@@ -6,9 +6,11 @@ use App\Repository\TesoreroRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: TesoreroRepository::class)]
-class Tesorero
+class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,6 +25,9 @@ class Tesorero
 
     #[ORM\Column(length: 255)]
     private ?string $correo = null;
+
+    #[ORM\Column(type: 'string')]
+    private $password;
 
     #[ORM\OneToMany(mappedBy: 'habilitado_por_tesorero_id', targetEntity: Alumno::class)]
     private Collection $alumnos;
@@ -272,4 +277,32 @@ class Tesorero
 
         return $this;
     }
+
+    public function getRoles(): array
+    {
+        return ['ROL_TESORERO'];
+    }
+
+    public function eraseCredentials()
+    {
+
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->correo;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
 }

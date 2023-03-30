@@ -7,9 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: InstructorRepository::class)]
-class Instructor
+class Instructor implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -42,6 +44,9 @@ class Instructor
 
     #[ORM\OneToMany(mappedBy: 'instructor_id', targetEntity: InstructorVuelo::class)]
     private Collection $instructorVuelos;
+
+    #[ORM\Column(type: 'string')]
+    private $password;
 
     public function __construct()
     {
@@ -194,6 +199,33 @@ class Instructor
                 $instructorVuelo->setInstructorId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return ['ROL_INSTRUCTOR'];
+    }
+
+    public function eraseCredentials()
+    {
+
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
 
         return $this;
     }

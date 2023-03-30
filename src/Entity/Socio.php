@@ -7,9 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: SocioRepository::class)]
-class Socio
+class Socio implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -57,6 +59,9 @@ class Socio
 
     #[ORM\OneToMany(mappedBy: 'socio_id', targetEntity: Venta::class)]
     private Collection $ventas;
+
+    #[ORM\Column(type: 'string')]
+    private $password;
 
     public function __construct()
     {
@@ -307,6 +312,33 @@ class Socio
                 $venta->setSocioId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return ['ROL_SOCIO'];
+    }
+
+    public function eraseCredentials()
+    {
+
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
 
         return $this;
     }

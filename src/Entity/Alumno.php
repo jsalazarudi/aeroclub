@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\AlumnoRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: AlumnoRepository::class)]
-class Alumno
+class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -49,6 +51,9 @@ class Alumno
 
     #[ORM\ManyToOne(inversedBy: 'alumnos')]
     private ?Tesorero $habilitado_por_tesorero_id = null;
+
+    #[ORM\Column(type: 'string')]
+    private $password;
 
     public function getId(): ?int
     {
@@ -200,6 +205,33 @@ class Alumno
     public function setHabilitadoPorTesoreroId(?Tesorero $habilitado_por_tesorero_id): self
     {
         $this->habilitado_por_tesorero_id = $habilitado_por_tesorero_id;
+
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return ['ROL_ALUMNO'];
+    }
+
+    public function eraseCredentials()
+    {
+
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
 
         return $this;
     }
