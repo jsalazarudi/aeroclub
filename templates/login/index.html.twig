@@ -13,18 +13,23 @@
 
                 <div class="card shadow-lg">
                     <div class="card-body p-5">
+
+                        {% if error %}
+                            <div class="alert alert-danger" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                        {% endif %}
+
                         <h1 class="fs-4 fw-bold mb-4">Iniciar sesión</h1>
                         <form action="{{ path('aeroclub_login') }}" method="post">
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                             <div class="mb-3">
                                 <label class="mb-2 text-muted" for="username">Correo electrónico:</label>
-                                <input type="text" class="form-control" id="username" name="_username" value="">
+                                <input type="email" class="form-control" id="username" name="_username" value="{{ last_username }}" required="true">
                             </div>
 
                             <div class="mb-4">
                                 <label class="mb-2 text-muted" for="password">Contraseña:</label>
-                                <input type="password"  class="form-control" id="password" name="_password">
+                                <input type="password"  class="form-control" id="password" name="_password" required="true">
                             </div>
 
                             <button class="btn btn-primary" type="submit">Iniciar sesión</button>
