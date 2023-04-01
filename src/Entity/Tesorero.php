@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TesoreroRepository::class)]
 class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
@@ -18,15 +19,23 @@ class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $nombre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $apellido = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Email()]
     private ?string $correo = null;
 
     #[ORM\Column(type: 'string')]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private $password;
 
     #[ORM\OneToMany(mappedBy: 'habilitado_por_tesorero_id', targetEntity: Alumno::class)]
@@ -280,7 +289,7 @@ class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return ['ROL_TESORERO'];
+        return ['ROLE_TESORERO'];
     }
 
     public function eraseCredentials()
@@ -304,5 +313,11 @@ class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->nombre.' '.$this->apellido;
+    }
+
 
 }
