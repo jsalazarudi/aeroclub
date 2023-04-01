@@ -4,15 +4,23 @@ namespace App\Form;
 
 use App\Entity\Tesorero;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class TesoreroType extends AbstractType
 {
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -35,8 +43,27 @@ class TesoreroType extends AbstractType
                 'label' => 'Contraseña',
                 'attr' => [
                     'class' => 'form-control'
-                ]
+                ],
+                'required' => false
             ])
+            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
+
+                $formData = $event->getData();
+                /** @var Tesorero $tesorero */
+                $tesorero = $event->getForm()->getData();
+
+                if($tesorero->getId()){
+                   $formData['password'] = $tesorero->getPassword();
+                }
+                else {
+                    if($formData['password']){
+                        $hashedPassword = $this->passwordHasher->hashPassword($tesorero,$formData["password"]);
+                        $formData["password"] = $hashedPassword;
+                    }
+                }
+
+                $event->setData($formData);
+            });
         ;
     }
 

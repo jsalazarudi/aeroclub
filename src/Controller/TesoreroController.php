@@ -31,11 +31,8 @@ class TesoreroController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $plainPassword = $tesorero->getPassword();
-            $hashedPassword = $passwordHasher->hashPassword($tesorero,$plainPassword);
-            $tesorero->setPassword($hashedPassword);
-            $tesoreroRepository->save($tesorero, true);
 
+            $tesoreroRepository->save($tesorero, true);
             return $this->redirectToRoute('aeroclub_usuario', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -62,7 +59,7 @@ class TesoreroController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $tesoreroRepository->save($tesorero, true);
 
-            return $this->redirectToRoute('app_tesorero_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('aeroclub_usuario', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('tesorero/edit.html.twig', [
@@ -78,6 +75,6 @@ class TesoreroController extends AbstractController
             $tesoreroRepository->remove($tesorero, true);
         }
 
-        return $this->redirectToRoute('app_tesorero_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('aeroclub_tesorero_index', [], Response::HTTP_SEE_OTHER);
     }
 }
