@@ -4,14 +4,25 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        # users_in_memory: { memory: null }
+        tesorero_provider:
+            entity:
+                class: App\Entity\Tesorero
+                property: correo
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: tesorero_provider
+            form_login:
+                login_path: aeroclub_login
+                check_path: aeroclub_login
+                enable_csrf: true
+                default_target_path: aeroclub_home
+            logout:
+                path: aeroclub_logout
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -22,8 +33,9 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/tesorero, roles: ROLE_TESORERO }
+        - { path: ^/usuario, roles: ROLE_TESORERO }
+        - { path: ^/home, roles: ROLE_TESORERO }
 
 when@test:
     security:
