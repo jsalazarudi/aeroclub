@@ -29,7 +29,7 @@ class UsuarioController extends AbstractController
     public function index(Request $request, AlumnoRepository $alumnoRepository, SocioRepository $socioRepository, InstructorRepository $instructorRepository,
                           PilotoRepository $pilotoRepository, TesoreroRepository $tesoreroRepository, PaginatorInterface $paginator, EntityManagerInterface $entityManager): Response
     {
-        $allTesoreros = $tesoreroRepository->createQueryBuilder('t');
+        $allTesoreros = $tesoreroRepository->createQueryBuilder('t')->andWhere('t.activo = true');
         $query = $allTesoreros->getQuery();
 
         $pagination = $paginator->paginate(

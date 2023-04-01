@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Tesorero;
 use App\Form\TesoreroType;
-use App\Form\UsuarioType;
 use App\Repository\TesoreroRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +30,7 @@ class TesoreroController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $tesorero->setActivo(true);
 
             $tesoreroRepository->save($tesorero, true);
             return $this->redirectToRoute('aeroclub_usuario', [], Response::HTTP_SEE_OTHER);
@@ -72,9 +72,10 @@ class TesoreroController extends AbstractController
     public function delete(Request $request, Tesorero $tesorero, TesoreroRepository $tesoreroRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$tesorero->getId(), $request->request->get('_token'))) {
-            $tesoreroRepository->remove($tesorero, true);
+            $tesorero->setActivo(false);
+            $tesoreroRepository->save($tesorero, true);
         }
 
-        return $this->redirectToRoute('aeroclub_tesorero_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('aeroclub_usuario', [], Response::HTTP_SEE_OTHER);
     }
 }

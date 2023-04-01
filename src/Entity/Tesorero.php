@@ -56,6 +56,9 @@ class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'tesorero_id', targetEntity: Nota::class)]
     private Collection $notas;
 
+    #[ORM\Column]
+    private ?bool $activo = null;
+
     public function __construct()
     {
         $this->alumnos = new ArrayCollection();
@@ -317,6 +320,18 @@ class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return $this->nombre.' '.$this->apellido;
+    }
+
+    public function isActivo(): ?bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(bool $activo): self
+    {
+        $this->activo = $activo;
+
+        return $this;
     }
 
 
