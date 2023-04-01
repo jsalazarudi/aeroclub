@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {% if tipo_usuario(app.user)  == "App\\Entity\\Tesorero" %}
+        {{ include('sidebar_menu/tesorero.html.twig') }}
+    {% endif %}
+
+    <div class="w-100 p-5">
+        {% block content %}{% endblock %}
+    </div>
+{% endblock %}
