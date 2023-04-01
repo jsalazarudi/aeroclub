@@ -1,0 +1,68 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Usuarios{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mb-5">Usuarios</h1>
+
+        <div class="row">
+            <div class="col-4 offset-4">
+                <div class="card shadow-lg">
+                    <div class="card-body text-center">
+                        {{ include('usuario/_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <h1 class="text-center mt-5">Listar usuarios</h1>
+
+        <div class="fw-bold text-center">
+            {% set filtros = {
+                't.nombre' : 'Nombre',
+                't.apellido': 'Apellido'
+            } %}
+            {{ knp_pagination_filter(tesoreros,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('aeroclub_usuario') }}">Sin Filtros</a>
+
+            <p>Registros totales: {{ tesoreros.count }}</p>
+        </div>
+
+
+        <table class="table">
+            <thead>
+                <th {% if tesoreros.isSorted('t.nombre') %} class="table-active" {% endif %}>
+                    {{ knp_pagination_sortable(tesoreros,'Nombre','t.nombre') }}
+                </th>
+                <th {% if tesoreros.isSorted('t.apellido') %} class="table-active" {% endif %}>
+                    {{ knp_pagination_sortable(tesoreros,'Apellido','t.apellido') }}
+                </th>
+                <th {% if tesoreros.isSorted('t.correo') %} class="table-active" {% endif %}>
+                    {{ knp_pagination_sortable(tesoreros,'Correo','t.correo') }}
+                </th>
+                <th></th>
+            </thead>
+            <tbody>
+                    {% for tesorero in tesoreros %}
+                        <tr>
+                            <td>{{ tesorero.nombre }}</td>
+                            <td>{{ tesorero.apellido }}</td>
+                            <td>{{ tesorero.correo }}</td>
+                            <td>
+                                <a class="btn btn-warning" href="{{ path('aeroclub_tesorero_edit', {'id': tesorero.id}) }}">Editar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(tesoreros) }}
+        </div>
+    </div>
+{% endblock %}
