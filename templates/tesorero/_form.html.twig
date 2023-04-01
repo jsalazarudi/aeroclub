@@ -1,0 +1,48 @@
+{{ form_start(form,{'attr': {'class': 'p-2' }}) }}
+
+    <div class="row">
+        <div class="col mb-3">
+            <label class="text-muted fs-3" for=""> {{ form_label(form.nombre) }}</label>
+
+            {% if form_errors(form.nombre) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.nombre) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.nombre) }}
+        </div>
+        <div class="col mb-3">
+            <label class="text-muted fs-3" for=""> {{ form_label(form.apellido) }}</label>
+            {% if form_errors(form.apellido) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.apellido) }}
+                </div>
+            {% endif %}
+            {{ form_widget(form.apellido) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mb-3">
+            <label class="text-muted fs-3" for=""> {{ form_label(form.correo) }}</label>
+            {% if form_errors(form.correo) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.correo) }}
+                </div>
+            {% endif %}
+            {{ form_widget(form.correo) }}
+        </div>
+        <div class="col mb-3">
+            <label class="text-muted fs-3" for=""> {{ form_label(form.password) }}</label>
+            {% if form_errors(form.password) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.password) }}
+                </div>
+            {% endif %}
+            {{ form_widget(form.password) }}
+        </div>
+    </div>
+    <div class="text-center">
+        <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
+    </div>
+{{ form_end(form) }}
