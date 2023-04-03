@@ -22,12 +22,12 @@ class Curso
     #[ORM\Column]
     private ?bool $aprobado = null;
 
-    #[ORM\OneToOne(inversedBy: 'curso', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Alumno $alumno_id = null;
-
     #[ORM\OneToMany(mappedBy: 'curso_id', targetEntity: Vuelo::class)]
     private Collection $vuelos;
+
+    #[ORM\ManyToOne(inversedBy: 'curso')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Alumno $alumno = null;
 
     public function __construct()
     {
@@ -63,18 +63,6 @@ class Curso
         return $this;
     }
 
-    public function getAlumnoId(): ?Alumno
-    {
-        return $this->alumno_id;
-    }
-
-    public function setAlumnoId(Alumno $alumno_id): self
-    {
-        $this->alumno_id = $alumno_id;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Vuelo>
      */
@@ -101,6 +89,18 @@ class Curso
                 $vuelo->setCursoId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAlumno(): ?Alumno
+    {
+        return $this->alumno;
+    }
+
+    public function setAlumno(?Alumno $alumno): self
+    {
+        $this->alumno = $alumno;
 
         return $this;
     }

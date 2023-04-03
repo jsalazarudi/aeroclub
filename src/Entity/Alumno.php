@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\AlumnoRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AlumnoRepository::class)]
 class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
@@ -17,34 +20,47 @@ class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank()]
+    #[Assert\Regex('/\d/')]
     private ?string $dni = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $nombre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $apellido = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Email()]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Regex('/\d/')]
     private ?string $telefono = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $domicilio = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $ciudad = null;
 
     #[ORM\Column]
     private ?bool $habilitado_volar = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\Type("\DateTimeInterface")]
+    #[Assert\NotBlank()]
     private ?\DateTimeInterface $fecha_vencimiento_licencia_medica = null;
-
-    #[ORM\OneToOne(mappedBy: 'alumno_id', cascade: ['persist', 'remove'])]
-    private ?Curso $curso = null;
 
     #[ORM\ManyToOne(inversedBy: 'alumnos')]
     private ?Instructor $habilitado_por_instructor_id = null;
@@ -53,7 +69,20 @@ class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Tesorero $habilitado_por_tesorero_id = null;
 
     #[ORM\Column(type: 'string')]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private $password;
+
+    #[ORM\Column]
+    private ?bool $activo = null;
+
+    #[ORM\OneToMany(mappedBy: 'alumno', targetEntity: Curso::class)]
+    private Collection $curso;
+
+    public function __construct()
+    {
+        $this->curso = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -168,23 +197,6 @@ class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCurso(): ?Curso
-    {
-        return $this->curso;
-    }
-
-    public function setCurso(Curso $curso): self
-    {
-        // set the owning side of the relation if necessary
-        if ($curso->getAlumnoId() !== $this) {
-            $curso->setAlumnoId($this);
-        }
-
-        $this->curso = $curso;
-
-        return $this;
-    }
-
     public function getHabilitadoPorInstructorId(): ?Instructor
     {
         return $this->habilitado_por_instructor_id;
@@ -232,6 +244,48 @@ class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function isActivo(): ?bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(bool $activo): self
+    {
+        $this->activo = $activo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Curso>
+     */
+    public function getCurso(): Collection
+    {
+        return $this->curso;
+    }
+
+    public function addCurso(Curso $curso): self
+    {
+        if (!$this->curso->contains($curso)) {
+            $this->curso->add($curso);
+            $curso->setAlumno($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCurso(Curso $curso): self
+    {
+        if ($this->curso->removeElement($curso)) {
+            // set the owning side to null (unless already changed)
+            if ($curso->getAlumno() === $this) {
+                $curso->setAlumno(null);
+            }
+        }
 
         return $this;
     }
