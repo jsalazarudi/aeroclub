@@ -4,65 +4,61 @@
 
 {% block content %}
 
-    <div class="container">
+    <style>
+        .usuarios-container img {
+            margin: 0 auto;
+            padding-top: 10px;
+        }
+    </style>
 
-        <h1 class="text-center mb-5">Usuarios</h1>
+    <div class="container text-center usuarios-container">
+
+        <h1 class="my-4">Gestión de Usuarios</h1>
 
         <div class="row">
-            <div class="col-4 offset-4">
-                <div class="card shadow-lg">
-                    <div class="card-body text-center">
-                        {{ include('usuario/_form.html.twig') }}
+            <div class="col">
+                <div class="card">
+                    <img src="{{ asset('usuarios/alumno.png') }}" class="card-img-top w-25" alt="">
+                    <div class="card-body">
+                        <a class="fw-bold fs-5" href="{{ path('aeroclub_alumno_index') }}">Alumno</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <img src="{{ asset('usuarios/socio.png') }}" class="card-img-top w-25" alt="">
+                    <div class="card-body">
+                        <a class="fw-bold fs-5" href="{{ path('aeroclub_socio_index') }}">Socio</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <img src="{{ asset('usuarios/instructor.png') }}" class="card-img-top w-25" alt="">
+                    <div class="card-body">
+                        <a class="fw-bold fs-5" href="{{ path('aeroclub_instructor_index') }}">Instructor</a>
                     </div>
                 </div>
             </div>
         </div>
 
-
-        <h1 class="text-center mt-5">Listar usuarios</h1>
-
-        <div class="fw-bold text-center">
-            {% set filtros = {
-                't.nombre' : 'Nombre',
-                't.apellido': 'Apellido'
-            } %}
-            {{ knp_pagination_filter(tesoreros,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('aeroclub_usuario') }}">Sin Filtros</a>
-
-            <p>Registros totales: {{ tesoreros.count }}</p>
-        </div>
-
-
-        <table class="table">
-            <thead>
-                <th {% if tesoreros.isSorted('t.nombre') %} class="table-active" {% endif %}>
-                    {{ knp_pagination_sortable(tesoreros,'Nombre','t.nombre') }}
-                </th>
-                <th {% if tesoreros.isSorted('t.apellido') %} class="table-active" {% endif %}>
-                    {{ knp_pagination_sortable(tesoreros,'Apellido','t.apellido') }}
-                </th>
-                <th {% if tesoreros.isSorted('t.correo') %} class="table-active" {% endif %}>
-                    {{ knp_pagination_sortable(tesoreros,'Correo','t.correo') }}
-                </th>
-                <th></th>
-            </thead>
-            <tbody>
-                    {% for tesorero in tesoreros %}
-                        <tr>
-                            <td>{{ tesorero.nombre }}</td>
-                            <td>{{ tesorero.apellido }}</td>
-                            <td>{{ tesorero.correo }}</td>
-                            <td>
-                                <a class="btn btn-warning" href="{{ path('aeroclub_tesorero_edit', {'id': tesorero.id}) }}">Editar</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-            </tbody>
-        </table>
-
-        <div class="d-flex justify-content-center">
-            {{ knp_pagination_render(tesoreros) }}
+        <div class="row mt-5">
+            <div class="col">
+                <div class="card">
+                    <img src="{{ asset('usuarios/tesorero.jpg') }}" class="card-img-top w-25" alt="">
+                    <div class="card-body">
+                        <a class="fw-bold fs-5" href="{{ path('aeroclub_tesorero_index') }}">Tesorero</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <img src="{{ asset('usuarios/piloto.png') }}" class="card-img-top w-25" alt="">
+                    <div class="card-body">
+                        <a class="fw-bold fs-5" href="{{ path('aeroclub_piloto_index') }}">Piloto</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

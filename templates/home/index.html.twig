@@ -4,6 +4,7 @@
 
 {% block content %}
 
-    <h1>Home</h1>
+    <h1 class="text-center mb-3">Bienvenido {{ app.user.nombre }} {{ app.user.apellido }}</h1>
+    <p class="fs-5 fw-light text-center">En el menú lateral podrá acceder a las funcionalidades que tiene disponible</p>
 
 {% endblock %}
