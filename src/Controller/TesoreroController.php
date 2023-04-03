@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Tesorero;
 use App\Form\TesoreroType;
 use App\Repository\TesoreroRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +16,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class TesoreroController extends AbstractController
 {
     #[Route('/', name: 'aeroclub_tesorero_index', methods: ['GET'])]
-    public function index(TesoreroRepository $tesoreroRepository): Response
+    public function index(Request $request,TesoreroRepository $tesoreroRepository, PaginatorInterface $paginator): Response
     {
+        $tesorerosActivos = $tesoreroRepository->createQueryBuilder('t')->andWhere('t.activo = true');
+        $query = $tesorerosActivos->getQuery();
+
+        $tesoreros = $paginator->paginate(
+            $query,
+            $request->query->getInt('page',1),
+            2
+        );
+
         return $this->render('tesorero/index.html.twig', [
-            'tesoreros' => $tesoreroRepository->findAll()
+            'tesoreros' => $tesoreros
         ]);
     }
 
@@ -33,7 +43,7 @@ class TesoreroController extends AbstractController
             $tesorero->setActivo(true);
 
             $tesoreroRepository->save($tesorero, true);
-            return $this->redirectToRoute('aeroclub_usuario', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('aeroclub_tesorero_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('tesorero/new.html.twig', [
@@ -76,6 +86,6 @@ class TesoreroController extends AbstractController
             $tesoreroRepository->save($tesorero, true);
         }
 
-        return $this->redirectToRoute('aeroclub_usuario', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('aeroclub_tesorero_index', [], Response::HTTP_SEE_OTHER);
     }
 }

@@ -2,7 +2,7 @@
 
 {% block body %}
 
-    {% if tipo_usuario(app.user)  == "App\\Entity\\Tesorero" %}
+    {% if "App\\Entity\\Tesorero" in tipo_usuario(app.user) %}
         {{ include('sidebar_menu/tesorero.html.twig') }}
     {% endif %}
 

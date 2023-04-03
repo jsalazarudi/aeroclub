@@ -15,6 +15,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class TesoreroType extends AbstractType
 {
+    private UserPasswordHasherInterface $passwordHasher;
 
     public function __construct(UserPasswordHasherInterface $passwordHasher)
     {
@@ -27,16 +28,25 @@ class TesoreroType extends AbstractType
             ->add('nombre', TextType::class, [
                 'attr' => [
                     'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
                 ]
             ])
             ->add('apellido', TextType::class, [
                 'attr' => [
                     'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
                 ]
             ])
             ->add('correo', EmailType::class, [
                 'attr' => [
                     'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
                 ]
             ])
             ->add('password', PasswordType::class, [
@@ -44,7 +54,10 @@ class TesoreroType extends AbstractType
                 'attr' => [
                     'class' => 'form-control'
                 ],
-                'required' => false
+                'required' => false,
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
+                ]
             ])
             ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
 

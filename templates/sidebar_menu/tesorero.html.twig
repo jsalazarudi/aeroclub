@@ -8,10 +8,6 @@
             padding: .875rem 1.25rem;
         }
 
-        #sidebar-container .menu {
-            width: 18rem;
-        }
-
         .menu a {
             text-decoration: none;
         }
@@ -19,11 +15,15 @@
         .menu a:hover {
             background-color: #93c5fd;
         }
+
+        .logo img {
+            width: 50%;
+        }
  </style>
 
  <div id="sidebar-container">
      <div class="logo text-center">
-            <img src="{{ asset('logo_aeroclub.jpg') }}" alt="Logo Aeroclub">
+            <img src="{{ asset('Logoaeroclub.png') }}" alt="Logo Aeroclub">
      </div>
      <div class="menu">
         <a class="d-block p-3 text-light" href="{{ path('aeroclub_usuario') }}">Usuarios</a>
