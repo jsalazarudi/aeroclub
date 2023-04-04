@@ -1,0 +1,11 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Nuevo Piloto{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center mb-5">Crear Piloto</h1>
+
+        {{ include('piloto/_form.html.twig') }}
+    </div>
+{% endblock %}
