@@ -19,10 +19,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AlumnoType extends AbstractType
 {
     private UserPasswordHasherInterface $passwordHasher;
+
     public function __construct(UserPasswordHasherInterface $passwordHasher)
     {
         $this->passwordHasher = $passwordHasher;
     }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -34,7 +36,7 @@ class AlumnoType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ]
             ])
-            ->add('nombre',TextType::class, [
+            ->add('nombre', TextType::class, [
                 'attr' => [
                     'class' => 'form-control'
                 ],
@@ -42,7 +44,7 @@ class AlumnoType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ]
             ])
-            ->add('apellido',TextType::class, [
+            ->add('apellido', TextType::class, [
                 'attr' => [
                     'class' => 'form-control'
                 ],
@@ -50,7 +52,7 @@ class AlumnoType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ]
             ])
-            ->add('email',EmailType::class, [
+            ->add('email', EmailType::class, [
                 'attr' => [
                     'class' => 'form-control'
                 ],
@@ -92,7 +94,7 @@ class AlumnoType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('fecha_vencimiento_licencia_medica',DateTimeType::class,[
+            ->add('fecha_vencimiento_licencia_medica', DateTimeType::class, [
                 'widget' => 'single_text',
                 'attr' => [
                     'class' => 'form-control'
@@ -119,19 +121,17 @@ class AlumnoType extends AbstractType
                 /** @var Alumno $alumno */
                 $alumno = $event->getForm()->getData();
 
-                if($alumno->getId()){
+                if ($alumno->getId()) {
                     $formData['password'] = $alumno->getPassword();
-                }
-                else {
-                    if($formData['password']){
-                        $hashedPassword = $this->passwordHasher->hashPassword($alumno,$formData["password"]);
+                } else {
+                    if ($formData['password']) {
+                        $hashedPassword = $this->passwordHasher->hashPassword($alumno, $formData["password"]);
                         $formData["password"] = $hashedPassword;
                     }
                 }
 
                 $event->setData($formData);
             });
-        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
