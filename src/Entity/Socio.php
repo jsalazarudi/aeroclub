@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SocioRepository::class)]
 class Socio implements UserInterface, PasswordAuthenticatedUserInterface
@@ -19,33 +20,53 @@ class Socio implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank()]
+    #[Assert\Regex('/\d/')]
     private ?string $dni = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $nombre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $apellido = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Email()]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Regex('/\d/')]
     private ?string $telefono = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $domicilio = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $ciudad = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\Type("\DateTimeInterface")]
+    #[Assert\NotBlank()]
     private ?\DateTimeInterface $fecha_vencimiento_licencia_medica = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $tipo_licencia = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $numero_socio = null;
 
     #[ORM\OneToMany(mappedBy: 'socio_id', targetEntity: Vuelo::class)]
@@ -61,6 +82,8 @@ class Socio implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $ventas;
 
     #[ORM\Column(type: 'string')]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private $password;
 
     #[ORM\Column]
@@ -331,7 +354,7 @@ class Socio implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     public function getPassword(): ?string

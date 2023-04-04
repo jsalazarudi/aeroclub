@@ -28,8 +28,8 @@
             <th {% if socios.isSorted('t.apellido') %} class="table-active" {% endif %}>
                 {{ knp_pagination_sortable(socios,'Apellido','s.apellido') }}
             </th>
-            <th {% if socios.isSorted('t.correo') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(socios,'Correo','s.correo') }}
+            <th {% if socios.isSorted('t.email') %} class="table-active" {% endif %}>
+                {{ knp_pagination_sortable(socios,'Correo','s.email') }}
             </th>
             <th></th>
             </thead>
@@ -38,7 +38,7 @@
                 <tr>
                     <td>{{ socio.nombre }}</td>
                     <td>{{ socio.apellido }}</td>
-                    <td>{{ socio.correo }}</td>
+                    <td>{{ socio.email }}</td>
                     <td>
                         <a class="btn btn-warning" href="{{ path('aeroclub_socio_edit', {'id': socio.id}) }}">Editar</a>
                     </td>
