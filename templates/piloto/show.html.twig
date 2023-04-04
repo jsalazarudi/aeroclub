@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Piloto{% endblock %}
+
+{% block body %}
+    <h1>Piloto</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ piloto.id }}</td>
+            </tr>
+            <tr>
+                <th>Dni</th>
+                <td>{{ piloto.dni }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ piloto.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Apellido</th>
+                <td>{{ piloto.apellido }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ piloto.email }}</td>
+            </tr>
+            <tr>
+                <th>Telefono</th>
+                <td>{{ piloto.telefono }}</td>
+            </tr>
+            <tr>
+                <th>Domicilio</th>
+                <td>{{ piloto.domicilio }}</td>
+            </tr>
+            <tr>
+                <th>Ciudad</th>
+                <td>{{ piloto.ciudad }}</td>
+            </tr>
+            <tr>
+                <th>Fecha_vencimiento_licencia_medica</th>
+                <td>{{ piloto.fechaVencimientoLicenciaMedica ? piloto.fechaVencimientoLicenciaMedica|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Tipo_licencia</th>
+                <td>{{ piloto.tipoLicencia }}</td>
+            </tr>
+            <tr>
+                <th>Password</th>
+                <td>{{ piloto.password }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_piloto_index') }}">back to list</a>
+
+    <a href="{{ path('app_piloto_edit', {'id': piloto.id}) }}">edit</a>
+
+    {{ include('piloto/_delete_form.html.twig') }}
+{% endblock %}

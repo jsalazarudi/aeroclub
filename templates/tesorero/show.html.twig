@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tesorero{% endblock %}
+
+{% block body %}
+    <h1>Tesorero</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ tesorero.id }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ tesorero.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Apellido</th>
+                <td>{{ tesorero.apellido }}</td>
+            </tr>
+            <tr>
+                <th>Correo</th>
+                <td>{{ tesorero.correo }}</td>
+            </tr>
+            <tr>
+                <th>Password</th>
+                <td>{{ tesorero.password }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_tesorero_index') }}">back to list</a>
+
+    <a href="{{ path('app_tesorero_edit', {'id': tesorero.id}) }}">edit</a>
+
+    {{ include('tesorero/_delete_form.html.twig') }}
+{% endblock %}

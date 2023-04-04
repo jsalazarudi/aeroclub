@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Socio{% endblock %}
+
+{% block body %}
+    <h1>Socio</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ socio.id }}</td>
+            </tr>
+            <tr>
+                <th>Dni</th>
+                <td>{{ socio.dni }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ socio.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Apellido</th>
+                <td>{{ socio.apellido }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ socio.email }}</td>
+            </tr>
+            <tr>
+                <th>Telefono</th>
+                <td>{{ socio.telefono }}</td>
+            </tr>
+            <tr>
+                <th>Domicilio</th>
+                <td>{{ socio.domicilio }}</td>
+            </tr>
+            <tr>
+                <th>Ciudad</th>
+                <td>{{ socio.ciudad }}</td>
+            </tr>
+            <tr>
+                <th>Fecha_vencimiento_licencia_medica</th>
+                <td>{{ socio.fechaVencimientoLicenciaMedica ? socio.fechaVencimientoLicenciaMedica|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Tipo_licencia</th>
+                <td>{{ socio.tipoLicencia }}</td>
+            </tr>
+            <tr>
+                <th>Numero_socio</th>
+                <td>{{ socio.numeroSocio }}</td>
+            </tr>
+            <tr>
+                <th>Password</th>
+                <td>{{ socio.password }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_socio_index') }}">back to list</a>
+
+    <a href="{{ path('app_socio_edit', {'id': socio.id}) }}">edit</a>
+
+    {{ include('socio/_delete_form.html.twig') }}
+{% endblock %}
