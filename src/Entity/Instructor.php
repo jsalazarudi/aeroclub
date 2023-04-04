@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InstructorRepository::class)]
 class Instructor implements UserInterface, PasswordAuthenticatedUserInterface
@@ -19,24 +20,38 @@ class Instructor implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank()]
+    #[Assert\Regex('/\d/')]
     private ?string $dni = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $nombre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $apellido = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Email()]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Regex('/\d/')]
     private ?string $telefono = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $domicilio = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $ciudad = null;
 
     #[ORM\OneToMany(mappedBy: 'habilitado_por_instructor_id', targetEntity: Alumno::class)]
@@ -46,6 +61,8 @@ class Instructor implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $instructorVuelos;
 
     #[ORM\Column(type: 'string')]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private $password;
 
     #[ORM\Column]
@@ -218,7 +235,7 @@ class Instructor implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     public function getPassword(): ?string
@@ -235,7 +252,7 @@ class Instructor implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __toString(): string
     {
-        return  $this->nombre. ' '.$this->apellido;
+        return $this->nombre . ' ' . $this->apellido;
     }
 
     public function isActivo(): ?bool
