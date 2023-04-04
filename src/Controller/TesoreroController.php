@@ -69,7 +69,7 @@ class TesoreroController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $tesoreroRepository->save($tesorero, true);
 
-            return $this->redirectToRoute('aeroclub_usuario', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('aeroclub_tesorero_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('tesorero/edit.html.twig', [

@@ -6,11 +6,13 @@ use App\Repository\TesoreroRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TesoreroRepository::class)]
+#[UniqueEntity('correo')]
 class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
