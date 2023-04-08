@@ -5,17 +5,17 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # users_in_memory: { memory: null }
-        tesorero_provider:
+        usuario:
             entity:
-                class: App\Entity\Tesorero
-                property: correo
+                class: App\Entity\Usuario
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
-            provider: tesorero_provider
+            provider: usuario
             form_login:
                 login_path: aeroclub_login
                 check_path: aeroclub_login
@@ -29,13 +29,16 @@ security:
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
-
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/tesorero, roles: ROLE_TESORERO }
-        - { path: ^/usuario, roles: ROLE_TESORERO }
-        - { path: ^/home, roles: ROLE_TESORERO }
+        - { path: ^/tesorero, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/usuario, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/home, roles: [ROLE_TESORERO,ROLE_ALUMNO,ROLE_ADMINISTRADOR] }
+        - { path: ^/alumno, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/instructor, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/piloto, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/socio, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
 
 when@test:
     security:

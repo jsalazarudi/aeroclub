@@ -2,9 +2,18 @@
 
 {% block body %}
 
-    {% if "App\\Entity\\Tesorero" in tipo_usuario(app.user) %}
+    {% if is_granted('ROLE_TESORERO') %}
         {{ include('sidebar_menu/tesorero.html.twig') }}
     {% endif %}
+
+    {% if is_granted('ROLE_ALUMNO') %}
+        {{ include('sidebar_menu/alumno.html.twig') }}
+    {% endif %}
+
+    {% if is_granted('ROLE_ADMINISTRADOR') %}
+        {{ include('sidebar_menu/administrador.html.twig') }}
+    {% endif %}
+
 
     <div class="w-100 p-5">
         {% block content %}{% endblock %}
