@@ -1,4 +1,4 @@
-<form method="post" action="{{ path('aeroclub_piloto_delete', {'id': piloto.id}) }}" onsubmit="return confirm('Esta seguro de eliminar al piloto?');">
+<form method="post" action="{{ path('aeroclub_piloto_delete', {'id': piloto.id}) }}" onsubmit="return confirm('Esta seguro de desactivar al piloto?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ piloto.id) }}">
-    <button class="btn btn-danger">Eliminar</button>
+    <button class="btn btn-danger">Desactivar</button>
 </form>

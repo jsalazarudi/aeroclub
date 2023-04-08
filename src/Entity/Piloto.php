@@ -7,52 +7,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PilotoRepository::class)]
-class Piloto implements UserInterface, PasswordAuthenticatedUserInterface
+class Piloto
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank()]
-    #[Assert\Regex('/\d/')]
-    private ?string $dni = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private ?string $nombre = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private ?string $apellido = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Email()]
-    private ?string $email = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Regex('/\d/')]
-    private ?string $telefono = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private ?string $domicilio = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private ?string $ciudad = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\Type("\DateTimeInterface")]
@@ -74,13 +37,10 @@ class Piloto implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'piloto_id', targetEntity: Venta::class)]
     private Collection $ventas;
 
-    #[ORM\Column(type: 'string')]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private $password;
-
-    #[ORM\Column]
-    private ?bool $activo = null;
+    #[ORM\OneToOne(targetEntity: Usuario::class,mappedBy: 'piloto', cascade: ['persist', 'remove'])]
+    #[Assert\Type(type: Usuario::class)]
+    #[Assert\Valid]
+    private ?Usuario $usuario = null;
 
     public function __construct()
     {
@@ -93,90 +53,6 @@ class Piloto implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getDni(): ?string
-    {
-        return $this->dni;
-    }
-
-    public function setDni(string $dni): self
-    {
-        $this->dni = $dni;
-
-        return $this;
-    }
-
-    public function getNombre(): ?string
-    {
-        return $this->nombre;
-    }
-
-    public function setNombre(string $nombre): self
-    {
-        $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    public function getApellido(): ?string
-    {
-        return $this->apellido;
-    }
-
-    public function setApellido(string $apellido): self
-    {
-        $this->apellido = $apellido;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    public function getTelefono(): ?string
-    {
-        return $this->telefono;
-    }
-
-    public function setTelefono(string $telefono): self
-    {
-        $this->telefono = $telefono;
-
-        return $this;
-    }
-
-    public function getDomicilio(): ?string
-    {
-        return $this->domicilio;
-    }
-
-    public function setDomicilio(string $domicilio): self
-    {
-        $this->domicilio = $domicilio;
-
-        return $this;
-    }
-
-    public function getCiudad(): ?string
-    {
-        return $this->ciudad;
-    }
-
-    public function setCiudad(string $ciudad): self
-    {
-        $this->ciudad = $ciudad;
-
-        return $this;
     }
 
     public function getFechaVencimientoLicenciaMedica(): ?\DateTimeInterface
@@ -323,41 +199,24 @@ class Piloto implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getRoles(): array
+    public function getUsuario(): ?Usuario
     {
-        return ['ROL_PILOTO'];
+        return $this->usuario;
     }
 
-    public function eraseCredentials()
+    public function setUsuario(?Usuario $usuario): self
     {
+        // unset the owning side of the relation if necessary
+        if ($usuario === null && $this->usuario !== null) {
+            $this->usuario->setPiloto(null);
+        }
 
-    }
+        // set the owning side of the relation if necessary
+        if ($usuario !== null && $usuario->getPiloto() !== $this) {
+            $usuario->setPiloto($this);
+        }
 
-    public function getUserIdentifier(): string
-    {
-        return (string)$this->email;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    public function isActivo(): ?bool
-    {
-        return $this->activo;
-    }
-
-    public function setActivo(bool $activo): self
-    {
-        $this->activo = $activo;
+        $this->usuario = $usuario;
 
         return $this;
     }

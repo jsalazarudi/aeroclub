@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Piloto;
+use App\Entity\Usuario;
 use App\Form\PilotoType;
 use App\Repository\PilotoRepository;
+use App\Repository\UsuarioRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,9 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class PilotoController extends AbstractController
 {
     #[Route('/', name: 'aeroclub_piloto_index', methods: ['GET'])]
-    public function index(Request $request, PilotoRepository $pilotoRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, UsuarioRepository $usuarioRepository, PaginatorInterface $paginator): Response
     {
-        $pilotosActivos = $pilotoRepository->createQueryBuilder('p')->andWhere('p.activo = true');
+        $pilotosActivos = $usuarioRepository->createQueryBuilder('u')
+            ->join('u.piloto','p')
+            ->where('u.activo = true');
+
         $query = $pilotosActivos->getQuery();
 
         $pilotos = $paginator->paginate(
@@ -27,7 +32,10 @@ class PilotoController extends AbstractController
         );
 
         return $this->render('piloto/index.html.twig', [
-            'pilotos' => $pilotos,
+            'usuarios' => $pilotos,
+            'tipo' => 'Pilotos',
+            'url_ruta_crear' => $this->generateUrl('aeroclub_piloto_new'),
+            'url_ruta_listar' => $this->generateUrl('aeroclub_piloto_index')
         ]);
     }
 
@@ -35,11 +43,15 @@ class PilotoController extends AbstractController
     public function new(Request $request, PilotoRepository $pilotoRepository): Response
     {
         $piloto = new Piloto();
+        $piloto->setUsuario(new Usuario());
+
         $form = $this->createForm(PilotoType::class, $piloto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $piloto->setActivo(true);
+            $piloto->getUsuario()->setRoles(['ROLE_PILOTO']);
+            $piloto->getUsuario()->setActivo(true);
+
             $pilotoRepository->save($piloto, true);
 
             return $this->redirectToRoute('aeroclub_piloto_index', [], Response::HTTP_SEE_OTHER);
@@ -48,6 +60,8 @@ class PilotoController extends AbstractController
         return $this->render('piloto/new.html.twig', [
             'piloto' => $piloto,
             'form' => $form,
+            'tipo' => 'Pilotos',
+            'url_ruta_listar' => $this->generateUrl('aeroclub_piloto_index')
         ]);
     }
 
@@ -74,6 +88,8 @@ class PilotoController extends AbstractController
         return $this->render('piloto/edit.html.twig', [
             'piloto' => $piloto,
             'form' => $form,
+            'tipo' => 'Pilotos',
+            'url_ruta_listar' => $this->generateUrl('aeroclub_piloto_index')
         ]);
     }
 
@@ -81,7 +97,7 @@ class PilotoController extends AbstractController
     public function delete(Request $request, Piloto $piloto, PilotoRepository $pilotoRepository): Response
     {
         if ($this->isCsrfTokenValid('delete' . $piloto->getId(), $request->request->get('_token'))) {
-            $piloto->setActivo(false);
+            $piloto->getUsuario()->setActivo(false);
             $pilotoRepository->save($piloto, true);
         }
 

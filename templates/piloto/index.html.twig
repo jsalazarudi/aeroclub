@@ -1,58 +1,22 @@
 {% extends 'theme.html.twig' %}
 
-{% block title %}Listado pilotos{% endblock %}
+{% block title %}Listado Pilotos{% endblock %}
 
 {% block content %}
 
-    <div class="container">
-
-        <h1 class="text-center mt-5 mb-5">Listado pilotos <a class="btn btn-success" href="{{ path('aeroclub_piloto_new') }}">Crear piloto</a></h1>
-
-        <div class="text-center">
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                'p.nombre' : 'Nombre',
-                'p.apellido': 'Apellido'
-            } %}
-            {{ knp_pagination_filter(pilotos,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('aeroclub_piloto_index') }}">Sin Filtros</a>
-        </div>
-
-
-        <table class="table">
-            <thead>
-            <th {% if pilotos.isSorted('t.nombre') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(pilotos,'Nombre','p.nombre') }}
-            </th>
-            <th {% if pilotos.isSorted('t.apellido') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(pilotos,'Apellido','p.apellido') }}
-            </th>
-            <th {% if pilotos.isSorted('t.email') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(pilotos,'Correo','p.email') }}
-            </th>
-            <th></th>
-            </thead>
-            <tbody>
-            {% for piloto in pilotos %}
+    {% embed 'usuario/index.html.twig' %}
+        {% block content_usuarios %}
+            {% for usuario in usuarios %}
                 <tr>
-                    <td>{{ piloto.nombre }}</td>
-                    <td>{{ piloto.apellido }}</td>
-                    <td>{{ piloto.email }}</td>
+                    <td>{{ usuario.nombre }}</td>
+                    <td>{{ usuario.apellido }}</td>
+                    <td>{{ usuario.email }}</td>
                     <td>
-                        <a class="btn btn-warning" href="{{ path('aeroclub_piloto_edit', {'id': piloto.id}) }}">Editar</a>
+                        <a class="btn btn-warning" href="{{ path('aeroclub_piloto_edit', {'id': usuario.piloto.id}) }}">Editar</a>
                     </td>
                 </tr>
             {% endfor %}
-            </tbody>
-        </table>
+        {% endblock %}
+    {% endembed %}
 
-        <p class="text-center fw-bold">
-            Registros totales: {{ pilotos.count }}
-        </p>
-
-        <div class="d-flex justify-content-center">
-            {{ knp_pagination_render(pilotos) }}
-        </div>
-    </div>
 {% endblock %}
