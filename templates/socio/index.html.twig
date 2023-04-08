@@ -4,55 +4,19 @@
 
 {% block content %}
 
-    <div class="container">
-
-        <h1 class="text-center mt-5 mb-5">Listado socios <a class="btn btn-success" href="{{ path('aeroclub_socio_new') }}">Crear Socio</a></h1>
-
-        <div class="text-center">
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                's.nombre' : 'Nombre',
-                's.apellido': 'Apellido'
-            } %}
-            {{ knp_pagination_filter(socios,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('aeroclub_socio_index') }}">Sin Filtros</a>
-        </div>
-
-
-        <table class="table">
-            <thead>
-            <th {% if socios.isSorted('t.nombre') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(socios,'Nombre','s.nombre') }}
-            </th>
-            <th {% if socios.isSorted('t.apellido') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(socios,'Apellido','s.apellido') }}
-            </th>
-            <th {% if socios.isSorted('t.email') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(socios,'Correo','s.email') }}
-            </th>
-            <th></th>
-            </thead>
-            <tbody>
-            {% for socio in socios %}
+    {% embed 'usuario/index.html.twig' %}
+        {% block content_usuarios %}
+            {% for usuario in usuarios %}
                 <tr>
-                    <td>{{ socio.nombre }}</td>
-                    <td>{{ socio.apellido }}</td>
-                    <td>{{ socio.email }}</td>
+                    <td>{{ usuario.nombre }}</td>
+                    <td>{{ usuario.apellido }}</td>
+                    <td>{{ usuario.email }}</td>
                     <td>
-                        <a class="btn btn-warning" href="{{ path('aeroclub_socio_edit', {'id': socio.id}) }}">Editar</a>
+                        <a class="btn btn-warning" href="{{ path('aeroclub_socio_edit', {'id': usuario.socio.id}) }}">Editar</a>
                     </td>
                 </tr>
             {% endfor %}
-            </tbody>
-        </table>
+        {% endblock %}
+    {% endembed %}
 
-        <p class="text-center fw-bold">
-            Registros totales: {{ socios.count }}
-        </p>
-
-        <div class="d-flex justify-content-center">
-            {{ knp_pagination_render(socios) }}
-        </div>
-    </div>
 {% endblock %}

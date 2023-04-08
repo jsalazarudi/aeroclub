@@ -1,90 +1,6 @@
 {{ form_start(form,{'attr': {'class': 'p-2' }}) }}
 <div class="row">
     <div class="col mb-3">
-        {{ form_label(form.nombre) }}
-
-        {% if form_errors(form.nombre) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.nombre) }}
-            </div>
-        {% endif %}
-
-        {{ form_widget(form.nombre) }}
-    </div>
-    <div class="col mb-3">
-        {{ form_label(form.apellido) }}
-
-        {% if form_errors(form.apellido) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.apellido) }}
-            </div>
-        {% endif %}
-
-        {{ form_widget(form.apellido) }}
-    </div>
-</div>
-<div class="row">
-    <div class="col mb-3">
-        {{ form_label(form.email) }}
-        {% if form_errors(form.email) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.email) }}
-            </div>
-        {% endif %}
-        {{ form_widget(form.email) }}
-    </div>
-    <div class="col mb-3">
-        {{ form_label(form.password) }}
-        {% if form_errors(form.password) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.password) }}
-            </div>
-        {% endif %}
-        {{ form_widget(form.password) }}
-    </div>
-</div>
-<div class="row">
-    <div class="col mb-3">
-        {{ form_label(form.dni) }}
-        {% if form_errors(form.dni) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.dni) }}
-            </div>
-        {% endif %}
-        {{ form_widget(form.dni) }}
-    </div>
-    <div class="col mb-3">
-        {{ form_label(form.telefono) }}
-        {% if form_errors(form.telefono) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.telefono) }}
-            </div>
-        {% endif %}
-        {{ form_widget(form.telefono) }}
-    </div>
-</div>
-<div class="row">
-    <div class="col mb-3">
-        {{ form_label(form.domicilio) }}
-        {% if form_errors(form.domicilio) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.domicilio) }}
-            </div>
-        {% endif %}
-        {{ form_widget(form.domicilio) }}
-    </div>
-</div>
-<div class="row">
-    <div class="col mb-3">
-        {{ form_label(form.ciudad) }}
-        {% if form_errors(form.ciudad) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.ciudad) }}
-            </div>
-        {% endif %}
-        {{ form_widget(form.ciudad) }}
-    </div>
-    <div class="col mb-3">
         {{ form_label(form.fecha_vencimiento_licencia_medica) }}
         {% if form_errors(form.fecha_vencimiento_licencia_medica) %}
             <div class="alert alert-danger">
@@ -114,7 +30,5 @@
         {{ form_widget(form.numero_socio) }}
     </div>
 </div>
-<div class="text-center">
-    <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
-</div>
+{{ include('usuario/_form.html.twig') }}
 {{ form_end(form) }}

@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Socio;
+use App\Entity\Usuario;
 use App\Form\SocioType;
 use App\Repository\SocioRepository;
+use App\Repository\UsuarioRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,9 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class SocioController extends AbstractController
 {
     #[Route('/', name: 'aeroclub_socio_index', methods: ['GET'])]
-    public function index(Request $request, SocioRepository $socioRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, UsuarioRepository $usuarioRepository, PaginatorInterface $paginator): Response
     {
-        $sociosActivos = $socioRepository->createQueryBuilder('s')->andWhere('s.activo = true');
+        $sociosActivos = $usuarioRepository->createQueryBuilder('u')
+            ->join('u.socio','s')
+            ->where('u.activo = true');
+
         $query = $sociosActivos->getQuery();
 
         $socios = $paginator->paginate(
@@ -27,7 +32,10 @@ class SocioController extends AbstractController
         );
 
         return $this->render('socio/index.html.twig', [
-            'socios' => $socios,
+            'usuarios' => $socios,
+            'tipo' => 'Socios',
+            'url_ruta_crear' => $this->generateUrl('aeroclub_socio_new'),
+            'url_ruta_listar' => $this->generateUrl('aeroclub_socio_index')
         ]);
     }
 
@@ -35,11 +43,16 @@ class SocioController extends AbstractController
     public function new(Request $request, SocioRepository $socioRepository): Response
     {
         $socio = new Socio();
+        $socio->setUsuario(new Usuario());
+
         $form = $this->createForm(SocioType::class, $socio);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $socio->setActivo(true);
+
+            $socio->getUsuario()->setRoles(['ROLE_SOCIO']);
+            $socio->getUsuario()->setActivo(true);
+
             $socioRepository->save($socio, true);
 
             return $this->redirectToRoute('aeroclub_socio_index', [], Response::HTTP_SEE_OTHER);
@@ -48,6 +61,8 @@ class SocioController extends AbstractController
         return $this->render('socio/new.html.twig', [
             'socio' => $socio,
             'form' => $form,
+            'tipo' => 'Socios',
+            'url_ruta_listar' => $this->generateUrl('aeroclub_socio_index')
         ]);
     }
 
@@ -74,6 +89,8 @@ class SocioController extends AbstractController
         return $this->render('socio/edit.html.twig', [
             'socio' => $socio,
             'form' => $form,
+            'tipo' => 'Socios',
+            'url_ruta_listar' => $this->generateUrl('aeroclub_socio_index')
         ]);
     }
 
@@ -81,7 +98,7 @@ class SocioController extends AbstractController
     public function delete(Request $request, Socio $socio, SocioRepository $socioRepository): Response
     {
         if ($this->isCsrfTokenValid('delete' . $socio->getId(), $request->request->get('_token'))) {
-            $socio->setActivo(false);
+            $socio->getUsuario()->setActivo(false);
             $socioRepository->save($socio, true);
         }
 
