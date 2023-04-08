@@ -4,55 +4,19 @@
 
 {% block content %}
 
-    <div class="container">
-
-        <h1 class="text-center mt-5 mb-5">Listado Alumnos <a class="btn btn-success" href="{{ path('aeroclub_alumno_new') }}">Crear Alumno</a></h1>
-
-        <div class="text-center">
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                'a.nombre' : 'Nombre',
-                'a.apellido': 'Apellido'
-            } %}
-            {{ knp_pagination_filter(alumnos,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('aeroclub_alumno_index') }}">Sin Filtros</a>
-        </div>
-
-
-        <table class="table">
-            <thead>
-            <th {% if alumnos.isSorted('t.nombre') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(alumnos,'Nombre','t.nombre') }}
-            </th>
-            <th {% if alumnos.isSorted('t.apellido') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(alumnos,'Apellido','t.apellido') }}
-            </th>
-            <th {% if alumnos.isSorted('t.correo') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(alumnos,'Email','t.email') }}
-            </th>
-            <th></th>
-            </thead>
-            <tbody>
-            {% for alumno in alumnos %}
+    {% embed 'usuario/index.html.twig' %}
+        {% block content_usuarios %}
+            {% for usuario in usuarios %}
                 <tr>
-                    <td>{{ alumno.nombre }}</td>
-                    <td>{{ alumno.apellido }}</td>
-                    <td>{{ alumno.email }}</td>
+                    <td>{{ usuario.nombre }}</td>
+                    <td>{{ usuario.apellido }}</td>
+                    <td>{{ usuario.email }}</td>
                     <td>
-                        <a class="btn btn-warning" href="{{ path('aeroclub_alumno_edit', {'id': alumno.id}) }}">Editar</a>
+                        <a class="btn btn-warning" href="{{ path('aeroclub_alumno_edit', {'id': usuario.alumno.id}) }}">Editar</a>
                     </td>
                 </tr>
             {% endfor %}
-            </tbody>
-        </table>
+        {% endblock %}
+    {% endembed %}
 
-        <p class="text-center fw-bold">
-            Registros totales: {{ alumnos.count }}
-        </p>
-
-        <div class="d-flex justify-content-center">
-            {{ knp_pagination_render(alumnos) }}
-        </div>
-    </div>
 {% endblock %}

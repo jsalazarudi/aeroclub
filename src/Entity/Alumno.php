@@ -7,55 +7,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AlumnoRepository::class)]
-#[UniqueEntity('email')]
-class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
+class Alumno
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank()]
-    #[Assert\Regex('/\d/')]
-    private ?string $dni = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private ?string $nombre = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private ?string $apellido = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Email()]
-    private ?string $email = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Regex('/\d/')]
-    private ?string $telefono = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private ?string $domicilio = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private ?string $ciudad = null;
-
     #[ORM\Column]
     private ?bool $habilitado_volar = null;
 
@@ -70,16 +30,13 @@ class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'alumnos')]
     private ?Tesorero $habilitado_por_tesorero_id = null;
 
-    #[ORM\Column(type: 'string')]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private $password;
-
-    #[ORM\Column]
-    private ?bool $activo = null;
-
     #[ORM\OneToMany(mappedBy: 'alumno', targetEntity: Curso::class)]
     private Collection $curso;
+
+    #[ORM\OneToOne(targetEntity: Usuario::class,mappedBy: 'alumno', cascade: ['persist', 'remove'])]
+    #[Assert\Type(type: Usuario::class)]
+    #[Assert\Valid]
+    private ?Usuario $usuario = null;
 
     public function __construct()
     {
@@ -89,90 +46,6 @@ class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getDni(): ?string
-    {
-        return $this->dni;
-    }
-
-    public function setDni(string $dni): self
-    {
-        $this->dni = $dni;
-
-        return $this;
-    }
-
-    public function getNombre(): ?string
-    {
-        return $this->nombre;
-    }
-
-    public function setNombre(string $nombre): self
-    {
-        $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    public function getApellido(): ?string
-    {
-        return $this->apellido;
-    }
-
-    public function setApellido(string $apellido): self
-    {
-        $this->apellido = $apellido;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    public function getTelefono(): ?string
-    {
-        return $this->telefono;
-    }
-
-    public function setTelefono(string $telefono): self
-    {
-        $this->telefono = $telefono;
-
-        return $this;
-    }
-
-    public function getDomicilio(): ?string
-    {
-        return $this->domicilio;
-    }
-
-    public function setDomicilio(string $domicilio): self
-    {
-        $this->domicilio = $domicilio;
-
-        return $this;
-    }
-
-    public function getCiudad(): ?string
-    {
-        return $this->ciudad;
-    }
-
-    public function setCiudad(string $ciudad): self
-    {
-        $this->ciudad = $ciudad;
-
-        return $this;
     }
 
     public function isHabilitadoVolar(): ?bool
@@ -223,45 +96,6 @@ class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getRoles(): array
-    {
-        return ['ROL_ALUMNO'];
-    }
-
-    public function eraseCredentials()
-    {
-
-    }
-
-    public function getUserIdentifier(): string
-    {
-        return (string)$this->email;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    public function isActivo(): ?bool
-    {
-        return $this->activo;
-    }
-
-    public function setActivo(bool $activo): self
-    {
-        $this->activo = $activo;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Curso>
      */
@@ -290,5 +124,32 @@ class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getUsuario(): ?Usuario
+    {
+        return $this->usuario;
+    }
+
+    public function setUsuario(?Usuario $usuario): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($usuario === null && $this->usuario !== null) {
+            $this->usuario->setAlumno(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($usuario !== null && $usuario->getAlumno() !== $this) {
+            $usuario->setAlumno($this);
+        }
+
+        $this->usuario = $usuario;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nombre.' '.$this->apellido;
     }
 }
