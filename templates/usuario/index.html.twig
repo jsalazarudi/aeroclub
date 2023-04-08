@@ -1,64 +1,42 @@
-{% extends 'theme.html.twig' %}
+<div class="container">
 
-{% block title %}Usuarios{% endblock %}
+    <h1 class="text-center mt-2 mb-2">Listado {{ tipo }}</h1>
 
-{% block content %}
+    <div class="text-center">
+        <a class="btn btn-success mt-2 mb-5" href="{{ url_ruta_crear }}">Crear {{ tipo }}</a>
+        <p class="fw-bold">Filtrar por:</p>
+        {% set filtros = {
+            'u.nombre' : 'Nombre',
+            'u.apellido': 'Apellido'
+        } %}
+        {{ knp_pagination_filter(usuarios,filtros) }}
 
-    <style>
-        .usuarios-container img {
-            margin: 0 auto;
-            padding-top: 10px;
-        }
-    </style>
-
-    <div class="container text-center usuarios-container">
-
-        <h1 class="my-4">Gestión de Usuarios</h1>
-
-        <div class="row">
-            <div class="col">
-                <div class="card">
-                    <img src="{{ asset('usuarios/alumno.png') }}" class="card-img-top w-25" alt="">
-                    <div class="card-body">
-                        <a class="fw-bold fs-5" href="{{ path('aeroclub_alumno_index') }}">Alumno</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <img src="{{ asset('usuarios/socio.png') }}" class="card-img-top w-25" alt="">
-                    <div class="card-body">
-                        <a class="fw-bold fs-5" href="{{ path('aeroclub_socio_index') }}">Socio</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <img src="{{ asset('usuarios/instructor.png') }}" class="card-img-top w-25" alt="">
-                    <div class="card-body">
-                        <a class="fw-bold fs-5" href="{{ path('aeroclub_instructor_index') }}">Instructor</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-5">
-            <div class="col">
-                <div class="card">
-                    <img src="{{ asset('usuarios/tesorero.jpg') }}" class="card-img-top w-25" alt="">
-                    <div class="card-body">
-                        <a class="fw-bold fs-5" href="{{ path('aeroclub_tesorero_index') }}">Tesorero</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <img src="{{ asset('usuarios/piloto.png') }}" class="card-img-top w-25" alt="">
-                    <div class="card-body">
-                        <a class="fw-bold fs-5" href="{{ path('aeroclub_piloto_index') }}">Piloto</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <a class="btn btn-link" href="{{ url_ruta_listar }}">Sin Filtros</a>
     </div>
-{% endblock %}
+
+    <table class="table">
+        <thead>
+        <th {% if usuarios.isSorted('u.nombre') %} class="table-active" {% endif %}>
+            {{ knp_pagination_sortable(usuarios,'Nombre','u.nombre') }}
+        </th>
+        <th {% if usuarios.isSorted('u.apellido') %} class="table-active" {% endif %}>
+            {{ knp_pagination_sortable(usuarios,'Apellido','u.apellido') }}
+        </th>
+        <th {% if usuarios.isSorted('u.correo') %} class="table-active" {% endif %}>
+            {{ knp_pagination_sortable(usuarios,'Email','u.email') }}
+        </th>
+        <th></th>
+        </thead>
+        <tbody>
+        {% block content_usuarios %}{% endblock %}
+        </tbody>
+    </table>
+
+    <p class="text-center fw-bold">
+        Registros totales: {{ usuarios.count }}
+    </p>
+
+    <div class="d-flex justify-content-center">
+        {{ knp_pagination_render(usuarios) }}
+    </div>
+</div>

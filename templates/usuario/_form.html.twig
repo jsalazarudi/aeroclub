@@ -1,14 +1,89 @@
-{{ form_start(form,{'attr': {'class': 'p-2' }}) }}
-    <div class="row">
-        <div class="col mb-2">
-            <label class="text-muted mb-2 fs-3" for="">{{ form_label(form.tipo_usuario) }}</label>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col mb-3">
-            {{ form_widget(form.tipo_usuario) }}
-        </div>
-    </div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.usuario.nombre) }}
 
-    <button class="btn btn-primary">{{ button_label|default('Crear Usuario') }}</button>
-{{ form_end(form) }}
+        {% if form_errors(form.usuario.nombre) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.usuario.nombre) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.usuario.nombre) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.usuario.apellido) }}
+
+        {% if form_errors(form.usuario.apellido) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.usuario.apellido) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.usuario.apellido) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.usuario.email) }}
+        {% if form_errors(form.usuario.email) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.usuario.email) }}
+            </div>
+        {% endif %}
+        {{ form_widget(form.usuario.email) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.usuario.password) }}
+        {% if form_errors(form.usuario.password) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.usuario.password) }}
+            </div>
+        {% endif %}
+        {{ form_widget(form.usuario.password) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.usuario.dni) }}
+        {% if form_errors(form.usuario.dni) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.usuario.dni) }}
+            </div>
+        {% endif %}
+        {{ form_widget(form.usuario.dni) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.usuario.telefono) }}
+        {% if form_errors(form.usuario.telefono) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.usuario.telefono) }}
+            </div>
+        {% endif %}
+        {{ form_widget(form.usuario.telefono) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.usuario.domicilio) }}
+        {% if form_errors(form.usuario.domicilio) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.usuario.domicilio) }}
+            </div>
+        {% endif %}
+        {{ form_widget(form.usuario.domicilio) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.usuario.ciudad) }}
+        {% if form_errors(form.usuario.ciudad) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.usuario.ciudad) }}
+            </div>
+        {% endif %}
+        {{ form_widget(form.usuario.ciudad) }}
+    </div>
+</div>
+<div class="text-center">
+    <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
+</div>
