@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Instructor;
+use App\Entity\Usuario;
 use App\Form\InstructorType;
 use App\Repository\InstructorRepository;
+use App\Repository\UsuarioRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,9 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class InstructorController extends AbstractController
 {
     #[Route('/', name: 'aeroclub_instructor_index', methods: ['GET'])]
-    public function index(Request $request, InstructorRepository $instructorRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, UsuarioRepository $usuarioRepository, PaginatorInterface $paginator): Response
     {
-        $instructoresActivos = $instructorRepository->createQueryBuilder('i')->andWhere('i.activo = true');
+        $instructoresActivos = $usuarioRepository->createQueryBuilder('u')
+            ->join('u.instructor','i')
+            ->where('u.activo = true');
+
         $query = $instructoresActivos->getQuery();
 
         $instructores = $paginator->paginate(
@@ -27,7 +32,10 @@ class InstructorController extends AbstractController
         );
 
         return $this->render('instructor/index.html.twig', [
-            'instructores' => $instructores,
+            'usuarios' => $instructores,
+            'tipo' => 'Instructores',
+            'url_ruta_crear' => $this->generateUrl('aeroclub_instructor_new'),
+            'url_ruta_listar' => $this->generateUrl('aeroclub_instructor_index')
         ]);
     }
 
@@ -35,11 +43,15 @@ class InstructorController extends AbstractController
     public function new(Request $request, InstructorRepository $instructorRepository): Response
     {
         $instructor = new Instructor();
+        $instructor->setUsuario(new Usuario());
+
         $form = $this->createForm(InstructorType::class, $instructor);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $instructor->setActivo(true);
+            $instructor->getUsuario()->setRoles(['ROLE_INSTRUCTOR']);
+            $instructor->getUsuario()->setActivo(true);
+
             $instructorRepository->save($instructor, true);
 
             return $this->redirectToRoute('aeroclub_instructor_index', [], Response::HTTP_SEE_OTHER);
@@ -48,6 +60,8 @@ class InstructorController extends AbstractController
         return $this->render('instructor/new.html.twig', [
             'instructor' => $instructor,
             'form' => $form,
+            'tipo' => 'Instructores',
+            'url_ruta_listar' => $this->generateUrl('aeroclub_instructor_index')
         ]);
     }
 
@@ -74,6 +88,8 @@ class InstructorController extends AbstractController
         return $this->render('instructor/edit.html.twig', [
             'instructor' => $instructor,
             'form' => $form,
+            'tipo' => 'Alumnos',
+            'url_ruta_listar' => $this->generateUrl('aeroclub_instructor_index')
         ]);
     }
 
@@ -81,7 +97,7 @@ class InstructorController extends AbstractController
     public function delete(Request $request, Instructor $instructor, InstructorRepository $instructorRepository): Response
     {
         if ($this->isCsrfTokenValid('delete' . $instructor->getId(), $request->request->get('_token'))) {
-            $instructor->setActivo(false);
+            $instructor->getUsuario()->setActivo(false);
             $instructorRepository->save($instructor, true);
         }
 

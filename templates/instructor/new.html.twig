@@ -3,9 +3,11 @@
 {% block title %}Crear Instructor{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <h1 class="text-center mb-5">Crear Instructor</h1>
 
-        {{ include('instructor/_form.html.twig') }}
-    </div>
+    {% embed 'usuario/new.html.twig' %}
+        {% block new_fields_usuario %}
+            {{ include('instructor/_form.html.twig') }}
+        {% endblock %}
+    {% endembed %}
+
 {% endblock %}
