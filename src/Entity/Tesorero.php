@@ -6,40 +6,15 @@ use App\Repository\TesoreroRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TesoreroRepository::class)]
-#[UniqueEntity('correo')]
-class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
+class Tesorero
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private ?string $nombre = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private ?string $apellido = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
-    #[Assert\Email()]
-    private ?string $correo = null;
-
-    #[ORM\Column(type: 'string')]
-    #[Assert\NotBlank()]
-    #[Assert\Type('string')]
-    private $password;
-
     #[ORM\OneToMany(mappedBy: 'habilitado_por_tesorero_id', targetEntity: Alumno::class)]
     private Collection $alumnos;
 
@@ -58,8 +33,11 @@ class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'tesorero_id', targetEntity: Nota::class)]
     private Collection $notas;
 
-    #[ORM\Column]
-    private ?bool $activo = null;
+
+    #[ORM\OneToOne(targetEntity: Usuario::class, mappedBy: 'tesorero', cascade: ['persist', 'remove'])]
+    #[Assert\Type(type: Usuario::class)]
+    #[Assert\Valid]
+    private ?Usuario $usuario = null;
 
     public function __construct()
     {
@@ -74,42 +52,6 @@ class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getNombre(): ?string
-    {
-        return $this->nombre;
-    }
-
-    public function setNombre(string $nombre): self
-    {
-        $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    public function getApellido(): ?string
-    {
-        return $this->apellido;
-    }
-
-    public function setApellido(string $apellido): self
-    {
-        $this->apellido = $apellido;
-
-        return $this;
-    }
-
-    public function getCorreo(): ?string
-    {
-        return $this->correo;
-    }
-
-    public function setCorreo(string $correo): self
-    {
-        $this->correo = $correo;
-
-        return $this;
     }
 
     /**
@@ -292,46 +234,29 @@ class Tesorero implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getRoles(): array
-    {
-        return ['ROLE_TESORERO'];
-    }
-
-    public function eraseCredentials()
-    {
-
-    }
-
-    public function getUserIdentifier(): string
-    {
-        return (string) $this->correo;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
     public function __toString(): string
     {
-        return $this->nombre.' '.$this->apellido;
+        return $this->id;
     }
 
-    public function isActivo(): ?bool
+    public function getUsuario(): ?Usuario
     {
-        return $this->activo;
+        return $this->usuario;
     }
 
-    public function setActivo(bool $activo): self
+    public function setUsuario(?Usuario $usuario): self
     {
-        $this->activo = $activo;
+        // unset the owning side of the relation if necessary
+        if ($usuario === null && $this->usuario !== null) {
+            $this->usuario->setTesorero(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($usuario !== null && $usuario->getTesorero() !== $this) {
+            $usuario->setTesorero($this);
+        }
+
+        $this->usuario = $usuario;
 
         return $this;
     }

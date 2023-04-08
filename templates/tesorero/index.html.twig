@@ -1,58 +1,22 @@
 {% extends 'theme.html.twig' %}
 
-{% block title %}Listado tesoreros{% endblock %}
+{% block title %}Listado Tesoreros{% endblock %}
 
 {% block content %}
 
-    <div class="container">
-
-        <h1 class="text-center mt-5 mb-5">Listado Tesoreros <a class="btn btn-success" href="{{ path('aeroclub_tesorero_new') }}">Crear Tesorero</a></h1>
-
-        <div class="text-center">
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                't.nombre' : 'Nombre',
-                't.apellido': 'Apellido'
-            } %}
-            {{ knp_pagination_filter(tesoreros,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('aeroclub_tesorero_index') }}">Sin Filtros</a>
-        </div>
-
-
-        <table class="table">
-            <thead>
-            <th {% if tesoreros.isSorted('t.nombre') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(tesoreros,'Nombre','t.nombre') }}
-            </th>
-            <th {% if tesoreros.isSorted('t.apellido') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(tesoreros,'Apellido','t.apellido') }}
-            </th>
-            <th {% if tesoreros.isSorted('t.correo') %} class="table-active" {% endif %}>
-                {{ knp_pagination_sortable(tesoreros,'Correo','t.correo') }}
-            </th>
-            <th></th>
-            </thead>
-            <tbody>
-            {% for tesorero in tesoreros %}
+    {% embed 'usuario/index.html.twig' %}
+        {% block content_usuarios %}
+            {% for usuario in usuarios %}
                 <tr>
-                    <td>{{ tesorero.nombre }}</td>
-                    <td>{{ tesorero.apellido }}</td>
-                    <td>{{ tesorero.correo }}</td>
+                    <td>{{ usuario.nombre }}</td>
+                    <td>{{ usuario.apellido }}</td>
+                    <td>{{ usuario.email }}</td>
                     <td>
-                        <a class="btn btn-warning" href="{{ path('aeroclub_tesorero_edit', {'id': tesorero.id}) }}">Editar</a>
+                        <a class="btn btn-warning" href="{{ path('aeroclub_tesorero_edit', {'id': usuario.tesorero.id}) }}">Editar</a>
                     </td>
                 </tr>
             {% endfor %}
-            </tbody>
-        </table>
+        {% endblock %}
+    {% endembed %}
 
-        <p class="text-center fw-bold">
-            Registros totales: {{ tesoreros.count }}
-        </p>
-
-        <div class="d-flex justify-content-center">
-            {{ knp_pagination_render(tesoreros) }}
-        </div>
-    </div>
 {% endblock %}
