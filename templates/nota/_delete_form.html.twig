@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_nota_delete', {'id': notum.id}) }}" onsubmit="return confirm('Esta seguro de eliminar la nota?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ notum.id) }}">
+    <button class="btn btn-danger">Eliminar</button>
+</form>

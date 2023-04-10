@@ -7,4 +7,16 @@
     <h1 class="text-center mb-3">Bienvenido {{ app.user.nombre }} {{ app.user.apellido }}</h1>
     <p class="fs-5 fw-light text-center">En el menú lateral podrá acceder a las funcionalidades que tiene disponible</p>
 
+    {% if is_granted('ROLE_TESORERO') %}
+        {% for recordatorio in recordatorios %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+
+                <strong> <a class="link-dark fw-bold" href="{{ path('app_nota_edit',{'id': recordatorio.id}) }}">Recordatorio {{ recordatorio.fechaRecordatorio|date('Y-m-d') }}</a></strong>
+                <br>{{ recordatorio.descripcion }}
+                <button type="button" class="btn close" data-bs-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

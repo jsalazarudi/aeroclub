@@ -216,7 +216,7 @@ class Tesorero
     {
         if (!$this->notas->contains($nota)) {
             $this->notas->add($nota);
-            $nota->setTesoreroId($this);
+            $nota->setTesorero($this);
         }
 
         return $this;
@@ -226,8 +226,8 @@ class Tesorero
     {
         if ($this->notas->removeElement($nota)) {
             // set the owning side to null (unless already changed)
-            if ($nota->getTesoreroId() === $this) {
-                $nota->setTesoreroId(null);
+            if ($nota->getTesorero() === $this) {
+                $nota->setTesorero(null);
             }
         }
 

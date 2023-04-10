@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\NotaRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: NotaRepository::class)]
 class Nota
@@ -15,14 +16,21 @@ class Nota
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $descripcion = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('DateTime')]
     private ?\DateTimeInterface $fecha_recordatorio = null;
 
     #[ORM\ManyToOne(inversedBy: 'notas')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Tesorero $tesorero_id = null;
+    private ?Tesorero $tesorero = null;
+
+    #[ORM\Column]
+    private ?bool $realizado = null;
 
     public function getId(): ?int
     {
@@ -53,14 +61,26 @@ class Nota
         return $this;
     }
 
-    public function getTesoreroId(): ?Tesorero
+    public function getTesorero(): ?Tesorero
     {
-        return $this->tesorero_id;
+        return $this->tesorero;
     }
 
-    public function setTesoreroId(?Tesorero $tesorero_id): self
+    public function setTesorero(?Tesorero $tesorero): self
     {
-        $this->tesorero_id = $tesorero_id;
+        $this->tesorero = $tesorero;
+
+        return $this;
+    }
+
+    public function isRealizado(): ?bool
+    {
+        return $this->realizado;
+    }
+
+    public function setRealizado(bool $realizado): self
+    {
+        $this->realizado = $realizado;
 
         return $this;
     }

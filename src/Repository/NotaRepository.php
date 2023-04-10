@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Nota;
+use App\Entity\Tesorero;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,6 +38,23 @@ class NotaRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    /**
+     * @param Tesorero $tesorero
+     * @return float|int|mixed|string
+     */
+    public function notasPorTesorero(Tesorero $tesorero)
+    {
+
+        return $this->createQueryBuilder('n')
+            ->andWhere('n.tesorero = :tesorero')
+            ->andWhere('n.realizado = false')
+            ->andWhere('n.fecha_recordatorio <= :hoy')
+            ->setParameter('tesorero',$tesorero)
+            ->setParameter('hoy', new \DateTime())
+            ->getQuery()
+            ->getResult();
     }
 
 //    /**
