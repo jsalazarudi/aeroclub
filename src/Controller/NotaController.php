@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Nota;
 use App\Entity\Tesorero;
+use App\Entity\Usuario;
 use App\Form\NotaType;
 use App\Repository\NotaRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -18,7 +19,12 @@ class NotaController extends AbstractController
     #[Route('/', name: 'app_nota_index', methods: ['GET'])]
     public function index(Request $request,NotaRepository $notaRepository, PaginatorInterface $paginator): Response
     {
-        $notasQuery = $notaRepository->createQueryBuilder('n');
+        /** @var Usuario $currentUser */
+        $currentUser = $this->getUser();
+        /** @var Tesorero $tesorero */
+        $tesorero = $currentUser->getTesorero();
+
+        $notasQuery = $notaRepository->createQueryBuilder('n')->where('n.tesorero = :tesorero')->setParameter('tesorero',$tesorero);;
 
         $query = $notasQuery->getQuery();
 
