@@ -1,0 +1,42 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Exportar Gastos{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center mb-2">Exportar Gasto</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary mb-3" href="{{ path('app_gasto_index') }} ">Regresar</a>
+        </div>
+
+        {{ form_start(form,{'attr': {'class': 'p-2' }}) }}
+        <div class="row">
+            <div class="col mb-3">
+                {{ form_label(form.fecha_inicio) }}
+
+                {% if form_errors(form.fecha_inicio) %}
+                    <div class="alert alert-danger">
+                        {{ form_errors(form.fecha_inicio) }}
+                    </div>
+                {% endif %}
+
+                {{ form_widget(form.fecha_inicio) }}
+            </div>
+            <div class="col mb-3">
+                {{ form_label(form.fecha_fin) }}
+
+                {% if form_errors(form.fecha_fin) %}
+                    <div class="alert alert-danger">
+                        {{ form_errors(form.fecha_fin) }}
+                    </div>
+                {% endif %}
+
+                {{ form_widget(form.fecha_fin) }}
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-primary btn-lg">{{ button_label|default('Exportar CSV') }}</button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

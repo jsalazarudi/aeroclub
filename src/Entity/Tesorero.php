@@ -27,7 +27,7 @@ class Tesorero
     #[ORM\OneToMany(mappedBy: 'tesorero_id', targetEntity: MovimientoStock::class)]
     private Collection $movimientoStocks;
 
-    #[ORM\OneToMany(mappedBy: 'tesorero_id', targetEntity: Gasto::class)]
+    #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: Gasto::class)]
     private Collection $gastos;
 
     #[ORM\OneToMany(mappedBy: 'tesorero_id', targetEntity: Nota::class)]
@@ -186,7 +186,7 @@ class Tesorero
     {
         if (!$this->gastos->contains($gasto)) {
             $this->gastos->add($gasto);
-            $gasto->setTesoreroId($this);
+            $gasto->setTesorero($this);
         }
 
         return $this;
@@ -196,8 +196,8 @@ class Tesorero
     {
         if ($this->gastos->removeElement($gasto)) {
             // set the owning side to null (unless already changed)
-            if ($gasto->getTesoreroId() === $this) {
-                $gasto->setTesoreroId(null);
+            if ($gasto->getTesorero() === $this) {
+                $gasto->setTesorero(null);
             }
         }
 

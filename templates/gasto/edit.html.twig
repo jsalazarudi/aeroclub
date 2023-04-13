@@ -1,0 +1,15 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Editar Gasto{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center mb-2">Editar Gasto</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary mb-3" href="{{ path('app_gasto_index') }} ">Regresar</a>
+            {{ include('gasto/_delete_form.html.twig') }}
+        </div>
+
+        {{ include('gasto/_form.html.twig') }}
+    </div>
+{% endblock %}
