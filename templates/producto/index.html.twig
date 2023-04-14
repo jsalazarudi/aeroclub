@@ -10,6 +10,8 @@
 
         <div class="text-center">
             <a class="btn btn-success mt-2 mb-5" href="{{ path('app_producto_new') }}">Crear Productos</a>
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_movimiento_stock_new',{'tipo': 'ingreso'}) }}">Ingresar Stock</a>
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_movimiento_stock_new',{'tipo': 'salida'}) }}">Sacar Stock</a>
             <p class="fw-bold">Filtrar por:</p>
             {% set filtros = {
                 'p.descripcion' : 'Descripcion'

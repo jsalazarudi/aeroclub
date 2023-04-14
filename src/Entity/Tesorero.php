@@ -156,7 +156,7 @@ class Tesorero
     {
         if (!$this->movimientoStocks->contains($movimientoStock)) {
             $this->movimientoStocks->add($movimientoStock);
-            $movimientoStock->setTesoreroId($this);
+            $movimientoStock->setTesorero($this);
         }
 
         return $this;
@@ -166,8 +166,8 @@ class Tesorero
     {
         if ($this->movimientoStocks->removeElement($movimientoStock)) {
             // set the owning side to null (unless already changed)
-            if ($movimientoStock->getTesoreroId() === $this) {
-                $movimientoStock->setTesoreroId(null);
+            if ($movimientoStock->getTesorero() === $this) {
+                $movimientoStock->setTesorero(null);
             }
         }
 

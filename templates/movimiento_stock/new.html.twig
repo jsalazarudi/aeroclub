@@ -1,0 +1,27 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Crear Movimiento Stock{% endblock %}
+
+{% block content %}
+
+    {% if tipo == 'ingreso' %}
+        {% set tipoMovimiento = 'Entrada' %}
+    {% endif %}
+
+    {% if tipo == 'salida' %}
+        {% set tipoMovimiento = 'Salida' %}
+    {% endif %}
+
+    <div class="container">
+        <h1 class="text-center mb-2">Crear Movimiento Stock de {{ tipoMovimiento }}</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary" href="{{ path('app_producto_index') }}">Regresar Producto</a>
+            <a class="btn btn-secondary" href="{{ path('app_movimiento_stock_index') }}">Regresar Stock</a>
+        </div>
+        {{ include('movimiento_stock/_form.html.twig') }}
+    </div>
+
+{% endblock %}
+
+
+

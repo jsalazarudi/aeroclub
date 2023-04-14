@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\MovimientoStockRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MovimientoStockRepository::class)]
 class MovimientoStock
@@ -15,21 +16,26 @@ class MovimientoStock
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank()]
+    #[Assert\Type('integer')]
     private ?int $cantidad = null;
 
     #[ORM\Column(length: 255)]
     private ?string $tipo = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $observaciones = null;
 
     #[ORM\ManyToOne(inversedBy: 'movimientoStocks')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Tesorero $tesorero_id = null;
+    private ?Tesorero $tesorero = null;
 
     #[ORM\ManyToOne(inversedBy: 'movimientoStocks')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Producto $producto_id = null;
+    #[Assert\NotBlank()]
+    private ?Producto $producto = null;
 
     public function getId(): ?int
     {
@@ -72,26 +78,26 @@ class MovimientoStock
         return $this;
     }
 
-    public function getTesoreroId(): ?Tesorero
+    public function getTesorero(): ?Tesorero
     {
-        return $this->tesorero_id;
+        return $this->tesorero;
     }
 
-    public function setTesoreroId(?Tesorero $tesorero_id): self
+    public function setTesorero(?Tesorero $tesorero): self
     {
-        $this->tesorero_id = $tesorero_id;
+        $this->tesorero = $tesorero;
 
         return $this;
     }
 
-    public function getProductoId(): ?Producto
+    public function getProducto(): ?Producto
     {
-        return $this->producto_id;
+        return $this->producto;
     }
 
-    public function setProductoId(?Producto $producto_id): self
+    public function setProducto(?Producto $producto): self
     {
-        $this->producto_id = $producto_id;
+        $this->producto = $producto;
 
         return $this;
     }

@@ -104,7 +104,7 @@ class Producto
     {
         if (!$this->movimientoStocks->contains($movimientoStock)) {
             $this->movimientoStocks->add($movimientoStock);
-            $movimientoStock->setProductoId($this);
+            $movimientoStock->setProducto($this);
         }
 
         return $this;
@@ -114,8 +114,8 @@ class Producto
     {
         if ($this->movimientoStocks->removeElement($movimientoStock)) {
             // set the owning side to null (unless already changed)
-            if ($movimientoStock->getProductoId() === $this) {
-                $movimientoStock->setProductoId(null);
+            if ($movimientoStock->getProducto() === $this) {
+                $movimientoStock->setProducto(null);
             }
         }
 
@@ -193,4 +193,11 @@ class Producto
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->descripcion;
+    }
+
+
 }

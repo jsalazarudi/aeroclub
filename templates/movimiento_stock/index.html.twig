@@ -1,0 +1,68 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Movimiento Stock{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Movimientos Stock</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_movimiento_stock_new',{'tipo': 'ingreso'}) }}">Movimiento de entrada</a>
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_movimiento_stock_new',{'tipo': 'salida'}) }}">Movimiento de salida</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'm.observaciones' : 'Observaciones'
+            } %}
+            {{ knp_pagination_filter(stocks,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_movimiento_stock_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Cantidad
+            </th>
+            <th>
+                Tipo
+            </th>
+            <th>
+                Observaciones
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for stock in stocks %}
+                <tr>
+                    <td>{{ stock.cantidad }}</td>
+                    <td>
+                        {% if stock.tipo == 'Entrada' %}
+                            Movimiento de entrada
+                        {% endif %}
+
+                        {% if stock.tipo == 'Salida' %}
+                            Movimiento de salida
+                        {% endif %}
+                    </td>
+                    <td>{{ stock.observaciones }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_movimiento_stock_edit', {'id': stock.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ stocks.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(stocks) }}
+        </div>
+    </div>
+{% endblock %}
