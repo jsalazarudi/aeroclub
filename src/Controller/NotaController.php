@@ -24,7 +24,7 @@ class NotaController extends AbstractController
         /** @var Tesorero $tesorero */
         $tesorero = $currentUser->getTesorero();
 
-        $notasQuery = $notaRepository->createQueryBuilder('n')->where('n.tesorero = :tesorero')->setParameter('tesorero',$tesorero);;
+        $notasQuery = $notaRepository->createQueryBuilder('n')->where('n.tesorero = :tesorero')->setParameter('tesorero',$tesorero);
 
         $query = $notasQuery->getQuery();
 

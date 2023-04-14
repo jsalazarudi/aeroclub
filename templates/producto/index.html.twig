@@ -1,0 +1,51 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Productos{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Productos</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_producto_new') }}">Crear Productos</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'p.descripcion' : 'Descripcion'
+            } %}
+            {{ knp_pagination_filter(productos,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_producto_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Descripción
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.descripcion }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_producto_edit', {'id': producto.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ productos.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(productos) }}
+        </div>
+    </div>
+{% endblock %}

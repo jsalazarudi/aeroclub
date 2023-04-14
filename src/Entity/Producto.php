@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductoRepository::class)]
 class Producto
@@ -17,10 +18,9 @@ class Producto
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $descripcion = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $estado = null;
 
     #[ORM\OneToMany(mappedBy: 'producto_id', targetEntity: ListaPrecio::class)]
     private Collection $listaPrecios;
@@ -33,6 +33,9 @@ class Producto
 
     #[ORM\OneToMany(mappedBy: 'producto_id', targetEntity: ProductoVenta::class)]
     private Collection $productoVentas;
+
+    #[ORM\Column]
+    private ?bool $activo = null;
 
     public function __construct()
     {
@@ -55,18 +58,6 @@ class Producto
     public function setDescripcion(string $descripcion): self
     {
         $this->descripcion = $descripcion;
-
-        return $this;
-    }
-
-    public function getEstado(): ?string
-    {
-        return $this->estado;
-    }
-
-    public function setEstado(string $estado): self
-    {
-        $this->estado = $estado;
 
         return $this;
     }
@@ -187,6 +178,18 @@ class Producto
                 $productoVenta->setProductoId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isActivo(): ?bool
+    {
+        return $this->activo;
+    }
+
+    public function setActivo(bool $activo): self
+    {
+        $this->activo = $activo;
 
         return $this;
     }
