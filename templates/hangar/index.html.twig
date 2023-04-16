@@ -1,0 +1,51 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Hangares{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Hangares</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_hangar_new') }}">Crear Hangar</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'r.descripcion' : 'Descripcion'
+            } %}
+            {{ knp_pagination_filter(hangars,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_hangar_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Descripción
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for hangar in hangars %}
+                <tr>
+                    <td>{{ hangar.descripcion }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_hangar_edit', {'id': hangar.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ hangars.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(hangars) }}
+        </div>
+    </div>
+{% endblock %}

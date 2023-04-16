@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ReservaHangar{% endblock %}
+
+{% block body %}
+    <h1>ReservaHangar</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ reserva_hangar.id }}</td>
+            </tr>
+            <tr>
+                <th>Unidades_gastadas</th>
+                <td>{{ reserva_hangar.unidadesGastadas }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_reserva_hangar_index') }}">back to list</a>
+
+    <a href="{{ path('app_reserva_hangar_edit', {'id': reserva_hangar.id}) }}">edit</a>
+
+    {{ include('reserva_hangar/_delete_form.html.twig') }}
+{% endblock %}

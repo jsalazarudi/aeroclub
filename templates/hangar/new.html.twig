@@ -1,0 +1,15 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Crear Hangar{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <h1 class="text-center mb-2">Crear Hangar</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary" href="{{ path('app_hangar_index') }}">Regresar</a>
+        </div>
+        {{ include('hangar/_form.html.twig') }}
+    </div>
+
+{% endblock %}

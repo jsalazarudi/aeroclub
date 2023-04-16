@@ -6,6 +6,7 @@ use App\Repository\ReservaHangarRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReservaHangarRepository::class)]
 class ReservaHangar
@@ -15,19 +16,26 @@ class ReservaHangar
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $unidades_gastadas = null;
-
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Reserva $reserva_id = null;
+    #[Assert\NotBlank()]
+    private ?Reserva $reserva = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservaHangars')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Hangar $hangar_id = null;
+    #[Assert\NotBlank()]
+    private ?Hangar $hangar = null;
 
     #[ORM\OneToMany(mappedBy: 'reserva_hangar_id', targetEntity: CuentaCorriente::class)]
     private Collection $cuentaCorrientes;
+
+    #[ORM\Column]
+    #[Assert\NotBlank()]
+    #[Assert\Type("integer")]
+    private ?int $dias_ocupacion = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $unidades_gastadas = null;
 
     public function __construct()
     {
@@ -39,38 +47,26 @@ class ReservaHangar
         return $this->id;
     }
 
-    public function getUnidadesGastadas(): ?int
+    public function getReserva(): ?Reserva
     {
-        return $this->unidades_gastadas;
+        return $this->reserva;
     }
 
-    public function setUnidadesGastadas(int $unidades_gastadas): self
+    public function setReserva(Reserva $reserva): self
     {
-        $this->unidades_gastadas = $unidades_gastadas;
+        $this->reserva = $reserva;
 
         return $this;
     }
 
-    public function getReservaId(): ?Reserva
+    public function getHangar(): ?Hangar
     {
-        return $this->reserva_id;
+        return $this->hangar;
     }
 
-    public function setReservaId(Reserva $reserva_id): self
+    public function setHangar(?Hangar $hangar): self
     {
-        $this->reserva_id = $reserva_id;
-
-        return $this;
-    }
-
-    public function getHangarId(): ?Hangar
-    {
-        return $this->hangar_id;
-    }
-
-    public function setHangarId(?Hangar $hangar_id): self
-    {
-        $this->hangar_id = $hangar_id;
+        $this->hangar = $hangar;
 
         return $this;
     }
@@ -101,6 +97,30 @@ class ReservaHangar
                 $cuentaCorriente->setReservaHangarId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDiasOcupacion(): ?int
+    {
+        return $this->dias_ocupacion;
+    }
+
+    public function setDiasOcupacion(int $dias_ocupacion): self
+    {
+        $this->dias_ocupacion = $dias_ocupacion;
+
+        return $this;
+    }
+
+    public function getUnidadesGastadas(): ?int
+    {
+        return $this->unidades_gastadas;
+    }
+
+    public function setUnidadesGastadas(?int $unidades_gastadas): self
+    {
+        $this->unidades_gastadas = $unidades_gastadas;
 
         return $this;
     }

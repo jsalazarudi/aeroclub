@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ReservaRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReservaRepository::class)]
 class Reserva
@@ -15,13 +16,19 @@ class Reserva
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\Type("\DateTimeInterface")]
+    #[Assert\NotBlank()]
+
     private ?\DateTimeInterface $fecha = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservas')]
-    private ?Piloto $piloto_id = null;
+    private ?Piloto $piloto = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservas')]
-    private ?Socio $socio_id = null;
+    private ?Socio $socio = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $aprobado = null;
 
     public function getId(): ?int
     {
@@ -40,26 +47,38 @@ class Reserva
         return $this;
     }
 
-    public function getPilotoId(): ?Piloto
+    public function getPiloto(): ?Piloto
     {
-        return $this->piloto_id;
+        return $this->piloto;
     }
 
-    public function setPilotoId(?Piloto $piloto_id): self
+    public function setPiloto(?Piloto $piloto): self
     {
-        $this->piloto_id = $piloto_id;
+        $this->piloto = $piloto;
 
         return $this;
     }
 
-    public function getSocioId(): ?Socio
+    public function getSocio(): ?Socio
     {
-        return $this->socio_id;
+        return $this->socio;
     }
 
-    public function setSocioId(?Socio $socio_id): self
+    public function setSocio(?Socio $socio): self
     {
-        $this->socio_id = $socio_id;
+        $this->socio = $socio;
+
+        return $this;
+    }
+
+    public function isAprobado(): ?bool
+    {
+        return $this->aprobado;
+    }
+
+    public function setAprobado(?bool $aprobado): self
+    {
+        $this->aprobado = $aprobado;
 
         return $this;
     }

@@ -34,12 +34,14 @@ security:
     access_control:
         - { path: ^/tesorero, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
         - { path: ^/usuario, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
-        - { path: ^/home, roles: [ROLE_TESORERO,ROLE_ALUMNO,ROLE_ADMINISTRADOR] }
+        - { path: ^/home, roles: [ROLE_TESORERO,ROLE_ALUMNO,ROLE_ADMINISTRADOR,ROLE_SOCIO,ROLE_PILOTO] }
         - { path: ^/alumno, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
         - { path: ^/instructor, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
         - { path: ^/piloto, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
         - { path: ^/socio, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
         - { path: ^/nota, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/reserva, roles: [ROLE_PILOTO,ROLE_SOCIO,ROLE_TESORERO] }
+        - { path: ^/hangar, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
 
 when@test:
     security:

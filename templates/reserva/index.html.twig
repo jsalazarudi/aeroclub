@@ -1,0 +1,51 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Reservas{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Reservas</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_reserva_new') }}">Crear Reserva</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'r.fecha' : 'Fecha Reserva'
+            } %}
+            {{ knp_pagination_filter(reservas,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_reserva_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Fecha Reserva
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for reserva in reservas %}
+                <tr>
+                    <td>{{ reserva.fecha|date('Y-m-d') }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_reserva_edit', {'id': reserva.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ reservas.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(reservas) }}
+        </div>
+    </div>
+{% endblock %}

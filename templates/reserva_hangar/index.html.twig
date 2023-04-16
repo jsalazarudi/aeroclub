@@ -1,0 +1,95 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Reservas{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Solicitud Reservas Hangar</h1>
+
+        <div class="text-center">
+            {% if is_granted('ROLE_SOCIO') or is_granted('ROLE_PILOTO') %}
+                <a class="btn btn-success mt-2 mb-5" href="{{ path('app_reserva_hangar_new') }}">Crear Solicitud</a>
+            {% endif %}
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'r.fecha' : 'Fecha Reserva',
+                'r.aprobado' : 'Aprobado',
+            } %}
+            {{ knp_pagination_filter(reservas,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_reserva_hangar_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Fecha Reserva
+            </th>
+            <th>
+                Unidades gastadas
+            </th>
+            <th>
+                Dias ocupación
+            </th>
+            <th>
+                Hangar
+            </th>
+            <th>
+                Reserva Aprobada
+            </th>
+            <th>
+                {% if is_granted('ROLE_TESORERO') %}
+                    Realizada Por
+                {% endif %}
+            </th>
+            <th>
+            </th>
+            </thead>
+            <tbody>
+            {% for reserva_hangar in reservas %}
+                <tr>
+                    <td>{{ reserva_hangar.reserva.fecha|date('Y-m-d') }}</td>
+                    <td>
+                        {{ reserva_hangar.unidadesGastadas }}
+                    </td>
+                    <td>{{ reserva_hangar.diasOcupacion }}</td>
+                    <td>{{ reserva_hangar.hangar.descripcion }}</td>
+                    <td>
+                        {% if reserva_hangar.reserva.aprobado %}
+                            <p class="text-success">Si</p>
+                        {% else %}
+                            <p class="text-danger">No</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if is_granted('ROLE_TESORERO') %}
+                            {% if reserva_hangar.reserva.socio %}
+                                {{ reserva_hangar.reserva.socio.usuario.nombre }} {{ reserva_hangar.reserva.socio.usuario.apellido }}
+                            {% elseif reserva_hangar.reserva.piloto %}
+                                {{ reserva_hangar.reserva.piloto.usuario.nombre }} {{ reserva_hangar.reserva.piloto.usuario.apellido }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if is_granted('ROLE_TESORERO') %}
+                            <a class="btn btn-warning"
+                               href="{{ path('app_reserva_hangar_edit', {'id': reserva_hangar.id}) }}">Editar</a>
+                        {% endif %}
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ reservas.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(reservas) }}
+        </div>
+    </div>
+{% endblock %}

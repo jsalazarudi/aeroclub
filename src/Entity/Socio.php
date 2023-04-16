@@ -37,7 +37,7 @@ class Socio
     #[ORM\OneToMany(mappedBy: 'socio_id', targetEntity: Vuelo::class)]
     private Collection $vuelos;
 
-    #[ORM\OneToMany(mappedBy: 'socio_id', targetEntity: Reserva::class)]
+    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Reserva::class)]
     private Collection $reservas;
 
     #[ORM\OneToMany(mappedBy: 'socio_id', targetEntity: Abono::class)]
@@ -141,7 +141,7 @@ class Socio
     {
         if (!$this->reservas->contains($reserva)) {
             $this->reservas->add($reserva);
-            $reserva->setSocioId($this);
+            $reserva->setSocio($this);
         }
 
         return $this;
@@ -151,8 +151,8 @@ class Socio
     {
         if ($this->reservas->removeElement($reserva)) {
             // set the owning side to null (unless already changed)
-            if ($reserva->getSocioId() === $this) {
-                $reserva->setSocioId(null);
+            if ($reserva->getSocio() === $this) {
+                $reserva->setSocio(null);
             }
         }
 

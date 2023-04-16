@@ -28,7 +28,7 @@ class Piloto
     #[ORM\OneToMany(mappedBy: 'piloto_id', targetEntity: Vuelo::class)]
     private Collection $vuelos;
 
-    #[ORM\OneToMany(mappedBy: 'piloto_id', targetEntity: Reserva::class)]
+    #[ORM\OneToMany(mappedBy: 'piloto', targetEntity: Reserva::class)]
     private Collection $reservas;
 
     #[ORM\OneToMany(mappedBy: 'piloto_id', targetEntity: Abono::class)]
@@ -121,7 +121,7 @@ class Piloto
     {
         if (!$this->reservas->contains($reserva)) {
             $this->reservas->add($reserva);
-            $reserva->setPilotoId($this);
+            $reserva->setPiloto($this);
         }
 
         return $this;
@@ -131,8 +131,8 @@ class Piloto
     {
         if ($this->reservas->removeElement($reserva)) {
             // set the owning side to null (unless already changed)
-            if ($reserva->getPilotoId() === $this) {
-                $reserva->setPilotoId(null);
+            if ($reserva->getPiloto() === $this) {
+                $reserva->setPiloto(null);
             }
         }
 

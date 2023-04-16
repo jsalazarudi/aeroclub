@@ -1,0 +1,15 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Crear Reserva{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <h1 class="text-center mb-2">Crear Reserva</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary" href="{{ path('app_reserva_index') }}">Regresar</a>
+        </div>
+        {{ include('reserva/_form.html.twig') }}
+    </div>
+
+{% endblock %}
