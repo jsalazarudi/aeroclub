@@ -22,7 +22,7 @@ class HistorialListaPrecio
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $fecha = null;
 
-    #[ORM\OneToMany(mappedBy: 'historial_lista_precio_id', targetEntity: ListaPrecio::class)]
+    #[ORM\OneToMany(mappedBy: 'historial_lista_precio', targetEntity: ListaPrecio::class)]
     private Collection $listaPrecios;
 
     public function __construct()
@@ -71,7 +71,7 @@ class HistorialListaPrecio
     {
         if (!$this->listaPrecios->contains($listaPrecio)) {
             $this->listaPrecios->add($listaPrecio);
-            $listaPrecio->setHistorialListaPrecioId($this);
+            $listaPrecio->setHistorialListaPrecio($this);
         }
 
         return $this;
@@ -81,8 +81,8 @@ class HistorialListaPrecio
     {
         if ($this->listaPrecios->removeElement($listaPrecio)) {
             // set the owning side to null (unless already changed)
-            if ($listaPrecio->getHistorialListaPrecioId() === $this) {
-                $listaPrecio->setHistorialListaPrecioId(null);
+            if ($listaPrecio->getHistorialListaPrecio() === $this) {
+                $listaPrecio->setHistorialListaPrecio(null);
             }
         }
 

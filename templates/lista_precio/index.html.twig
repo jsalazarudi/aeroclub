@@ -1,0 +1,55 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Lista Precios{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Lista Precios</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_lista_precio_new') }}">Crear Lista Precios</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'l.precio' : 'Precio'
+            } %}
+            {{ knp_pagination_filter(lista_precios,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_lista_precio_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Precio
+            </th>
+            <th>
+                Servicio
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for lista_precio in lista_precios %}
+                <tr>
+                    <td>{{ lista_precio.precio|format_currency('ARS') }}</td>
+                    <td>{{ lista_precio.servicio.descripcion }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_lista_precio_edit', {'id': lista_precio.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ lista_precios.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(lista_precios) }}
+        </div>
+    </div>
+{% endblock %}

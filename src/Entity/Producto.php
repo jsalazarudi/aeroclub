@@ -22,7 +22,7 @@ class Producto
     #[Assert\Type('string')]
     private ?string $descripcion = null;
 
-    #[ORM\OneToMany(mappedBy: 'producto_id', targetEntity: ListaPrecio::class)]
+    #[ORM\OneToMany(mappedBy: 'producto', targetEntity: ListaPrecio::class)]
     private Collection $listaPrecios;
 
     #[ORM\OneToMany(mappedBy: 'producto_id', targetEntity: MovimientoStock::class)]
@@ -74,7 +74,7 @@ class Producto
     {
         if (!$this->listaPrecios->contains($listaPrecio)) {
             $this->listaPrecios->add($listaPrecio);
-            $listaPrecio->setProductoId($this);
+            $listaPrecio->setProducto($this);
         }
 
         return $this;
@@ -84,8 +84,8 @@ class Producto
     {
         if ($this->listaPrecios->removeElement($listaPrecio)) {
             // set the owning side to null (unless already changed)
-            if ($listaPrecio->getProductoId() === $this) {
-                $listaPrecio->setProductoId(null);
+            if ($listaPrecio->getProducto() === $this) {
+                $listaPrecio->setProducto(null);
             }
         }
 

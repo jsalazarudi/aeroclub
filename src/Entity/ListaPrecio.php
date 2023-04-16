@@ -6,6 +6,7 @@ use App\Repository\ListaPrecioRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ListaPrecioRepository::class)]
 class ListaPrecio
@@ -16,16 +17,18 @@ class ListaPrecio
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank()]
+    #[Assert\Type("integer")]
     private ?int $precio = null;
 
     #[ORM\ManyToOne(inversedBy: 'listaPrecios')]
-    private ?HistorialListaPrecio $historial_lista_precio_id = null;
+    private ?HistorialListaPrecio $historial_lista_precio = null;
 
     #[ORM\ManyToOne(inversedBy: 'listaPrecios')]
-    private ?Servicio $servicio_id = null;
+    private ?Servicio $servicio = null;
 
     #[ORM\ManyToOne(inversedBy: 'listaPrecios')]
-    private ?Producto $producto_id = null;
+    private ?Producto $producto = null;
 
     #[ORM\OneToMany(mappedBy: 'lista_precio_id', targetEntity: CuentaCorriente::class)]
     private Collection $cuentaCorrientes;
@@ -52,38 +55,38 @@ class ListaPrecio
         return $this;
     }
 
-    public function getHistorialListaPrecioId(): ?HistorialListaPrecio
+    public function getHistorialListaPrecio(): ?HistorialListaPrecio
     {
-        return $this->historial_lista_precio_id;
+        return $this->historial_lista_precio;
     }
 
-    public function setHistorialListaPrecioId(?HistorialListaPrecio $historial_lista_precio_id): self
+    public function setHistorialListaPrecioId(?HistorialListaPrecio $historial_lista_precio): self
     {
-        $this->historial_lista_precio_id = $historial_lista_precio_id;
+        $this->historial_lista_precio = $historial_lista_precio;
 
         return $this;
     }
 
-    public function getServicioId(): ?Servicio
+    public function getServicio(): ?Servicio
     {
-        return $this->servicio_id;
+        return $this->servicio;
     }
 
-    public function setServicioId(?Servicio $servicio_id): self
+    public function setServicio(?Servicio $servicio): self
     {
-        $this->servicio_id = $servicio_id;
+        $this->servicio = $servicio;
 
         return $this;
     }
 
-    public function getProductoId(): ?Producto
+    public function getProducto(): ?Producto
     {
-        return $this->producto_id;
+        return $this->producto;
     }
 
-    public function setProductoId(?Producto $producto_id): self
+    public function setProductoId(?Producto $producto): self
     {
-        $this->producto_id = $producto_id;
+        $this->producto = $producto;
 
         return $this;
     }

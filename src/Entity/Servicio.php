@@ -32,7 +32,7 @@ class Servicio
     #[ORM\OneToMany(mappedBy: 'servicio', targetEntity: UnidadesPago::class)]
     private Collection $unidadesPagos;
 
-    #[ORM\OneToMany(mappedBy: 'servicio_id', targetEntity: ListaPrecio::class)]
+    #[ORM\OneToMany(mappedBy: 'servicio', targetEntity: ListaPrecio::class)]
     private Collection $listaPrecios;
 
     #[ORM\OneToMany(mappedBy: 'servicio_id', targetEntity: CuentaCorriente::class)]
@@ -116,7 +116,7 @@ class Servicio
     {
         if (!$this->listaPrecios->contains($listaPrecio)) {
             $this->listaPrecios->add($listaPrecio);
-            $listaPrecio->setServicioId($this);
+            $listaPrecio->setServicio($this);
         }
 
         return $this;
@@ -126,8 +126,8 @@ class Servicio
     {
         if ($this->listaPrecios->removeElement($listaPrecio)) {
             // set the owning side to null (unless already changed)
-            if ($listaPrecio->getServicioId() === $this) {
-                $listaPrecio->setServicioId(null);
+            if ($listaPrecio->getServicio() === $this) {
+                $listaPrecio->setServicio(null);
             }
         }
 
