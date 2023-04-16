@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ServicioRepository::class)]
 class Servicio
@@ -17,12 +18,16 @@ class Servicio
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("string")]
     private ?string $codigo = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("string")]
     private ?string $descripcion = null;
 
-    #[ORM\OneToMany(mappedBy: 'servicio_id', targetEntity: UnidadesPago::class)]
+    #[ORM\OneToMany(mappedBy: 'servicio', targetEntity: UnidadesPago::class)]
     private Collection $unidadesPagos;
 
     #[ORM\OneToMany(mappedBy: 'servicio_id', targetEntity: ListaPrecio::class)]
@@ -79,7 +84,7 @@ class Servicio
     {
         if (!$this->unidadesPagos->contains($unidadesPago)) {
             $this->unidadesPagos->add($unidadesPago);
-            $unidadesPago->setServicioId($this);
+            $unidadesPago->setServicio($this);
         }
 
         return $this;
@@ -89,8 +94,8 @@ class Servicio
     {
         if ($this->unidadesPagos->removeElement($unidadesPago)) {
             // set the owning side to null (unless already changed)
-            if ($unidadesPago->getServicioId() === $this) {
-                $unidadesPago->setServicioId(null);
+            if ($unidadesPago->getServicio() === $this) {
+                $unidadesPago->setServicio(null);
             }
         }
 
@@ -156,4 +161,10 @@ class Servicio
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->descripcion;
+    }
+
 }

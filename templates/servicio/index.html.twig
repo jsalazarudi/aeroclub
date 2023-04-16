@@ -1,0 +1,55 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Servicios{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Servicios</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_servicio_new') }}">Crear Servicio</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                's.descripcion' : 'Descripción'
+            } %}
+            {{ knp_pagination_filter(servicios,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_servicio_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Código
+            </th>
+            <th>
+                Descripción
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for servicio in servicios %}
+                <tr>
+                    <td>{{ servicio.codigo }}</td>
+                    <td>{{ servicio.descripcion }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_servicio_edit', {'id': servicio.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ servicios.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(servicios) }}
+        </div>
+    </div>
+{% endblock %}
