@@ -22,6 +22,7 @@ class ListaPrecio
     private ?int $precio = null;
 
     #[ORM\ManyToOne(inversedBy: 'listaPrecios')]
+    #[Assert\NotBlank()]
     private ?HistorialListaPrecio $historial_lista_precio = null;
 
     #[ORM\ManyToOne(inversedBy: 'listaPrecios')]
@@ -33,9 +34,16 @@ class ListaPrecio
     #[ORM\OneToMany(mappedBy: 'lista_precio_id', targetEntity: CuentaCorriente::class)]
     private Collection $cuentaCorrientes;
 
+    #[ORM\Column]
+    private ?bool $socio = null;
+
+    #[ORM\OneToMany(mappedBy: 'lista_precio', targetEntity: ReservaHangar::class)]
+    private Collection $reservasHangar;
+
     public function __construct()
     {
         $this->cuentaCorrientes = new ArrayCollection();
+        $this->reservasHangar = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -60,7 +68,7 @@ class ListaPrecio
         return $this->historial_lista_precio;
     }
 
-    public function setHistorialListaPrecioId(?HistorialListaPrecio $historial_lista_precio): self
+    public function setHistorialListaPrecio(?HistorialListaPrecio $historial_lista_precio): self
     {
         $this->historial_lista_precio = $historial_lista_precio;
 
@@ -115,6 +123,48 @@ class ListaPrecio
             // set the owning side to null (unless already changed)
             if ($cuentaCorriente->getListaPrecioId() === $this) {
                 $cuentaCorriente->setListaPrecioId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isSocio(): ?bool
+    {
+        return $this->socio;
+    }
+
+    public function setSocio(bool $socio): self
+    {
+        $this->socio = $socio;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ReservaHangar>
+     */
+    public function getReservasHangar(): Collection
+    {
+        return $this->reservasHangar;
+    }
+
+    public function addReservasHangar(ReservaHangar $reservasHangar): self
+    {
+        if (!$this->reservasHangar->contains($reservasHangar)) {
+            $this->reservasHangar->add($reservasHangar);
+            $reservasHangar->setListaPrecio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservasHangar(ReservaHangar $reservasHangar): self
+    {
+        if ($this->reservasHangar->removeElement($reservasHangar)) {
+            // set the owning side to null (unless already changed)
+            if ($reservasHangar->getListaPrecio() === $this) {
+                $reservasHangar->setListaPrecio(null);
             }
         }
 

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AbonoRepository::class)]
 class Abono
@@ -20,26 +21,34 @@ class Abono
     private ?int $valor = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank()]
     private ?\DateTimeInterface $fecha = null;
 
     #[ORM\Column]
     private ?bool $aprobado = null;
 
     #[ORM\ManyToOne(inversedBy: 'abonos')]
-    private ?Tesorero $tesorero_id = null;
+    private ?Tesorero $tesorero = null;
 
     #[ORM\ManyToOne(inversedBy: 'abonos')]
-    private ?Socio $socio_id = null;
+    private ?Socio $socio = null;
 
     #[ORM\ManyToOne(inversedBy: 'abonos')]
-    private ?Piloto $piloto_id = null;
+    private ?Piloto $piloto = null;
 
     #[ORM\OneToMany(mappedBy: 'abono_id', targetEntity: CuentaCorriente::class)]
     private Collection $cuentaCorrientes;
 
+    #[ORM\ManyToOne(inversedBy: 'abonos')]
+    private ?Alumno $alumno = null;
+
+    #[ORM\OneToMany(mappedBy: 'abono', targetEntity: ReservaHangar::class)]
+    private Collection $reservasHangar;
+
     public function __construct()
     {
         $this->cuentaCorrientes = new ArrayCollection();
+        $this->reservasHangar = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -83,38 +92,38 @@ class Abono
         return $this;
     }
 
-    public function getTesoreroId(): ?Tesorero
+    public function getTesorero(): ?Tesorero
     {
-        return $this->tesorero_id;
+        return $this->tesorero;
     }
 
-    public function setTesoreroId(?Tesorero $tesorero_id): self
+    public function setTesorero(?Tesorero $tesorero): self
     {
-        $this->tesorero_id = $tesorero_id;
+        $this->tesorero = $tesorero;
 
         return $this;
     }
 
-    public function getSocioId(): ?Socio
+    public function getSocio(): ?Socio
     {
-        return $this->socio_id;
+        return $this->socio;
     }
 
-    public function setSocioId(?Socio $socio_id): self
+    public function setSocio(?Socio $socio): self
     {
-        $this->socio_id = $socio_id;
+        $this->socio = $socio;
 
         return $this;
     }
 
-    public function getPilotoId(): ?Piloto
+    public function getPiloto(): ?Piloto
     {
-        return $this->piloto_id;
+        return $this->piloto;
     }
 
-    public function setPilotoId(?Piloto $piloto_id): self
+    public function setPiloto(?Piloto $piloto): self
     {
-        $this->piloto_id = $piloto_id;
+        $this->piloto = $piloto;
 
         return $this;
     }
@@ -143,6 +152,48 @@ class Abono
             // set the owning side to null (unless already changed)
             if ($cuentaCorriente->getAbonoId() === $this) {
                 $cuentaCorriente->setAbonoId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAlumno(): ?Alumno
+    {
+        return $this->alumno;
+    }
+
+    public function setAlumno(?Alumno $alumno): self
+    {
+        $this->alumno = $alumno;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ReservaHangar>
+     */
+    public function getReservasHangar(): Collection
+    {
+        return $this->reservasHangar;
+    }
+
+    public function addReservasHangar(ReservaHangar $reservasHangar): self
+    {
+        if (!$this->reservasHangar->contains($reservasHangar)) {
+            $this->reservasHangar->add($reservasHangar);
+            $reservasHangar->setAbono($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservasHangar(ReservaHangar $reservasHangar): self
+    {
+        if ($this->reservasHangar->removeElement($reservasHangar)) {
+            // set the owning side to null (unless already changed)
+            if ($reservasHangar->getAbono() === $this) {
+                $reservasHangar->setAbono(null);
             }
         }
 

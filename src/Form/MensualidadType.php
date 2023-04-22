@@ -2,20 +2,22 @@
 
 namespace App\Form;
 
+use App\Entity\Mensualidad;
 use App\Entity\Servicio;
+use App\Entity\Socio;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ServicioType extends AbstractType
+class MensualidadType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('codigo',TextType::class, [
-                'label' => 'Código',
+            ->add('hasta',DateType::class,[
+                'widget' => 'single_text',
                 'attr' => [
                     'class' => 'form-control'
                 ],
@@ -23,8 +25,8 @@ class ServicioType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ]
             ])
-            ->add('descripcion',TextType::class, [
-                'label' => 'Descripción',
+            ->add('socio',EntityType::class,[
+                'class' => Socio::class,
                 'attr' => [
                     'class' => 'form-control'
                 ],
@@ -32,23 +34,15 @@ class ServicioType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ]
             ])
-            ->add('es_hangaraje',CheckboxType::class, [
+            ->add('servicio',EntityType::class,[
+                'class' => Servicio::class,
+                'choice_label' => 'descripcion',
                 'attr' => [
-                    'class' => 'form-check-input fs-4'
+                    'class' => 'form-control'
                 ],
                 'label_attr' => [
-                    'class' => 'form-check-label text-muted fs-3'
-                ],
-                'required' => false
-            ])
-            ->add('defecto',CheckboxType::class, [
-                'attr' => [
-                    'class' => 'form-check-input fs-4'
-                ],
-                'label_attr' => [
-                    'class' => 'form-check-label text-muted fs-3'
-                ],
-                'required' => false
+                    'class' => 'text-muted fs-3'
+                ]
             ])
         ;
     }
@@ -56,7 +50,7 @@ class ServicioType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Servicio::class,
+            'data_class' => Mensualidad::class,
         ]);
     }
 }

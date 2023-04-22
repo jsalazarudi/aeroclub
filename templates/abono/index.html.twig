@@ -1,0 +1,97 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Abonos{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Abonos</h1>
+
+        <div class="text-center">
+            {% if is_granted('ROLE_SOCIO') or is_granted('ROLE_PILOTO') or is_granted('ROLE_ALUMNO') %}
+                <a class="btn btn-success mt-2 mb-5" href="{{ path('app_abono_new') }}">Crear Solicitud</a>
+            {% endif %}
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'r.valor' : 'Valor'
+            } %}
+            {{ knp_pagination_filter(abonos,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_abono_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Valor
+            </th>
+            <th>
+                Fecha
+            </th>
+            <th>
+                Servicios abonados
+            </th>
+            <th>
+                Reserva Aprobada
+            </th>
+            <th>
+                {% if is_granted('ROLE_TESORERO') %}
+                    Realizada Por
+                {% endif %}
+            </th>
+            <th>
+            </th>
+            </thead>
+            <tbody>
+            {% for abono in abonos %}
+                <tr>
+                    <td>{{ abono.valor|format_currency('ARS') }}</td>
+                    <td>
+                        {{ abono.fecha|date('Y-m-d') }}
+                    </td>
+                    <td>
+                        <h5>Reservas Hangar</h5>
+                        {% for reservaHangar in abono.reservasHangar %}
+                            {% set valorServicioHangar = reservaHangar.listaPrecio.precio * reservaHangar.unidadesGastadas %}
+                            {{  reservaHangar.reserva.fecha|date('Y-m-d') ~ ' Costo: ' ~ valorServicioHangar|format_currency('ARS')  }}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if abono.aprobado %}
+                            <p class="text-success">Si</p>
+                        {% else %}
+                            <p class="text-danger">No</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if is_granted('ROLE_TESORERO') %}
+                            {% if abono.socio %}
+                                {{ abono.socio.usuario.nombre }} {{ abono.socio.usuario.apellido }}
+                            {% elseif abono.piloto %}
+                                {{ abono.piloto.usuario.nombre }} {{ abono.piloto.usuario.apellido }}
+                            {% elseif abono.alumno %}
+                                {{ abono.alumno.usuario.nombre }} {{ abono.alumno.usuario.apellido }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if is_granted('ROLE_TESORERO') %}
+                            <a class="btn btn-warning"
+                               href="{{ path('app_abono_edit', {'id': abono.id}) }}">Editar</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ abonos.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(abonos) }}
+        </div>
+    </div>
+{% endblock %}

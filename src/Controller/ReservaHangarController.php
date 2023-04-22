@@ -2,12 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\Mensualidad;
 use App\Entity\ReservaHangar;
+use App\Entity\Servicio;
 use App\Entity\Socio;
 use App\Entity\Tesorero;
 use App\Entity\Usuario;
 use App\Form\ReservaHangarType;
 use App\Repository\ReservaHangarRepository;
+use App\Repository\ServicioRepository;
+use App\Repository\SocioRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,7 +63,8 @@ class ReservaHangarController extends AbstractController
     }
 
     #[Route('/new', name: 'app_reserva_hangar_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ReservaHangarRepository $reservaHangarRepository): Response
+    public function new(Request         $request, ReservaHangarRepository $reservaHangarRepository,
+                        SocioRepository $socioRepository, ServicioRepository $servicioRepository): Response
     {
         $reservaHangar = new ReservaHangar();
 
@@ -75,11 +80,47 @@ class ReservaHangarController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $servicioHangarMensual = false;
+
             $tipoUsuario = $this->getTipoUsuario();
             if ($this->isGranted('ROLE_SOCIO')) {
                 $reservaHangar->getReserva()->setSocio($tipoUsuario);
+                $hoy = new \DateTime('now');
+                $mensualidadesSocio = $socioRepository->createQueryBuilder('s')
+                    ->join('s.mensualidades', 'm')
+                    ->join('m.servicio', 'servicio')
+                    ->where('m.hasta > :hoy')
+                    ->setParameter('hoy', $hoy->format('Y-m-d'))
+                    ->getQuery()
+                    ->getResult();
+
+                if ($mensualidadesSocio) {
+                    /** @var Mensualidad[] $mensualidades */
+                    $mensualidades = $mensualidadesSocio[0]->getMensualidades();
+                    foreach ($mensualidades as $mensualidad) {
+                        /** @var Servicio $servicio */
+                        $servicio = $mensualidad->getServicio();
+                        if ($servicio->isEsHangaraje()) {
+                            $reservaHangar->setServicio($servicio);
+                            $servicioHangarMensual = true;
+                            break;
+                        }
+                    }
+                }
+
+
             } elseif ($this->isGranted('ROLE_PILOTO')) {
                 $reservaHangar->getReserva()->setPiloto($tipoUsuario);
+            }
+
+            if (!$servicioHangarMensual) {
+                $servicio = $servicioRepository->createQueryBuilder('s')
+                    ->where('s.es_hangaraje = true')
+                    ->andWhere('s.defecto = true')
+                    ->getQuery()
+                    ->getSingleResult();
+
+                $reservaHangar->setServicio($servicio);
             }
 
             $reservaHangarRepository->save($reservaHangar, true);

@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mensualidad{% endblock %}
+
+{% block body %}
+    <h1>Mensualidad</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ mensualidad.id }}</td>
+            </tr>
+            <tr>
+                <th>Hasta</th>
+                <td>{{ mensualidad.hasta ? mensualidad.hasta|date('Y-m-d') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_mensualidad_index') }}">back to list</a>
+
+    <a href="{{ path('app_mensualidad_edit', {'id': mensualidad.id}) }}">edit</a>
+
+    {{ include('mensualidad/_delete_form.html.twig') }}
+{% endblock %}

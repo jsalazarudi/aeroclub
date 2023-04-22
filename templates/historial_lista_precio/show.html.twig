@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}HistorialListaPrecio{% endblock %}
+
+{% block body %}
+    <h1>HistorialListaPrecio</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ historial_lista_precio.id }}</td>
+            </tr>
+            <tr>
+                <th>Porcentaje_cambio</th>
+                <td>{{ historial_lista_precio.porcentajeCambio }}</td>
+            </tr>
+            <tr>
+                <th>Fecha</th>
+                <td>{{ historial_lista_precio.fecha ? historial_lista_precio.fecha|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_historial_lista_precio_index') }}">back to list</a>
+
+    <a href="{{ path('app_historial_lista_precio_edit', {'id': historial_lista_precio.id}) }}">edit</a>
+
+    {{ include('historial_lista_precio/_delete_form.html.twig') }}
+{% endblock %}

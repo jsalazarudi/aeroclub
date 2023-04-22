@@ -1,0 +1,18 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Crear Mensualidad{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <h1 class="text-center mb-2">Crear Mensualidad</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary" href="{{ path('app_mensualidad_index') }}">Regresar</a>
+        </div>
+        {{ include('mensualidad/_form.html.twig') }}
+    </div>
+
+{% endblock %}
+
+
+

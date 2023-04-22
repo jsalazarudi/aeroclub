@@ -18,7 +18,7 @@ class Tesorero
     #[ORM\OneToMany(mappedBy: 'habilitado_por_tesorero_id', targetEntity: Alumno::class)]
     private Collection $alumnos;
 
-    #[ORM\OneToMany(mappedBy: 'tesorero_id', targetEntity: Abono::class)]
+    #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: Abono::class)]
     private Collection $abonos;
 
     #[ORM\OneToMany(mappedBy: 'tesorero_id', targetEntity: Venta::class)]
@@ -96,7 +96,7 @@ class Tesorero
     {
         if (!$this->abonos->contains($abono)) {
             $this->abonos->add($abono);
-            $abono->setTesoreroId($this);
+            $abono->setTesorero($this);
         }
 
         return $this;
@@ -106,8 +106,8 @@ class Tesorero
     {
         if ($this->abonos->removeElement($abono)) {
             // set the owning side to null (unless already changed)
-            if ($abono->getTesoreroId() === $this) {
-                $abono->setTesoreroId(null);
+            if ($abono->getTesorero() === $this) {
+                $abono->setTesorero(null);
             }
         }
 

@@ -40,7 +40,7 @@ class Socio
     #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Reserva::class)]
     private Collection $reservas;
 
-    #[ORM\OneToMany(mappedBy: 'socio_id', targetEntity: Abono::class)]
+    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Abono::class)]
     private Collection $abonos;
 
     #[ORM\OneToMany(mappedBy: 'socio_id', targetEntity: Venta::class)]
@@ -50,12 +50,16 @@ class Socio
     #[Assert\Type(type: Usuario::class)]
     #[Assert\Valid]
     private ?Usuario $usuario = null;
+
+    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Mensualidad::class)]
+    private Collection $mensualidades;
    public function __construct()
     {
         $this->vuelos = new ArrayCollection();
         $this->reservas = new ArrayCollection();
         $this->abonos = new ArrayCollection();
         $this->ventas = new ArrayCollection();
+        $this->mensualidades = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -171,7 +175,7 @@ class Socio
     {
         if (!$this->abonos->contains($abono)) {
             $this->abonos->add($abono);
-            $abono->setSocioId($this);
+            $abono->setSocio($this);
         }
 
         return $this;
@@ -181,8 +185,8 @@ class Socio
     {
         if ($this->abonos->removeElement($abono)) {
             // set the owning side to null (unless already changed)
-            if ($abono->getSocioId() === $this) {
-                $abono->setSocioId(null);
+            if ($abono->getSocio() === $this) {
+                $abono->setSocio(null);
             }
         }
 
@@ -240,4 +244,41 @@ class Socio
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Mensualidad>
+     */
+    public function getMensualidades(): Collection
+    {
+        return $this->mensualidades;
+    }
+
+    public function addMensualidade(Mensualidad $mensualidade): self
+    {
+        if (!$this->mensualidades->contains($mensualidade)) {
+            $this->mensualidades->add($mensualidade);
+            $mensualidade->setSocio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMensualidade(Mensualidad $mensualidade): self
+    {
+        if ($this->mensualidades->removeElement($mensualidade)) {
+            // set the owning side to null (unless already changed)
+            if ($mensualidade->getSocio() === $this) {
+                $mensualidade->setSocio(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getUsuario()->getNombre(). ' '.$this->getUsuario()->getApellido();
+    }
+
+
 }

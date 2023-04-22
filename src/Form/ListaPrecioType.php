@@ -2,10 +2,12 @@
 
 namespace App\Form;
 
+use App\Entity\HistorialListaPrecio;
 use App\Entity\ListaPrecio;
 use App\Entity\Servicio;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -23,7 +25,17 @@ class ListaPrecioType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ]
             ])
-//            ->add('historial_lista_precio_id')
+            ->add('historial_lista_precio',EntityType::class,[
+                'label' => '% Aumento',
+                'class' => HistorialListaPrecio::class,
+                'choice_label' => 'porcentaje_cambio',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
+                ]
+            ])
             ->add('servicio',EntityType::class,[
                 'class' => Servicio::class,
                 'choice_label' => 'descripcion',
@@ -33,6 +45,16 @@ class ListaPrecioType extends AbstractType
                 'label_attr' => [
                     'class' => 'text-muted fs-3'
                 ]
+            ])
+            ->add('socio', CheckboxType::class, [
+                'label' => 'Precio para Socio',
+                'attr' => [
+                    'class' => 'form-check-input fs-4'
+                ],
+                'label_attr' => [
+                    'class' => 'form-check-label text-muted fs-3'
+                ],
+                'required' => false
             ])
 //            ->add('producto_id')
         ;

@@ -1,0 +1,55 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Historial Lista Precios{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Historial Lista Precios</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_historial_lista_precio_new') }}">Crear nuevo historial</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'hl.fecha' : 'Fecha'
+            } %}
+            {{ knp_pagination_filter(historial_lista_precios,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_historial_lista_precio_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Fecha
+            </th>
+            <th>
+                Porcentaje Cambio
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for historial_lista_precio in historial_lista_precios %}
+                <tr>
+                    <td>{{ historial_lista_precio.fecha|date('Y-m-d') }}</td>
+                    <td>{{ historial_lista_precio.porcentajeCambio ~ '%' }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_historial_lista_precio_edit', {'id': historial_lista_precio.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ historial_lista_precios.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(historial_lista_precios) }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_historial_lista_precio_delete', {'id': historial_lista_precio.id}) }}" onsubmit="return confirm('Esta seguro de eliminar este historial?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ historial_lista_precio.id) }}">
+    <button class="btn btn-danger">Eliminar</button>
+</form>

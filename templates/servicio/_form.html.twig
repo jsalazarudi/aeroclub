@@ -1,5 +1,32 @@
 {{ form_start(form,{'attr': {'class': 'p-2' }}) }}
 <div class="row">
+    <div class="col mb-3 form-check form-switch">
+        {{ form_label(form.es_hangaraje) }}
+
+        {% if form_errors(form.es_hangaraje) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.es_hangaraje) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.es_hangaraje) }}
+    </div>
+</div>
+{{ form_start(form,{'attr': {'class': 'p-2' }}) }}
+<div class="row">
+    <div class="col mb-3 form-check form-switch">
+        {{ form_label(form.defecto) }}
+
+        {% if form_errors(form.defecto) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.defecto) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.defecto) }}
+    </div>
+</div>
+<div class="row">
     <div class="col mb-3">
         {{ form_label(form.codigo) }}
 

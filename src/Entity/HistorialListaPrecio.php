@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HistorialListaPrecioRepository::class)]
 class HistorialListaPrecio
@@ -17,9 +18,13 @@ class HistorialListaPrecio
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank()]
+    #[Assert\Type("integer")]
     private ?int $porcentaje_cambio = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha = null;
 
     #[ORM\OneToMany(mappedBy: 'historial_lista_precio', targetEntity: ListaPrecio::class)]

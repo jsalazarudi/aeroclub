@@ -40,6 +40,9 @@
                 Reserva Aprobada
             </th>
             <th>
+                Servicio
+            </th>
+            <th>
                 {% if is_granted('ROLE_TESORERO') %}
                     Realizada Por
                 {% endif %}
@@ -62,6 +65,9 @@
                         {% else %}
                             <p class="text-danger">No</p>
                         {% endif %}
+                    </td>
+                    <td>
+                        {{ reserva_hangar.servicio.descripcion }}
                     </td>
                     <td>
                         {% if is_granted('ROLE_TESORERO') %}

@@ -28,6 +28,12 @@
                 Servicio
             </th>
             <th>
+                Ultima Actualización
+            </th>
+            <th>
+                Precio para Socio
+            </th>
+            <th>
 
             </th>
             </thead>
@@ -36,6 +42,15 @@
                 <tr>
                     <td>{{ lista_precio.precio|format_currency('ARS') }}</td>
                     <td>{{ lista_precio.servicio.descripcion }}</td>
+                    <td>
+                        {{ lista_precio.historialListaPrecio.fecha|date('Y-m-d') ~ ' ' ~ lista_precio.historialListaPrecio.porcentajeCambio ~ '%'   }}</td>
+                    <td>
+                        {% if lista_precio.socio %}
+                            <p class="text-success">Si</p>
+                        {% else %}
+                            <p class="text-danger">No</p>
+                        {% endif %}
+                    </td>
                     <td>
                         <a class="btn btn-warning" href="{{ path('app_lista_precio_edit', {'id': lista_precio.id}) }}">Editar</a>
                     </td>

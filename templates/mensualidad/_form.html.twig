@@ -1,9 +1,7 @@
 {{ form_start(form,{'attr': {'class': 'p-2' }}) }}
 <div class="row">
-    <div class="col form-check form-switch">
+    <div class="col mb-3">
         {{ form_label(form.socio) }}
-
-        {{ form_widget(form.socio) }}
 
         {% if form_errors(form.socio) %}
             <div class="alert alert-danger">
@@ -11,19 +9,7 @@
             </div>
         {% endif %}
 
-    </div>
-</div>
-<div class="row">
-    <div class="col mb-3">
-        {{ form_label(form.precio) }}
-
-        {% if form_errors(form.precio) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.precio) }}
-            </div>
-        {% endif %}
-
-        {{ form_widget(form.precio) }}
+        {{ form_widget(form.socio) }}
     </div>
     <div class="col mb-3">
         {{ form_label(form.servicio) }}
@@ -39,15 +25,15 @@
 </div>
 <div class="row">
     <div class="col mb-3">
-        {{ form_label(form.historial_lista_precio) }}
+        {{ form_label(form.hasta) }}
 
-        {% if form_errors(form.historial_lista_precio) %}
+        {% if form_errors(form.hasta) %}
             <div class="alert alert-danger">
-                {{ form_errors(form.historial_lista_precio) }}
+                {{ form_errors(form.hasta) }}
             </div>
         {% endif %}
 
-        {{ form_widget(form.historial_lista_precio) }}
+        {{ form_widget(form.hasta) }}
     </div>
 </div>
 <div class="text-center mt-3">

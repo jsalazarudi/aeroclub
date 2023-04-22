@@ -38,11 +38,25 @@ class Servicio
     #[ORM\OneToMany(mappedBy: 'servicio_id', targetEntity: CuentaCorriente::class)]
     private Collection $cuentaCorrientes;
 
+    #[ORM\OneToMany(mappedBy: 'servicio', targetEntity: ReservaHangar::class)]
+    private Collection $reservaHangars;
+
+    #[ORM\OneToMany(mappedBy: 'servicio', targetEntity: Mensualidad::class)]
+    private Collection $mensualidades;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $es_hangaraje = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $defecto = null;
+
     public function __construct()
     {
         $this->unidadesPagos = new ArrayCollection();
         $this->listaPrecios = new ArrayCollection();
         $this->cuentaCorrientes = new ArrayCollection();
+        $this->reservaHangars = new ArrayCollection();
+        $this->mensualidades = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -167,6 +181,90 @@ class Servicio
     public function __toString(): string
     {
         return $this->descripcion;
+    }
+
+    /**
+     * @return Collection<int, ReservaHangar>
+     */
+    public function getReservaHangars(): Collection
+    {
+        return $this->reservaHangars;
+    }
+
+    public function addReservaHangar(ReservaHangar $reservaHangar): self
+    {
+        if (!$this->reservaHangars->contains($reservaHangar)) {
+            $this->reservaHangars->add($reservaHangar);
+            $reservaHangar->setServicio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservaHangar(ReservaHangar $reservaHangar): self
+    {
+        if ($this->reservaHangars->removeElement($reservaHangar)) {
+            // set the owning side to null (unless already changed)
+            if ($reservaHangar->getServicio() === $this) {
+                $reservaHangar->setServicio(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Mensualidad>
+     */
+    public function getMensualidades(): Collection
+    {
+        return $this->mensualidades;
+    }
+
+    public function addMensualidade(Mensualidad $mensualidade): self
+    {
+        if (!$this->mensualidades->contains($mensualidade)) {
+            $this->mensualidades->add($mensualidade);
+            $mensualidade->setServicio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMensualidade(Mensualidad $mensualidade): self
+    {
+        if ($this->mensualidades->removeElement($mensualidade)) {
+            // set the owning side to null (unless already changed)
+            if ($mensualidade->getServicio() === $this) {
+                $mensualidade->setServicio(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isEsHangaraje(): ?bool
+    {
+        return $this->es_hangaraje;
+    }
+
+    public function setEsHangaraje(?bool $es_hangaraje): self
+    {
+        $this->es_hangaraje = $es_hangaraje;
+
+        return $this;
+    }
+
+    public function isDefecto(): ?bool
+    {
+        return $this->defecto;
+    }
+
+    public function setDefecto(?bool $defecto): self
+    {
+        $this->defecto = $defecto;
+
+        return $this;
     }
 
 }
