@@ -45,10 +45,14 @@ class Abono
     #[ORM\OneToMany(mappedBy: 'abono', targetEntity: ReservaHangar::class)]
     private Collection $reservasHangar;
 
+    #[ORM\OneToMany(mappedBy: 'abono', targetEntity: MovimientoCuentaVuelo::class)]
+    private Collection $movimientoCuentaVuelos;
+
     public function __construct()
     {
         $this->cuentaCorrientes = new ArrayCollection();
         $this->reservasHangar = new ArrayCollection();
+        $this->movimientoCuentaVuelos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -194,6 +198,36 @@ class Abono
             // set the owning side to null (unless already changed)
             if ($reservasHangar->getAbono() === $this) {
                 $reservasHangar->setAbono(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MovimientoCuentaVuelo>
+     */
+    public function getMovimientoCuentaVuelos(): Collection
+    {
+        return $this->movimientoCuentaVuelos;
+    }
+
+    public function addMovimientoCuentaVuelo(MovimientoCuentaVuelo $movimientoCuentaVuelo): self
+    {
+        if (!$this->movimientoCuentaVuelos->contains($movimientoCuentaVuelo)) {
+            $this->movimientoCuentaVuelos->add($movimientoCuentaVuelo);
+            $movimientoCuentaVuelo->setAbono($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMovimientoCuentaVuelo(MovimientoCuentaVuelo $movimientoCuentaVuelo): self
+    {
+        if ($this->movimientoCuentaVuelos->removeElement($movimientoCuentaVuelo)) {
+            // set the owning side to null (unless already changed)
+            if ($movimientoCuentaVuelo->getAbono() === $this) {
+                $movimientoCuentaVuelo->setAbono(null);
             }
         }
 

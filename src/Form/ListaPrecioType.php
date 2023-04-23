@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Avion;
 use App\Entity\HistorialListaPrecio;
 use App\Entity\ListaPrecio;
 use App\Entity\Servicio;
@@ -17,7 +18,7 @@ class ListaPrecioType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('precio',IntegerType::class,[
+            ->add('precio', IntegerType::class, [
                 'attr' => [
                     'class' => 'form-control'
                 ],
@@ -25,7 +26,7 @@ class ListaPrecioType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ]
             ])
-            ->add('historial_lista_precio',EntityType::class,[
+            ->add('historial_lista_precio', EntityType::class, [
                 'label' => '% Aumento',
                 'class' => HistorialListaPrecio::class,
                 'choice_label' => 'porcentaje_cambio',
@@ -36,15 +37,27 @@ class ListaPrecioType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ]
             ])
-            ->add('servicio',EntityType::class,[
+            ->add('servicio', EntityType::class, [
                 'class' => Servicio::class,
-                'choice_label' => 'descripcion',
                 'attr' => [
                     'class' => 'form-control'
                 ],
                 'label_attr' => [
                     'class' => 'text-muted fs-3'
-                ]
+                ],
+                'placeholder' => 'Selecciona el servicio',
+                'required' => false
+            ])
+            ->add('avion', EntityType::class, [
+                'label' => 'Avión',
+                'class' => Avion::class,
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
+                ],
+                'placeholder' => 'Selecciona el avión'
             ])
             ->add('socio', CheckboxType::class, [
                 'label' => 'Precio para Socio',
@@ -56,7 +69,16 @@ class ListaPrecioType extends AbstractType
                 ],
                 'required' => false
             ])
-//            ->add('producto_id')
+            ->add('alumno', CheckboxType::class, [
+                'label' => 'Precio para Alumno',
+                'attr' => [
+                    'class' => 'form-check-input fs-4'
+                ],
+                'label_attr' => [
+                    'class' => 'form-check-label text-muted fs-3'
+                ],
+                'required' => false
+            ])//            ->add('producto_id')
         ;
     }
 

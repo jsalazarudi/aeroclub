@@ -1,0 +1,18 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Crear Vuelo Planeador{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <h1 class="text-center mb-2">Crear Vuelo Planeador</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary" href="{{ path('app_vuelo_planeador_index') }}">Regresar</a>
+        </div>
+        {{ include('vuelo_planeador/_form.html.twig') }}
+    </div>
+
+{% endblock %}
+
+
+

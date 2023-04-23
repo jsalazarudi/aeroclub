@@ -40,10 +40,20 @@ class ListaPrecio
     #[ORM\OneToMany(mappedBy: 'lista_precio', targetEntity: ReservaHangar::class)]
     private Collection $reservasHangar;
 
+    #[ORM\OneToMany(mappedBy: 'lista_precio', targetEntity: MovimientoCuentaVuelo::class)]
+    private Collection $movimientoCuentaVuelos;
+
+    #[ORM\ManyToOne(inversedBy: 'listaPrecios')]
+    private ?Avion $avion = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $alumno = null;
+
     public function __construct()
     {
         $this->cuentaCorrientes = new ArrayCollection();
         $this->reservasHangar = new ArrayCollection();
+        $this->movimientoCuentaVuelos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,7 +102,7 @@ class ListaPrecio
         return $this->producto;
     }
 
-    public function setProductoId(?Producto $producto): self
+    public function setProducto(?Producto $producto): self
     {
         $this->producto = $producto;
 
@@ -167,6 +177,60 @@ class ListaPrecio
                 $reservasHangar->setListaPrecio(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MovimientoCuentaVuelo>
+     */
+    public function getMovimientoCuentaVuelos(): Collection
+    {
+        return $this->movimientoCuentaVuelos;
+    }
+
+    public function addMovimientoCuentaVuelo(MovimientoCuentaVuelo $movimientoCuentaVuelo): self
+    {
+        if (!$this->movimientoCuentaVuelos->contains($movimientoCuentaVuelo)) {
+            $this->movimientoCuentaVuelos->add($movimientoCuentaVuelo);
+            $movimientoCuentaVuelo->setListaPrecio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMovimientoCuentaVuelo(MovimientoCuentaVuelo $movimientoCuentaVuelo): self
+    {
+        if ($this->movimientoCuentaVuelos->removeElement($movimientoCuentaVuelo)) {
+            // set the owning side to null (unless already changed)
+            if ($movimientoCuentaVuelo->getListaPrecio() === $this) {
+                $movimientoCuentaVuelo->setListaPrecio(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAvion(): ?Avion
+    {
+        return $this->avion;
+    }
+
+    public function setAvion(?Avion $avion): self
+    {
+        $this->avion = $avion;
+
+        return $this;
+    }
+
+    public function isAlumno(): ?bool
+    {
+        return $this->alumno;
+    }
+
+    public function setAlumno(?bool $alumno): self
+    {
+        $this->alumno = $alumno;
 
         return $this;
     }

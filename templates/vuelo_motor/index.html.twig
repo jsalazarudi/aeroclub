@@ -1,0 +1,89 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Vuelos Motor{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Vuelos Motor</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_vuelo_motor_new') }}">Crear nuevo Vuelo Motor</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'vm.aterrizajes' : 'Aterrizajes'
+            } %}
+            {{ knp_pagination_filter(vuelos_motor,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_vuelo_motor_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Curso
+            </th>
+            <th>
+                Avión
+            </th>
+            <th>
+                Aterrizajes
+            </th>
+            <th>
+                Pista Despegue
+            </th>
+            <th>
+                Pista Aterrizaje
+            </th>
+            <th>
+                Horómetro Despegue
+            </th>
+            <th>
+                Horómetro Aterrizaje
+            </th>
+            <th>
+                Unidades gastadas
+            </th>
+            <th>
+                Tipo Vuelo
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for vuelo_motor in vuelos_motor %}
+                <tr>
+                    {% if vuelo_motor.vuelo.curso %}
+                        <td>
+                            {{ vuelo_motor.vuelo.curso.descripcion }}
+                        </td>
+                    {% endif %}
+                    <td>{{ vuelo_motor.vuelo.avion.matricula }}</td>
+                    <td>{{ vuelo_motor.aterrizajes }}</td>
+                    <td>{{ vuelo_motor.pistaDespegue }}</td>
+                    <td>{{ vuelo_motor.pistaAterrizaje }}</td>
+                    <td>{{ vuelo_motor.horometroDespegue }}</td>
+                    <td>{{ vuelo_motor.horometroAterrizaje }}</td>
+                    <td>
+                        {{ vuelo_motor.vuelo.movimientoCuentaVuelo.unidadesGastadas }}
+                    </td>
+                    <td>{{ vuelo_motor.tipoVuelo }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_vuelo_motor_edit', {'id': vuelo_motor.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ vuelos_motor.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(vuelos_motor) }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Aviones{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Aviones</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_avion_new') }}">Crear Avión</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'a.matricula' : 'Matricula'
+            } %}
+            {{ knp_pagination_filter(aviones,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_avion_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Matrícula
+            </th>
+            <th>
+                Ultima Fecha Inspección
+            </th>
+            <th>
+                Ultima Fecha Mantenimiento
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for avion in aviones %}
+                <tr>
+                    <td>{{ avion.matricula }}</td>
+                    <td>{{ avion.fechaInspeccion|date('Y-m-d') }}</td>
+                    <td>{{ avion.fechaMantenimiento|date('Y-m-d') }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_avion_edit', {'id': avion.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ aviones.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(aviones) }}
+        </div>
+    </div>
+{% endblock %}

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VueloRepository::class)]
 class Vuelo
@@ -17,35 +18,41 @@ class Vuelo
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("string")]
     private ?string $observaciones = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha = null;
 
     #[ORM\Column]
     private ?bool $es_vuelo_turistico = null;
 
     #[ORM\ManyToOne(inversedBy: 'vuelos')]
-    private ?Curso $curso_id = null;
+    #[Assert\NotBlank()]
+    private ?Curso $curso = null;
 
     #[ORM\ManyToOne(inversedBy: 'vuelos')]
-    private ?Socio $socio_id = null;
+    private ?Socio $socio = null;
 
     #[ORM\ManyToOne(inversedBy: 'vuelos')]
-    private ?Piloto $piloto_id = null;
+    private ?Piloto $piloto = null;
 
     #[ORM\ManyToOne(inversedBy: 'vuelos')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Avion $avion_id = null;
-
-    #[ORM\OneToOne(mappedBy: 'vuelo_id', cascade: ['persist', 'remove'])]
-    private ?MovimientoCuentaVuelo $movimientoCuentaVuelo = null;
+    #[Assert\NotBlank()]
+    private ?Avion $avion = null;
 
     #[ORM\OneToMany(mappedBy: 'vuelo_id', targetEntity: InstructorVuelo::class)]
     private Collection $instructorVuelos;
 
     #[ORM\OneToMany(mappedBy: 'vuelo_id', targetEntity: ProductoVuelo::class)]
     private Collection $productoVuelos;
+
+    #[ORM\OneToOne(mappedBy: 'vuelo', cascade: ['persist', 'remove'])]
+    private ?MovimientoCuentaVuelo $movimientoCuentaVuelo = null;
 
     public function __construct()
     {
@@ -94,70 +101,54 @@ class Vuelo
         return $this;
     }
 
-    public function getCursoId(): ?Curso
+    public function getCurso(): ?Curso
     {
-        return $this->curso_id;
+        return $this->curso;
     }
 
-    public function setCursoId(?Curso $curso_id): self
+    public function setCurso(?Curso $curso): self
     {
-        $this->curso_id = $curso_id;
+        $this->curso = $curso;
 
         return $this;
     }
 
-    public function getSocioId(): ?Socio
+    public function getSocio(): ?Socio
     {
-        return $this->socio_id;
+        return $this->socio;
     }
 
-    public function setSocioId(?Socio $socio_id): self
+    public function setSocio(?Socio $socio): self
     {
-        $this->socio_id = $socio_id;
+        $this->socio = $socio;
 
         return $this;
     }
 
-    public function getPilotoId(): ?Piloto
+    public function getPiloto(): ?Piloto
     {
-        return $this->piloto_id;
+        return $this->piloto;
     }
 
-    public function setPilotoId(?Piloto $piloto_id): self
+    public function setPiloto(?Piloto $piloto): self
     {
-        $this->piloto_id = $piloto_id;
+        $this->piloto = $piloto;
 
         return $this;
     }
 
-    public function getAvionId(): ?Avion
+    public function getAvion(): ?Avion
     {
-        return $this->avion_id;
+        return $this->avion;
     }
 
-    public function setAvionId(?Avion $avion_id): self
+    public function setAvion(?Avion $avion): self
     {
-        $this->avion_id = $avion_id;
+        $this->avion = $avion;
 
         return $this;
     }
 
-    public function getMovimientoCuentaVuelo(): ?MovimientoCuentaVuelo
-    {
-        return $this->movimientoCuentaVuelo;
-    }
-
-    public function setMovimientoCuentaVuelo(MovimientoCuentaVuelo $movimientoCuentaVuelo): self
-    {
-        // set the owning side of the relation if necessary
-        if ($movimientoCuentaVuelo->getVueloId() !== $this) {
-            $movimientoCuentaVuelo->setVueloId($this);
-        }
-
-        $this->movimientoCuentaVuelo = $movimientoCuentaVuelo;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, InstructorVuelo>
@@ -217,5 +208,27 @@ class Vuelo
         }
 
         return $this;
+    }
+
+    public function getMovimientoCuentaVuelo(): ?MovimientoCuentaVuelo
+    {
+        return $this->movimientoCuentaVuelo;
+    }
+
+    public function setMovimientoCuentaVuelo(MovimientoCuentaVuelo $movimientoCuentaVuelo): self
+    {
+        // set the owning side of the relation if necessary
+        if ($movimientoCuentaVuelo->getVuelo() !== $this) {
+            $movimientoCuentaVuelo->setVuelo($this);
+        }
+
+        $this->movimientoCuentaVuelo = $movimientoCuentaVuelo;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getFecha()->format('Y-m-d') . ' Avión: ' . $this->getAvion()->getMatricula();
     }
 }

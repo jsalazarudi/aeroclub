@@ -19,4 +19,16 @@
             </div>
         {% endfor %}
     {% endif %}
+
+    {% if is_granted('ROLE_ALUMNO') and notificacion_curso >= 40 %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+
+            <strong>Usted ha cumplido el mínimo de horas(40) requeridas para presentar el examen de su curso. Contacte
+                al tesorero o algún instructor si desea realizar el examen </strong>
+
+            <button type="button" class="btn close" data-bs-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
 {% endblock %}

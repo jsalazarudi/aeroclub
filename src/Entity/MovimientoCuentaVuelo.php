@@ -20,10 +20,19 @@ class MovimientoCuentaVuelo
 
     #[ORM\OneToOne(inversedBy: 'movimientoCuentaVuelo', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Vuelo $vuelo_id = null;
+    private ?Vuelo $vuelo = null;
 
     #[ORM\OneToMany(mappedBy: 'movimiento_cuenta_vuelo_id', targetEntity: CuentaCorriente::class)]
     private Collection $cuentaCorrientes;
+
+    #[ORM\ManyToOne(inversedBy: 'movimientoCuentaVuelos')]
+    private ?ListaPrecio $lista_precio = null;
+
+    #[ORM\ManyToOne(inversedBy: 'movimientoCuentaVuelos')]
+    private ?Servicio $servicio = null;
+
+    #[ORM\ManyToOne(inversedBy: 'movimientoCuentaVuelos')]
+    private ?Abono $abono = null;
 
     public function __construct()
     {
@@ -47,14 +56,14 @@ class MovimientoCuentaVuelo
         return $this;
     }
 
-    public function getVueloId(): ?Vuelo
+    public function getVuelo(): ?Vuelo
     {
-        return $this->vuelo_id;
+        return $this->vuelo;
     }
 
-    public function setVueloId(Vuelo $vuelo_id): self
+    public function setVuelo(Vuelo $vuelo): self
     {
-        $this->vuelo_id = $vuelo_id;
+        $this->vuelo = $vuelo;
 
         return $this;
     }
@@ -88,4 +97,47 @@ class MovimientoCuentaVuelo
 
         return $this;
     }
+
+    public function getListaPrecio(): ?ListaPrecio
+    {
+        return $this->lista_precio;
+    }
+
+    public function setListaPrecio(?ListaPrecio $lista_precio): self
+    {
+        $this->lista_precio = $lista_precio;
+
+        return $this;
+    }
+
+    public function getServicio(): ?Servicio
+    {
+        return $this->servicio;
+    }
+
+    public function setServicio(?Servicio $servicio): self
+    {
+        $this->servicio = $servicio;
+
+        return $this;
+    }
+
+    public function getAbono(): ?Abono
+    {
+        return $this->abono;
+    }
+
+    public function setAbono(?Abono $abono): self
+    {
+        $this->abono = $abono;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getVuelo()->getFecha()->format('Y-m-d') . ' Costo:' . $this->getUnidadesGastadas();
+    }
+
+
 }

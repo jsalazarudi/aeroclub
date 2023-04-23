@@ -1,0 +1,75 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Vuelos Planeador{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Vuelos Planeador</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_vuelo_planeador_new') }}">Crear Vuelo Planeador</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'vp.tema_vuelo' : 'Tema Vuelo'
+            } %}
+            {{ knp_pagination_filter(vuelos_planeador,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_vuelo_planeador_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Vuelo
+            </th>
+            <th>
+                Tiempo Remolque
+            </th>
+            <th>
+                Tiempo Libre
+            </th>
+            <th>
+                Tema Vuelo
+            </th>
+            <th>
+                Tiempo Acumulado
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for vuelo_planeador in vuelos_planeador %}
+                <tr>
+                    <td>{{ vuelo_planeador.vuelo.fecha|date('Y-m-d') ~ ' Avión:' ~ vuelo_planeador.vuelo.avion.matricula }}</td>
+                    <td>
+                        {{ vuelo_planeador.tiempo_remolque }}
+                    </td>
+                    <td>
+                        {{ vuelo_planeador.tiempo_libre }}
+                    <td>
+                        {{ vuelo_planeador.tema_vuelo }}
+                    </td>
+                    <td>
+                        {{ vuelo_planeador.tiempo_acumulado }}
+                    </td>
+                    <td>
+                        <a class="btn btn-warning"
+                           href="{{ path('app_vuelo_planeador_edit', {'id': vuelo_planeador.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ vuelos_planeador.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(vuelos_planeador) }}
+        </div>
+    </div>
+{% endblock %}

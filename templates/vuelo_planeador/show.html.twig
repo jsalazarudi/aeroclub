@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}VueloPlaneador{% endblock %}
+
+{% block body %}
+    <h1>VueloPlaneador</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ vuelo_planeador.id }}</td>
+            </tr>
+            <tr>
+                <th>Tiempo_remolque</th>
+                <td>{{ vuelo_planeador.tiempoRemolque }}</td>
+            </tr>
+            <tr>
+                <th>Tiempo_libre</th>
+                <td>{{ vuelo_planeador.tiempoLibre }}</td>
+            </tr>
+            <tr>
+                <th>Tema_vuelo</th>
+                <td>{{ vuelo_planeador.temaVuelo }}</td>
+            </tr>
+            <tr>
+                <th>Tiempo_acumulado</th>
+                <td>{{ vuelo_planeador.tiempoAcumulado }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_vuelo_planeador_index') }}">back to list</a>
+
+    <a href="{{ path('app_vuelo_planeador_edit', {'id': vuelo_planeador.id}) }}">edit</a>
+
+    {{ include('vuelo_planeador/_delete_form.html.twig') }}
+{% endblock %}

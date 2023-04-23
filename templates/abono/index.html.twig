@@ -51,10 +51,20 @@
                         {{ abono.fecha|date('Y-m-d') }}
                     </td>
                     <td>
-                        <h5>Reservas Hangar</h5>
+                        {% if abono.reservasHangar|length %}
+                            <h5>Reservas Hangar</h5>
+                        {% endif %}
                         {% for reservaHangar in abono.reservasHangar %}
                             {% set valorServicioHangar = reservaHangar.listaPrecio.precio * reservaHangar.unidadesGastadas %}
-                            {{  reservaHangar.reserva.fecha|date('Y-m-d') ~ ' Costo: ' ~ valorServicioHangar|format_currency('ARS')  }}
+                            {{ reservaHangar.reserva.fecha|date('Y-m-d') ~ ' Costo: ' ~ valorServicioHangar|format_currency('ARS') }}
+                        {% endfor %}
+
+                        {% if abono.movimientoCuentaVuelos|length %}
+                            <h5>Vuelos</h5>
+                        {% endif %}
+                        {% for vuelo in abono.movimientoCuentaVuelos %}
+                            {% set valorVuelo = vuelo.listaPrecio.precio * vuelo.unidadesGastadas %}
+                            {{ vuelo.vuelo.fecha|date('Y-m-d') ~ ' Costo: ' ~ valorVuelo|format_currency('ARS') }}
                         {% endfor %}
                     </td>
                     <td>

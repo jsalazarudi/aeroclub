@@ -50,6 +50,9 @@ class Servicio
     #[ORM\Column(nullable: true)]
     private ?bool $defecto = null;
 
+    #[ORM\OneToMany(mappedBy: 'servicio', targetEntity: MovimientoCuentaVuelo::class)]
+    private Collection $movimientoCuentaVuelos;
+
     public function __construct()
     {
         $this->unidadesPagos = new ArrayCollection();
@@ -57,6 +60,7 @@ class Servicio
         $this->cuentaCorrientes = new ArrayCollection();
         $this->reservaHangars = new ArrayCollection();
         $this->mensualidades = new ArrayCollection();
+        $this->movimientoCuentaVuelos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -263,6 +267,36 @@ class Servicio
     public function setDefecto(?bool $defecto): self
     {
         $this->defecto = $defecto;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MovimientoCuentaVuelo>
+     */
+    public function getMovimientoCuentaVuelos(): Collection
+    {
+        return $this->movimientoCuentaVuelos;
+    }
+
+    public function addMovimientoCuentaVuelo(MovimientoCuentaVuelo $movimientoCuentaVuelo): self
+    {
+        if (!$this->movimientoCuentaVuelos->contains($movimientoCuentaVuelo)) {
+            $this->movimientoCuentaVuelos->add($movimientoCuentaVuelo);
+            $movimientoCuentaVuelo->setServicio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMovimientoCuentaVuelo(MovimientoCuentaVuelo $movimientoCuentaVuelo): self
+    {
+        if ($this->movimientoCuentaVuelos->removeElement($movimientoCuentaVuelo)) {
+            // set the owning side to null (unless already changed)
+            if ($movimientoCuentaVuelo->getServicio() === $this) {
+                $movimientoCuentaVuelo->setServicio(null);
+            }
+        }
 
         return $this;
     }

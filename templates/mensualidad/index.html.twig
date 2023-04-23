@@ -1,0 +1,60 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Mensualidades{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Mensualidades</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_mensualidad_new') }}">Crear Mensualidad</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'm.socio_id' : 'Socio'
+            } %}
+            {{ knp_pagination_filter(mensualidades,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_mensualidad_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Socio
+            </th>
+            <th>
+                Servicio
+            </th>
+            <th>
+                Hasta
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for mensualidad in mensualidades %}
+                <tr>
+                    <td>{{ mensualidad.socio.usuario.nombre ~ ' ' ~ mensualidad.socio.usuario.apellido }}</td>
+                    <td>{{ mensualidad.servicio.descripcion }}</td>
+                    <td>
+                        {{ mensualidad.hasta|date('Y-m-d') }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_mensualidad_edit', {'id': mensualidad.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ mensualidades.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(mensualidades) }}
+        </div>
+    </div>
+{% endblock %}

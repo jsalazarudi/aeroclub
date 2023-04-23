@@ -6,13 +6,10 @@ use App\Entity\Abono;
 use App\Entity\Alumno;
 use App\Entity\ListaPrecio;
 use App\Entity\Socio;
-use App\Entity\Tesorero;
 use App\Entity\Usuario;
 use App\Form\AbonoType;
 use App\Repository\AbonoRepository;
-use App\Repository\CuentaCorrienteRepository;
 use App\Repository\ListaPrecioRepository;
-use App\Repository\ReservaHangarRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class AbonoController extends AbstractController
 {
     #[Route('/', name: 'app_abono_index', methods: ['GET'])]
-    public function index(Request $request,AbonoRepository $abonoRepository,PaginatorInterface $paginator): Response
+    public function index(Request $request, AbonoRepository $abonoRepository, PaginatorInterface $paginator): Response
     {
         $abonosQuery = null;
         $isTesorero = $this->isGranted('ROLE_TESORERO');
@@ -32,9 +29,10 @@ class AbonoController extends AbstractController
             $abonosQuery = $abonoRepository->createQueryBuilder('a');
         }
 
-        $isSocioPiloto = $this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO');
+        $isSocioPilotoAlumno = $this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO')
+            || $this->isGranted('ROLE_ALUMNO');
 
-        if ($isSocioPiloto && !$isTesorero) {
+        if ($isSocioPilotoAlumno && !$isTesorero) {
             $tipoUsuario = $this->getTipoUsuario();
             $abonosQuery = $abonoRepository->createQueryBuilder('a');
 
@@ -68,12 +66,12 @@ class AbonoController extends AbstractController
     {
 
         $abono = new Abono();
-        $form = $this->createForm(AbonoType::class, $abono,[
+        $form = $this->createForm(AbonoType::class, $abono, [
             'tipo_usuario' => $this->getUser()->getRoles()[0],
             'usuario' => $this->getTipoUsuario()
         ]);
 
-        if ($this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO')) {
+        if ($this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_ALUMNO')) {
             $form->remove('aprobado');
         }
 
@@ -81,24 +79,30 @@ class AbonoController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            /** @var string $ultimaFechaHistorialListaPrecios */
+            $ultimaFechaHistorialListaPrecios = $listaPrecioRepository->createQueryBuilder('lp')
+                ->join('lp.historial_lista_precio', 'hlp')
+                ->select('MAX(hlp.fecha) AS fecha')
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            // VALIDACION RESERVAS HANGAR
             $totalAbono = 0;
             foreach ($abono->getReservasHangar() as $reservaHangar) {
 
                 $servicio = $reservaHangar->getServicio();
 
                 $listaPrecioQuery = $listaPrecioRepository->createQueryBuilder('lp')
-                    ->select('lp','MAX(historial.fecha) AS HIDDEN fecha')
-                    ->join('lp.servicio','servicio')
-                    ->join('lp.historial_lista_precio','historial')
+                    ->join('lp.servicio', 'servicio')
+                    ->join('lp.historial_lista_precio', 'historial')
                     ->where('servicio = :servicio')
-                    ->setParameter('servicio',$servicio)
-                    ->groupBy('lp.id');
-
+                    ->andWhere('historial.fecha = :fecha')
+                    ->setParameter('servicio', $servicio)
+                    ->setParameter('fecha', $ultimaFechaHistorialListaPrecios);
 
                 if ($this->isGranted('ROLE_SOCIO')) {
                     $listaPrecioQuery->andWhere('lp.socio = true');
-                }
-                else {
+                } else {
                     $listaPrecioQuery->andWhere('lp.socio = false OR lp.socio IS NULL');
                 }
 
@@ -110,9 +114,41 @@ class AbonoController extends AbstractController
                 $reservaHangar->setListaPrecio($listaPrecio);
             }
 
+            // VALIDACION VUELOS
+            foreach ($abono->getMovimientoCuentaVuelos() as $movimientoCuentaVuelo) {
+                $avion = $movimientoCuentaVuelo->getVuelo()->getAvion();
+
+                /** @var string $ultimaFechaHistorialListaPrecios */
+                $ultimaFechaHistorialListaPrecios = $listaPrecioRepository->createQueryBuilder('lp')
+                    ->join('lp.historial_lista_precio', 'hlp')
+                    ->select('MAX(hlp.fecha) AS fecha')
+                    ->getQuery()
+                    ->getSingleScalarResult();
+
+
+                $listaPrecioQuery = $listaPrecioRepository->createQueryBuilder('lp')
+                    ->join('lp.historial_lista_precio', 'historial')
+                    ->where('lp.avion = :avion')
+                    ->andWhere('historial.fecha = :fecha')
+                    ->setParameter('avion', $avion)
+                    ->setParameter('fecha', $ultimaFechaHistorialListaPrecios);
+
+                if ($this->isGranted('ROLE_ALUMNO')) {
+                    $listaPrecioQuery->andWhere('lp.alumno = true');
+                }
+
+                /** @var ListaPrecio $listaPrecio */
+                $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
+
+                $totalAbono += $listaPrecio->getPrecio() * $movimientoCuentaVuelo->getUnidadesGastadas();
+
+                $movimientoCuentaVuelo->setAbono($abono);
+                $movimientoCuentaVuelo->setListaPrecio($listaPrecio);
+            }
+
             $abono->setValor($totalAbono);
 
-            if ($this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO')) {
+            if ($this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_ALUMNO')) {
                 $abono->setAprobado(false);
             }
 
@@ -122,6 +158,8 @@ class AbonoController extends AbstractController
                 $abono->setPiloto($this->getUser()->getPiloto());
             } elseif ($this->isGranted('ROLE_TESORERO')) {
                 $abono->setTesorero($this->getUser()->getTesorero());
+            } elseif ($this->isGranted('ROLE_ALUMNO')) {
+                $abono->setAlumno($this->getUser()->getAlumno());
             }
 
             $abonoRepository->save($abono, true);
@@ -150,6 +188,7 @@ class AbonoController extends AbstractController
 
         if ($this->isGranted('ROLE_TESORERO')) {
             $form->remove('reservasHangar');
+            $form->remove('movimientoCuentaVuelos');
             $form->remove('fecha');
         }
 
@@ -170,7 +209,7 @@ class AbonoController extends AbstractController
     #[Route('/{id}', name: 'app_abono_delete', methods: ['POST'])]
     public function delete(Request $request, Abono $abono, AbonoRepository $abonoRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$abono->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $abono->getId(), $request->request->get('_token'))) {
             $abonoRepository->remove($abono, true);
         }
 

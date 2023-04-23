@@ -24,43 +24,47 @@
                     </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="card">
-                    <img src="{{ asset('usuarios/socio.png') }}" class="card-img-top w-25" alt="">
-                    <div class="card-body">
-                        <a class="fw-bold fs-5" href="{{ path('aeroclub_socio_index') }}">Socio</a>
+            {% if is_granted('ROLE_TESORERO') %}
+                <div class="col">
+                    <div class="card">
+                        <img src="{{ asset('usuarios/socio.png') }}" class="card-img-top w-25" alt="">
+                        <div class="card-body">
+                            <a class="fw-bold fs-5" href="{{ path('aeroclub_socio_index') }}">Socio</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <img src="{{ asset('usuarios/instructor.png') }}" class="card-img-top w-25" alt="">
-                    <div class="card-body">
-                        <a class="fw-bold fs-5" href="{{ path('aeroclub_instructor_index') }}">Instructor</a>
+                <div class="col">
+                    <div class="card">
+                        <img src="{{ asset('usuarios/instructor.png') }}" class="card-img-top w-25" alt="">
+                        <div class="card-body">
+                            <a class="fw-bold fs-5" href="{{ path('aeroclub_instructor_index') }}">Instructor</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
 
         <div class="row mt-5">
             {% if is_granted('ROLE_ADMINISTRADOR') %}
-            <div class="col">
-                <div class="card">
-                    <img src="{{ asset('usuarios/tesorero.jpg') }}" class="card-img-top w-25" alt="">
-                    <div class="card-body">
-                        <a class="fw-bold fs-5" href="{{ path('aeroclub_tesorero_index') }}">Tesorero</a>
+                <div class="col">
+                    <div class="card">
+                        <img src="{{ asset('usuarios/tesorero.jpg') }}" class="card-img-top w-25" alt="">
+                        <div class="card-body">
+                            <a class="fw-bold fs-5" href="{{ path('aeroclub_tesorero_index') }}">Tesorero</a>
+                        </div>
                     </div>
                 </div>
-            </div>
             {% endif %}
-            <div class="col">
-                <div class="card">
-                    <img src="{{ asset('usuarios/piloto.png') }}" class="card-img-top w-25" alt="">
-                    <div class="card-body">
-                        <a class="fw-bold fs-5" href="{{ path('aeroclub_piloto_index') }}">Piloto</a>
+            {% if is_granted('ROLE_TESORERO') %}
+                <div class="col">
+                    <div class="card">
+                        <img src="{{ asset('usuarios/piloto.png') }}" class="card-img-top w-25" alt="">
+                        <div class="card-body">
+                            <a class="fw-bold fs-5" href="{{ path('aeroclub_piloto_index') }}">Piloto</a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

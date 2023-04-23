@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AvionRepository::class)]
 class Avion
@@ -17,12 +18,18 @@ class Avion
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("string")]
     private ?string $matricula = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha_inspeccion = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha_mantenimiento = null;
 
     #[ORM\OneToMany(mappedBy: 'avion_id', targetEntity: Vuelo::class)]
@@ -31,10 +38,14 @@ class Avion
     #[ORM\OneToMany(mappedBy: 'avion_id', targetEntity: ReservaVuelo::class)]
     private Collection $reservaVuelos;
 
+    #[ORM\OneToMany(mappedBy: 'Avion', targetEntity: ListaPrecio::class)]
+    private Collection $listaPrecios;
+
     public function __construct()
     {
         $this->vuelos = new ArrayCollection();
         $this->reservaVuelos = new ArrayCollection();
+        $this->listaPrecios = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -137,4 +148,41 @@ class Avion
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->matricula;
+    }
+
+    /**
+     * @return Collection<int, ListaPrecio>
+     */
+    public function getListaPrecios(): Collection
+    {
+        return $this->listaPrecios;
+    }
+
+    public function addListaPrecio(ListaPrecio $listaPrecio): self
+    {
+        if (!$this->listaPrecios->contains($listaPrecio)) {
+            $this->listaPrecios->add($listaPrecio);
+            $listaPrecio->setAvion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeListaPrecio(ListaPrecio $listaPrecio): self
+    {
+        if ($this->listaPrecios->removeElement($listaPrecio)) {
+            // set the owning side to null (unless already changed)
+            if ($listaPrecio->getAvion() === $this) {
+                $listaPrecio->setAvion(null);
+            }
+        }
+
+        return $this;
+    }
+
+
 }

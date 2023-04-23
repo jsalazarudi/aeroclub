@@ -1,0 +1,42 @@
+{{ form_start(form,{'attr': {'class': 'p-2' }}) }}
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.matricula) }}
+
+        {% if form_errors(form.matricula) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.matricula) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.matricula) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.fecha_inspeccion) }}
+
+        {% if form_errors(form.fecha_inspeccion) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.fecha_inspeccion) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.fecha_inspeccion) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.fecha_mantenimiento) }}
+
+        {% if form_errors(form.fecha_mantenimiento) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.fecha_mantenimiento) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.fecha_mantenimiento) }}
+    </div>
+</div>
+<div class="text-center mt-3">
+    <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
+</div>
+{{ form_end(form) }}

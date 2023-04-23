@@ -1,0 +1,67 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Cursos{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Cursos</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_curso_new') }}">Crear Curso</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'c.descripcion' : 'Descripción'
+            } %}
+            {{ knp_pagination_filter(cursos,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_curso_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Alumno
+            </th>
+            <th>
+                Descripción
+            </th>
+            <th>
+                Aprobado
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for curso in cursos %}
+                <tr>
+                    <td>
+                        {{ curso.alumno.usuario.nombre ~ ' ' ~  curso.alumno.usuario.apellido }}
+                    </td>
+                    <td>{{ curso.descripcion }}</td>
+                    <td>
+                        {% if curso.aprobado %}
+                            <p class="text-success">Si</p>
+                        {% else %}
+                            <p class="text-danger">No</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_curso_edit', {'id': curso.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ cursos.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(cursos) }}
+        </div>
+    </div>
+{% endblock %}

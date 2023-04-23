@@ -12,6 +12,42 @@
         {% endif %}
 
     </div>
+    <div class="col form-check form-switch">
+        {{ form_label(form.alumno) }}
+
+        {{ form_widget(form.alumno) }}
+
+        {% if form_errors(form.alumno) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.alumno) }}
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.servicio) }}
+
+        {% if form_errors(form.servicio) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.servicio) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.servicio) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.avion) }}
+
+        {% if form_errors(form.avion) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.avion) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.avion) }}
+    </div>
 </div>
 <div class="row">
     <div class="col mb-3">
@@ -25,19 +61,6 @@
 
         {{ form_widget(form.precio) }}
     </div>
-    <div class="col mb-3">
-        {{ form_label(form.servicio) }}
-
-        {% if form_errors(form.servicio) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.servicio) }}
-            </div>
-        {% endif %}
-
-        {{ form_widget(form.servicio) }}
-    </div>
-</div>
-<div class="row">
     <div class="col mb-3">
         {{ form_label(form.historial_lista_precio) }}
 

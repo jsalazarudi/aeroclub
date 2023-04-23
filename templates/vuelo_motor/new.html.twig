@@ -1,0 +1,15 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Crear Vuelo Motor{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <h1 class="text-center mb-2">Crear Vuelo Motor</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary" href="{{ path('app_vuelo_motor_index') }}">Regresar</a>
+        </div>
+        {{ include('vuelo_motor/_form.html.twig') }}
+    </div>
+
+{% endblock %}

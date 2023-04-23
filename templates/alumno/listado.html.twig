@@ -1,0 +1,54 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Cuenta Corriente{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado de Precios Vigente</h1>
+
+        <table class="table">
+            <thead>
+            <th>
+                Precio
+            </th>
+            <th>
+                Avión
+            </th>
+            {#            <th> #}
+            {#                Servicio #}
+            {#            </th> #}
+
+            </thead>
+            <tbody>
+            {% for lista_precio in lista_precios %}
+                <tr>
+                    <td>
+                        {{ lista_precio.precio|format_currency('ARS') }}
+                    </td>
+                    <td>
+                        {% if lista_precio.avion|length %}
+                            {{ lista_precio.avion.matricula }}
+                        {% endif %}
+                    </td>
+                    {#                    <td> #}
+                    {#                        {% if lista_precio.servicio|length  %} #}
+                    {#                            {{ lista_precio.servicio.descripcion }} #}
+                    {#                        {% endif %} #}
+                    {#                    </td> #}
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ lista_precios.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(lista_precios) }}
+        </div>
+    </div>
+{% endblock %}

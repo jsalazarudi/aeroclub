@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_avion_delete', {'id': avion.id}) }}" onsubmit="return confirm('Esta seguro de eliminar el avión?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ avion.id) }}">
+    <button class="btn btn-danger">Eliminar</button>
+</form>

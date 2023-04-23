@@ -27,7 +27,7 @@ class VueloPlaneador
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Vuelo $vuelo_id = null;
+    private ?Vuelo $vuelo = null;
 
     public function getId(): ?int
     {
@@ -82,14 +82,14 @@ class VueloPlaneador
         return $this;
     }
 
-    public function getVueloId(): ?Vuelo
+    public function getVuelo(): ?Vuelo
     {
-        return $this->vuelo_id;
+        return $this->vuelo;
     }
 
-    public function setVueloId(Vuelo $vuelo_id): self
+    public function setVuelo(Vuelo $vuelo): self
     {
-        $this->vuelo_id = $vuelo_id;
+        $this->vuelo = $vuelo;
 
         return $this;
     }

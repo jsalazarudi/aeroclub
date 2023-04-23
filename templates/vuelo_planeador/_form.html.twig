@@ -1,0 +1,114 @@
+{{ form_start(form,{'attr': {'class': 'p-2' }}) }}
+<div class="row">
+    <div class="col mb-3 form-check form-switch">
+        {{ form_label(form.vuelo.es_vuelo_turistico) }}
+
+        {% if form_errors(form.vuelo.es_vuelo_turistico) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.vuelo.es_vuelo_turistico) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.vuelo.es_vuelo_turistico) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.vuelo.observaciones) }}
+
+        {% if form_errors(form.vuelo.observaciones) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.vuelo.observaciones) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.vuelo.observaciones) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.vuelo.fecha) }}
+
+        {% if form_errors(form.vuelo.fecha) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.vuelo.fecha) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.vuelo.fecha) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.vuelo.curso) }}
+
+        {% if form_errors(form.vuelo.curso) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.vuelo.curso) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.vuelo.curso) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.vuelo.avion) }}
+
+        {% if form_errors(form.vuelo.avion) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.vuelo.avion) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.vuelo.avion) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.tiempo_remolque) }}
+
+        {% if form_errors(form.tiempo_remolque) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.tiempo_remolque) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.tiempo_remolque) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.tiempo_libre) }}
+
+        {% if form_errors(form.tiempo_libre) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.tiempo_libre) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.tiempo_libre) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.tema_vuelo) }}
+
+        {% if form_errors(form.tema_vuelo) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.tema_vuelo) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.tema_vuelo) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.tiempo_acumulado) }}
+
+        {% if form_errors(form.tiempo_acumulado) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.tiempo_acumulado) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.tiempo_acumulado) }}
+    </div>
+</div>
+<div class="text-center mt-3">
+    <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
+</div>
+{{ form_end(form) }}

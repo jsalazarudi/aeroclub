@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CursoRepository::class)]
 class Curso
@@ -17,16 +18,19 @@ class Curso
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("string")]
     private ?string $descripcion = null;
 
     #[ORM\Column]
     private ?bool $aprobado = null;
 
-    #[ORM\OneToMany(mappedBy: 'curso_id', targetEntity: Vuelo::class)]
+    #[ORM\OneToMany(mappedBy: 'curso', targetEntity: Vuelo::class)]
     private Collection $vuelos;
 
     #[ORM\ManyToOne(inversedBy: 'curso')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank()]
     private ?Alumno $alumno = null;
 
     public function __construct()
@@ -104,4 +108,11 @@ class Curso
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->descripcion;
+    }
+
+
 }

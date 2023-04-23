@@ -15,9 +15,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class ListaPrecioController extends AbstractController
 {
     #[Route('/', name: 'app_lista_precio_index', methods: ['GET'])]
-    public function index(Request $request,ListaPrecioRepository $listaPrecioRepository,PaginatorInterface $paginator): Response
+    public function index(Request $request, ListaPrecioRepository $listaPrecioRepository, PaginatorInterface $paginator): Response
     {
-
         $listaPreciosQuery = $listaPrecioRepository->createQueryBuilder('l');
 
         $query = $listaPreciosQuery->getQuery();
@@ -81,7 +80,7 @@ class ListaPrecioController extends AbstractController
     #[Route('/{id}', name: 'app_lista_precio_delete', methods: ['POST'])]
     public function delete(Request $request, ListaPrecio $listaPrecio, ListaPrecioRepository $listaPrecioRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$listaPrecio->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $listaPrecio->getId(), $request->request->get('_token'))) {
             $listaPrecioRepository->remove($listaPrecio, true);
         }
 

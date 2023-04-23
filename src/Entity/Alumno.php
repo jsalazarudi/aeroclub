@@ -25,22 +25,26 @@ class Alumno
     private ?\DateTimeInterface $fecha_vencimiento_licencia_medica = null;
 
     #[ORM\ManyToOne(inversedBy: 'alumnos')]
-    private ?Instructor $habilitado_por_instructor_id = null;
+    private ?Instructor $habilitado_por_instructor = null;
 
     #[ORM\ManyToOne(inversedBy: 'alumnos')]
-    private ?Tesorero $habilitado_por_tesorero_id = null;
+    private ?Tesorero $habilitado_por_tesorero = null;
 
     #[ORM\OneToMany(mappedBy: 'alumno', targetEntity: Curso::class)]
     private Collection $curso;
 
-    #[ORM\OneToOne(targetEntity: Usuario::class,mappedBy: 'alumno', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Usuario::class, mappedBy: 'alumno', cascade: ['persist', 'remove'])]
     #[Assert\Type(type: Usuario::class)]
     #[Assert\Valid]
     private ?Usuario $usuario = null;
 
+    #[ORM\OneToMany(mappedBy: 'alumno', targetEntity: Abono::class)]
+    private Collection $abonos;
+
     public function __construct()
     {
         $this->curso = new ArrayCollection();
+        $this->abonos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -72,26 +76,26 @@ class Alumno
         return $this;
     }
 
-    public function getHabilitadoPorInstructorId(): ?Instructor
+    public function getHabilitadoPorInstructor(): ?Instructor
     {
-        return $this->habilitado_por_instructor_id;
+        return $this->habilitado_por_instructor;
     }
 
-    public function setHabilitadoPorInstructorId(?Instructor $habilitado_por_instructor_id): self
+    public function setHabilitadoPorInstructor(?Instructor $habilitado_por_instructor): self
     {
-        $this->habilitado_por_instructor_id = $habilitado_por_instructor_id;
+        $this->habilitado_por_instructor = $habilitado_por_instructor;
 
         return $this;
     }
 
-    public function getHabilitadoPorTesoreroId(): ?Tesorero
+    public function getHabilitadoPorTesorero(): ?Tesorero
     {
-        return $this->habilitado_por_tesorero_id;
+        return $this->habilitado_por_tesorero;
     }
 
-    public function setHabilitadoPorTesoreroId(?Tesorero $habilitado_por_tesorero_id): self
+    public function setHabilitadoPorTesorero(?Tesorero $habilitado_por_tesorero): self
     {
-        $this->habilitado_por_tesorero_id = $habilitado_por_tesorero_id;
+        $this->habilitado_por_tesorero = $habilitado_por_tesorero;
 
         return $this;
     }
@@ -150,6 +154,36 @@ class Alumno
 
     public function __toString(): string
     {
-        return $this->nombre.' '.$this->apellido;
+        return $this->getUsuario()->getNombre() . ' ' . $this->getUsuario()->getApellido();
+    }
+
+    /**
+     * @return Collection<int, Abono>
+     */
+    public function getAbonos(): Collection
+    {
+        return $this->abonos;
+    }
+
+    public function addAbono(Abono $abono): self
+    {
+        if (!$this->abonos->contains($abono)) {
+            $this->abonos->add($abono);
+            $abono->setAlumno($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAbono(Abono $abono): self
+    {
+        if ($this->abonos->removeElement($abono)) {
+            // set the owning side to null (unless already changed)
+            if ($abono->getAlumno() === $this) {
+                $abono->setAlumno(null);
+            }
+        }
+
+        return $this;
     }
 }

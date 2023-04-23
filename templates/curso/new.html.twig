@@ -1,0 +1,18 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Crear Curso{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <h1 class="text-center mb-2">Crear Curso</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary" href="{{ path('app_curso_index') }}">Regresar</a>
+        </div>
+        {{ include('curso/_form.html.twig') }}
+    </div>
+
+{% endblock %}
+
+
+

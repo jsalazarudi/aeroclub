@@ -22,6 +22,10 @@
         {{ include('sidebar_menu/piloto.html.twig') }}
     {% endif %}
 
+    {% if is_granted('ROLE_INSTRUCTOR') %}
+        {{ include('sidebar_menu/instructor.html.twig') }}
+    {% endif %}
+
     <div class="w-100 p-5">
         {% for message in app.flashes('error') %}
             <div class="alert alert-danger alert-dismissible fade show" role="alert">

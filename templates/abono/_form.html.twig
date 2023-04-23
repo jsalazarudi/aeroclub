@@ -1,18 +1,18 @@
 {{ form_start(form,{'attr': {'class': 'p-2' }}) }}
 {% if is_granted('ROLE_TESORERO') %}
-<div class="row">
-    <div class="col mb-3 form-check form-switch">
-        {{ form_label(form.aprobado) }}
+    <div class="row">
+        <div class="col mb-3 form-check form-switch">
+            {{ form_label(form.aprobado) }}
 
-        {% if form_errors(form.aprobado) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.aprobado) }}
-            </div>
-        {% endif %}
+            {% if form_errors(form.aprobado) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.aprobado) }}
+                </div>
+            {% endif %}
 
-        {{ form_widget(form.aprobado) }}
+            {{ form_widget(form.aprobado) }}
+        </div>
     </div>
-</div>
 {% endif %}
 
 {% if not is_granted('ROLE_TESORERO') %}
@@ -32,6 +32,20 @@
 
     <div class="row">
         <div class="col mb-3">
+            {{ form_label(form.movimientoCuentaVuelos) }}
+
+            {% if form_errors(form.movimientoCuentaVuelos) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.movimientoCuentaVuelos) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.movimientoCuentaVuelos) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col mb-3">
             {{ form_label(form.fecha) }}
 
             {% if form_errors(form.fecha) %}
@@ -44,7 +58,6 @@
         </div>
     </div>
 {% endif %}
-
 
 
 <div class="text-center mt-3">

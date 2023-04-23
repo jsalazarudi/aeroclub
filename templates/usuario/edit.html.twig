@@ -2,7 +2,10 @@
     <h1 class="text-center mb-2">Editar {{ tipo }}</h1>
     <div class="text-center ">
         <a class="btn btn-secondary mb-3" href="{{ url_ruta_listar }} ">Regresar</a>
-        {% block eliminar_usuario_form %}{% endblock %}
+
+        {% if is_granted('ROLE_TESORERO') %}
+            {% block eliminar_usuario_form %}{% endblock %}
+        {% endif %}
     </div>
 
     {% block edit_fields_usuario %} {% endblock %}
