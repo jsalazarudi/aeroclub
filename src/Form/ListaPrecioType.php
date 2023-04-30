@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Avion;
 use App\Entity\HistorialListaPrecio;
 use App\Entity\ListaPrecio;
+use App\Entity\Producto;
 use App\Entity\Servicio;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -48,6 +49,17 @@ class ListaPrecioType extends AbstractType
                 'placeholder' => 'Selecciona el servicio',
                 'required' => false
             ])
+            ->add('producto', EntityType::class, [
+                'class' => Producto::class,
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
+                ],
+                'placeholder' => 'Selecciona el producto',
+                'required' => false
+            ])
             ->add('avion', EntityType::class, [
                 'label' => 'Avión',
                 'class' => Avion::class,
@@ -57,7 +69,8 @@ class ListaPrecioType extends AbstractType
                 'label_attr' => [
                     'class' => 'text-muted fs-3'
                 ],
-                'placeholder' => 'Selecciona el avión'
+                'placeholder' => 'Selecciona el avión',
+                'required' => false
             ])
             ->add('socio', CheckboxType::class, [
                 'label' => 'Precio para Socio',
@@ -78,7 +91,7 @@ class ListaPrecioType extends AbstractType
                     'class' => 'form-check-label text-muted fs-3'
                 ],
                 'required' => false
-            ])//            ->add('producto_id')
+            ])
         ;
     }
 

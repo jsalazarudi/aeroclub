@@ -1,0 +1,15 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Crear Solicitud Reserva Vuelo{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <h1 class="text-center mb-2">Crear Solicitud Reserva Vuelo</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary" href="{{ path('app_reserva_vuelo_index') }}">Regresar</a>
+        </div>
+        {{ include('reserva_vuelo/_form.html.twig') }}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_producto_venta_delete', {'id': producto_ventum.id}) }}" onsubmit="return confirm('Esta seguro de eliminar el producto de la venta?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ producto_ventum.id) }}">
+    <button class="btn btn-danger">Eliminar</button>
+</form>

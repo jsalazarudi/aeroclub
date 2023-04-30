@@ -29,7 +29,7 @@ class MovimientoStock
     private ?string $observaciones = null;
 
     #[ORM\ManyToOne(inversedBy: 'movimientoStocks')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Tesorero $tesorero = null;
 
     #[ORM\ManyToOne(inversedBy: 'movimientoStocks')]

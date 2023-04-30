@@ -1,0 +1,15 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Crear Venta{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <h1 class="text-center mb-2">Crear Venta</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary" href="{{ path('app_venta_index') }}">Regresar</a>
+        </div>
+        {{ include('venta/_form.html.twig') }}
+    </div>
+
+{% endblock %}

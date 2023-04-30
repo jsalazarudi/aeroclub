@@ -1,0 +1,57 @@
+{{ form_start(form,{'attr': {'class': 'p-2' }}) }}
+{% if is_granted('ROLE_TESORERO') %}
+    <div class="row">
+        <div class="col mb-3 form-check form-switch">
+            {{ form_label(form.reserva.aprobado) }}
+
+            {% if form_errors(form.reserva.aprobado) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.reserva.aprobado) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.reserva.aprobado) }}
+        </div>
+    </div>
+{% endif %}
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.reserva.fecha) }}
+
+        {% if form_errors(form.reserva.fecha) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.reserva.fecha) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.reserva.fecha) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.duracion) }}
+
+        {% if form_errors(form.duracion) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.duracion) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.duracion) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.avion) }}
+
+        {% if form_errors(form.avion) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.avion) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.avion) }}
+    </div>
+</div>
+<div class="text-center mt-3">
+    <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
+</div>
+{{ form_end(form) }}

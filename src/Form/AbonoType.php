@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Abono;
 use App\Entity\MovimientoCuentaVuelo;
 use App\Entity\ReservaHangar;
+use App\Entity\Venta;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -94,18 +95,67 @@ class AbonoType extends AbstractType
                 'expanded' => true,
                 'query_builder' => function (EntityRepository $er) use ($options) {
 
-                    return $er->createQueryBuilder('mcv')
+                    $movimientoCuentaVuelo = $er->createQueryBuilder('mcv')
                         ->join('mcv.vuelo', 'v')
-                        ->join('v.curso', 'c')
-                        ->where('mcv.abono IS NULL')
-                        ->andWhere('c.alumno = :alumno')
-                        ->setParameter('alumno', $options['usuario']);
+                        ->where('mcv.abono IS NULL');
+
+                    if ($options['tipo_usuario'] == 'ROLE_ALUMNO') {
+                        $movimientoCuentaVuelo
+                            ->join('v.curso', 'c')
+                            ->andWhere('c.alumno = :alumno')
+                            ->setParameter('alumno', $options['usuario']);
+
+                    } elseif ($options['tipo_usuario'] == 'ROLE_SOCIO' || $options['tipo_usuario'] == 'ROLE_PILOTO' ) {
+                        $movimientoCuentaVuelo->join('v.reservaVuelo', 'rv')
+                            ->join('rv.reserva','r');
+
+                        if ($options['tipo_usuario'] == 'ROLE_SOCIO') {
+                            $movimientoCuentaVuelo->andWhere('r.socio = :socio')
+                                ->setParameter('socio', $options['usuario']);
+                        } else {
+                            $movimientoCuentaVuelo->andWhere('r.piloto = :piloto')
+                                ->setParameter('piloto', $options['usuario']);
+                        }
+
+                    }
+
+                    return $movimientoCuentaVuelo;
 
                 },
                 'choice_attr' => function (MovimientoCuentaVuelo $vuelo, $key, $index) {
                     return ['class' => 'form-check-input me-2 ms-2'];
                 }
-            ]);;
+            ])
+            ->add('ventas', EntityType::class, [
+                'label' => 'Seleccione las compras que desea cancelar:',
+                'class' => Venta::class,
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
+                ],
+                'multiple' => true,
+                'expanded' => true,
+                'query_builder' => function (EntityRepository $er) use ($options) {
+
+                    $ventasQuery = $er->createQueryBuilder('v');
+
+                    if ($options['tipo_usuario'] == 'ROLE_SOCIO') {
+                        $ventasQuery->andWhere('v.socio = :socio')
+                            ->setParameter('socio', $options['usuario']);
+                    } else {
+                        $ventasQuery->andWhere('v.piloto = :piloto')
+                            ->setParameter('piloto', $options['usuario']);
+                    }
+
+                    return $ventasQuery;
+
+                },
+                'choice_attr' => function (Venta $venta, $key, $index) {
+                    return ['class' => 'form-check-input me-2 ms-2'];
+                }
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

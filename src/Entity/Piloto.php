@@ -25,16 +25,13 @@ class Piloto
     #[ORM\Column(type: Types::TEXT)]
     private ?string $tipo_licencia = null;
 
-    #[ORM\OneToMany(mappedBy: 'piloto_id', targetEntity: Vuelo::class)]
-    private Collection $vuelos;
-
     #[ORM\OneToMany(mappedBy: 'piloto', targetEntity: Reserva::class)]
     private Collection $reservas;
 
     #[ORM\OneToMany(mappedBy: 'piloto', targetEntity: Abono::class)]
     private Collection $abonos;
 
-    #[ORM\OneToMany(mappedBy: 'piloto_id', targetEntity: Venta::class)]
+    #[ORM\OneToMany(mappedBy: 'piloto', targetEntity: Venta::class)]
     private Collection $ventas;
 
     #[ORM\OneToOne(targetEntity: Usuario::class,mappedBy: 'piloto', cascade: ['persist', 'remove'])]
@@ -44,7 +41,6 @@ class Piloto
 
     public function __construct()
     {
-        $this->vuelos = new ArrayCollection();
         $this->reservas = new ArrayCollection();
         $this->abonos = new ArrayCollection();
         $this->ventas = new ArrayCollection();
@@ -75,36 +71,6 @@ class Piloto
     public function setTipoLicencia(string $tipo_licencia): self
     {
         $this->tipo_licencia = $tipo_licencia;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Vuelo>
-     */
-    public function getVuelos(): Collection
-    {
-        return $this->vuelos;
-    }
-
-    public function addVuelo(Vuelo $vuelo): self
-    {
-        if (!$this->vuelos->contains($vuelo)) {
-            $this->vuelos->add($vuelo);
-            $vuelo->setPilotoId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVuelo(Vuelo $vuelo): self
-    {
-        if ($this->vuelos->removeElement($vuelo)) {
-            // set the owning side to null (unless already changed)
-            if ($vuelo->getPilotoId() === $this) {
-                $vuelo->setPilotoId(null);
-            }
-        }
 
         return $this;
     }
@@ -181,7 +147,7 @@ class Piloto
     {
         if (!$this->ventas->contains($venta)) {
             $this->ventas->add($venta);
-            $venta->setPilotoId($this);
+            $venta->setPiloto($this);
         }
 
         return $this;
@@ -191,8 +157,8 @@ class Piloto
     {
         if ($this->ventas->removeElement($venta)) {
             // set the owning side to null (unless already changed)
-            if ($venta->getPilotoId() === $this) {
-                $venta->setPilotoId(null);
+            if ($venta->getPiloto() === $this) {
+                $venta->setPiloto(null);
             }
         }
 

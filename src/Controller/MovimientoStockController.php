@@ -19,12 +19,8 @@ class MovimientoStockController extends AbstractController
     #[Route('/', name: 'app_movimiento_stock_index', methods: ['GET'])]
     public function index(Request $request,MovimientoStockRepository $movimientoStockRepository, PaginatorInterface $paginator): Response
     {
-        /** @var Usuario $currentUser */
-        $currentUser = $this->getUser();
-        /** @var Tesorero $tesorero */
-        $tesorero = $currentUser->getTesorero();
 
-        $stockQuery = $movimientoStockRepository->createQueryBuilder('m')->where('m.tesorero = :tesorero')->setParameter('tesorero',$tesorero);
+        $stockQuery = $movimientoStockRepository->createQueryBuilder('m');
 
         $query = $stockQuery->getQuery();
 

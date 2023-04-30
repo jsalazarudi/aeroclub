@@ -49,11 +49,15 @@ class ListaPrecio
     #[ORM\Column(nullable: true)]
     private ?bool $alumno = null;
 
+    #[ORM\OneToMany(mappedBy: 'lista_precio', targetEntity: Venta::class)]
+    private Collection $ventas;
+
     public function __construct()
     {
         $this->cuentaCorrientes = new ArrayCollection();
         $this->reservasHangar = new ArrayCollection();
         $this->movimientoCuentaVuelos = new ArrayCollection();
+        $this->ventas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -231,6 +235,36 @@ class ListaPrecio
     public function setAlumno(?bool $alumno): self
     {
         $this->alumno = $alumno;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Venta>
+     */
+    public function getVentas(): Collection
+    {
+        return $this->ventas;
+    }
+
+    public function addVenta(Venta $venta): self
+    {
+        if (!$this->ventas->contains($venta)) {
+            $this->ventas->add($venta);
+            $venta->setListaPrecio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVenta(Venta $venta): self
+    {
+        if ($this->ventas->removeElement($venta)) {
+            // set the owning side to null (unless already changed)
+            if ($venta->getListaPrecio() === $this) {
+                $venta->setListaPrecio(null);
+            }
+        }
 
         return $this;
     }

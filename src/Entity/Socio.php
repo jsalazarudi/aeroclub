@@ -34,8 +34,6 @@ class Socio
     #[Assert\Type('string')]
     private ?string $numero_socio = null;
 
-    #[ORM\OneToMany(mappedBy: 'socio_id', targetEntity: Vuelo::class)]
-    private Collection $vuelos;
 
     #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Reserva::class)]
     private Collection $reservas;
@@ -43,7 +41,7 @@ class Socio
     #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Abono::class)]
     private Collection $abonos;
 
-    #[ORM\OneToMany(mappedBy: 'socio_id', targetEntity: Venta::class)]
+    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Venta::class)]
     private Collection $ventas;
 
     #[ORM\OneToOne(mappedBy: 'socio', cascade: ['persist', 'remove'])]
@@ -55,7 +53,6 @@ class Socio
     private Collection $mensualidades;
    public function __construct()
     {
-        $this->vuelos = new ArrayCollection();
         $this->reservas = new ArrayCollection();
         $this->abonos = new ArrayCollection();
         $this->ventas = new ArrayCollection();
@@ -99,36 +96,6 @@ class Socio
     public function setNumeroSocio(string $numero_socio): self
     {
         $this->numero_socio = $numero_socio;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Vuelo>
-     */
-    public function getVuelos(): Collection
-    {
-        return $this->vuelos;
-    }
-
-    public function addVuelo(Vuelo $vuelo): self
-    {
-        if (!$this->vuelos->contains($vuelo)) {
-            $this->vuelos->add($vuelo);
-            $vuelo->setSocioId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVuelo(Vuelo $vuelo): self
-    {
-        if ($this->vuelos->removeElement($vuelo)) {
-            // set the owning side to null (unless already changed)
-            if ($vuelo->getSocioId() === $this) {
-                $vuelo->setSocioId(null);
-            }
-        }
 
         return $this;
     }
@@ -205,7 +172,7 @@ class Socio
     {
         if (!$this->ventas->contains($venta)) {
             $this->ventas->add($venta);
-            $venta->setSocioId($this);
+            $venta->setSocio($this);
         }
 
         return $this;
@@ -215,8 +182,8 @@ class Socio
     {
         if ($this->ventas->removeElement($venta)) {
             // set the owning side to null (unless already changed)
-            if ($venta->getSocioId() === $this) {
-                $venta->setSocioId(null);
+            if ($venta->getSocio() === $this) {
+                $venta->setSocio(null);
             }
         }
 

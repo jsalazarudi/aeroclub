@@ -136,7 +136,16 @@ class MovimientoCuentaVuelo
 
     public function __toString(): string
     {
-        return $this->getVuelo()->getFecha()->format('Y-m-d') . ' Costo:' . $this->getUnidadesGastadas();
+        $vuelo = $this->getVuelo();
+
+        if ($vuelo->getReservaVuelo()) {
+            $tipo = 'Alquier Avión';
+        }
+        else {
+            $tipo = 'Escuela de Vuelo';
+        }
+
+        return sprintf('%s del %s Costo:%s',$tipo,$vuelo->getFecha()->format('Y-m-d'),$this->getUnidadesGastadas());
     }
 
 

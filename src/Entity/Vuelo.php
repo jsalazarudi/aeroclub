@@ -35,24 +35,21 @@ class Vuelo
     private ?Curso $curso = null;
 
     #[ORM\ManyToOne(inversedBy: 'vuelos')]
-    private ?Socio $socio = null;
-
-    #[ORM\ManyToOne(inversedBy: 'vuelos')]
-    private ?Piloto $piloto = null;
-
-    #[ORM\ManyToOne(inversedBy: 'vuelos')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     #[Assert\NotBlank()]
     private ?Avion $avion = null;
 
     #[ORM\OneToMany(mappedBy: 'vuelo_id', targetEntity: InstructorVuelo::class)]
     private Collection $instructorVuelos;
 
-    #[ORM\OneToMany(mappedBy: 'vuelo_id', targetEntity: ProductoVuelo::class)]
+    #[ORM\OneToMany(mappedBy: 'vuelo', targetEntity: ProductoVuelo::class,cascade: ['persist','remove'])]
     private Collection $productoVuelos;
 
     #[ORM\OneToOne(mappedBy: 'vuelo', cascade: ['persist', 'remove'])]
     private ?MovimientoCuentaVuelo $movimientoCuentaVuelo = null;
+
+    #[ORM\OneToOne(inversedBy: 'vuelo', cascade: ['persist'])]
+    private ?ReservaVuelo $reservaVuelo = null;
 
     public function __construct()
     {
@@ -113,30 +110,6 @@ class Vuelo
         return $this;
     }
 
-    public function getSocio(): ?Socio
-    {
-        return $this->socio;
-    }
-
-    public function setSocio(?Socio $socio): self
-    {
-        $this->socio = $socio;
-
-        return $this;
-    }
-
-    public function getPiloto(): ?Piloto
-    {
-        return $this->piloto;
-    }
-
-    public function setPiloto(?Piloto $piloto): self
-    {
-        $this->piloto = $piloto;
-
-        return $this;
-    }
-
     public function getAvion(): ?Avion
     {
         return $this->avion;
@@ -192,7 +165,7 @@ class Vuelo
     {
         if (!$this->productoVuelos->contains($productoVuelo)) {
             $this->productoVuelos->add($productoVuelo);
-            $productoVuelo->setVueloId($this);
+            $productoVuelo->setVuelo($this);
         }
 
         return $this;
@@ -202,8 +175,8 @@ class Vuelo
     {
         if ($this->productoVuelos->removeElement($productoVuelo)) {
             // set the owning side to null (unless already changed)
-            if ($productoVuelo->getVueloId() === $this) {
-                $productoVuelo->setVueloId(null);
+            if ($productoVuelo->getVuelo() === $this) {
+                $productoVuelo->setVuelo(null);
             }
         }
 
@@ -231,4 +204,17 @@ class Vuelo
     {
         return $this->getFecha()->format('Y-m-d') . ' Avión: ' . $this->getAvion()->getMatricula();
     }
+
+    public function getReservaVuelo(): ?ReservaVuelo
+    {
+        return $this->reservaVuelo;
+    }
+
+    public function setReservaVuelo(?ReservaVuelo $reservaVuelo): self
+    {
+        $this->reservaVuelo = $reservaVuelo;
+
+        return $this;
+    }
+
 }

@@ -1,0 +1,82 @@
+{{ form_start(form) }}
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.observaciones) }}
+
+        {% if form_errors(form.observaciones) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.observaciones) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.observaciones) }}
+    </div>
+    <div class="col mb-3">
+        {{ form_label(form.fecha) }}
+
+        {% if form_errors(form.fecha) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.fecha) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.fecha) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.productoVentas) }}
+
+        {% if form_errors(form.productoVentas) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.productoVentas) }}
+            </div>
+        {% endif %}
+
+
+        <ul class="productosVentas"
+            data-index="{{ form.productoVentas|length > 0 ? form.productoVentas|last.vars.name + 1 : 0 }}"
+            data-prototype="{{ form_widget(form.productoVentas.vars.prototype)|e('html_attr') }}">
+            {% for productoVentas in form.productoVentas %}
+                <li>
+                    {{ form_errors(productoVentas) }}
+                    {{ form_widget(productoVentas) }}
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="button" class="add_item_link btn btn-info" data-collection-holder-class="productosVentas">Agregar Producto</button>
+
+    </div>
+</div>
+<div class="text-center mt-3">
+    <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
+</div>
+{{ form_end(form) }}
+
+<script>
+    document.addEventListener('DOMContentLoaded',function (){
+
+        const addFormToCollection = (e) => {
+            const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+
+            const item = document.createElement('li');
+
+            item.innerHTML = collectionHolder
+                .dataset
+                .prototype
+                .replace(
+                    /__name__/g,
+                    collectionHolder.dataset.index
+                );
+
+            collectionHolder.appendChild(item);
+
+            collectionHolder.dataset.index++;
+        };
+
+        document.querySelectorAll('.add_item_link')
+            .forEach(btn => {
+                btn.addEventListener("click",addFormToCollection)
+            });
+    })
+</script>

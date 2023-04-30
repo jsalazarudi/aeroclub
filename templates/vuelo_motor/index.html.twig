@@ -55,12 +55,18 @@
             <tbody>
             {% for vuelo_motor in vuelos_motor %}
                 <tr>
-                    {% if vuelo_motor.vuelo.curso %}
-                        <td>
+                    <td>
+                        {% if vuelo_motor.vuelo.curso is not null %}
                             {{ vuelo_motor.vuelo.curso.descripcion }}
-                        </td>
-                    {% endif %}
-                    <td>{{ vuelo_motor.vuelo.avion.matricula }}</td>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if vuelo_motor.vuelo.avion|length  %}
+                            {{ vuelo_motor.vuelo.avion.matricula }}
+                        {% else %}
+                            {{ vuelo_motor.vuelo.reservaVuelo.avion.matricula }}
+                        {% endif %}
+                    </td>
                     <td>{{ vuelo_motor.aterrizajes }}</td>
                     <td>{{ vuelo_motor.pistaDespegue }}</td>
                     <td>{{ vuelo_motor.pistaAterrizaje }}</td>

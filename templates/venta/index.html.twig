@@ -1,0 +1,55 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Ventas{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Ventas</h1>
+
+        <div class="text-center">
+            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_venta_new') }}">Crear Venta</a>
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'v.descripcion' : 'Descripcion'
+            } %}
+            {{ knp_pagination_filter(ventas,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_venta_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Observaciones
+            </th>
+            <th>
+                Fecha
+            </th>
+            <th>
+
+            </th>
+            </thead>
+            <tbody>
+            {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.observaciones }}</td>
+                    <td>{{ venta.fecha|date('Y-m-d') }}</td>
+                    <td>
+                        <a class="btn btn-warning" href="{{ path('app_venta_edit', {'id': venta.id}) }}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ ventas.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(ventas) }}
+        </div>
+    </div>
+{% endblock %}

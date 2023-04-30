@@ -28,10 +28,10 @@ class Producto
     #[ORM\OneToMany(mappedBy: 'producto_id', targetEntity: MovimientoStock::class)]
     private Collection $movimientoStocks;
 
-    #[ORM\OneToMany(mappedBy: 'producto_id', targetEntity: ProductoVuelo::class)]
+    #[ORM\OneToMany(mappedBy: 'producto', targetEntity: ProductoVuelo::class)]
     private Collection $productoVuelos;
 
-    #[ORM\OneToMany(mappedBy: 'producto_id', targetEntity: ProductoVenta::class)]
+    #[ORM\OneToMany(mappedBy: 'producto', targetEntity: ProductoVenta::class)]
     private Collection $productoVentas;
 
     #[ORM\Column]
@@ -134,7 +134,7 @@ class Producto
     {
         if (!$this->productoVuelos->contains($productoVuelo)) {
             $this->productoVuelos->add($productoVuelo);
-            $productoVuelo->setProductoId($this);
+            $productoVuelo->setProducto($this);
         }
 
         return $this;
@@ -144,8 +144,8 @@ class Producto
     {
         if ($this->productoVuelos->removeElement($productoVuelo)) {
             // set the owning side to null (unless already changed)
-            if ($productoVuelo->getProductoId() === $this) {
-                $productoVuelo->setProductoId(null);
+            if ($productoVuelo->getProducto() === $this) {
+                $productoVuelo->setProducto(null);
             }
         }
 
@@ -164,7 +164,7 @@ class Producto
     {
         if (!$this->productoVentas->contains($productoVenta)) {
             $this->productoVentas->add($productoVenta);
-            $productoVenta->setProductoId($this);
+            $productoVenta->setProducto($this);
         }
 
         return $this;
@@ -174,8 +174,8 @@ class Producto
     {
         if ($this->productoVentas->removeElement($productoVenta)) {
             // set the owning side to null (unless already changed)
-            if ($productoVenta->getProductoId() === $this) {
-                $productoVenta->setProductoId(null);
+            if ($productoVenta->getProducto() === $this) {
+                $productoVenta->setProducto(null);
             }
         }
 

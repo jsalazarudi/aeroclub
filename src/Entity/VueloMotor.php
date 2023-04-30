@@ -37,6 +37,9 @@ class VueloMotor
     #[ORM\Column]
     #[Assert\NotBlank()]
     #[Assert\Type("integer")]
+    #[Assert\GreaterThan(
+        propertyPath: "horometro_despegue"
+    )]
     private ?int $horometro_aterrizaje = null;
 
     #[ORM\Column(length: 255)]

@@ -1,0 +1,91 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Reservas Vuelo{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h1 class="text-center mt-2 mb-2">Listado Solicitud Reservas Vuelo</h1>
+
+        <div class="text-center">
+            {% if is_granted('ROLE_SOCIO') or is_granted('ROLE_PILOTO') %}
+                <a class="btn btn-success mt-2 mb-5" href="{{ path('app_reserva_vuelo_new') }}">Crear Solicitud</a>
+            {% endif %}
+            <p class="fw-bold">Filtrar por:</p>
+            {% set filtros = {
+                'r.fecha' : 'Fecha Reserva',
+                'r.aprobado' : 'Aprobado',
+            } %}
+            {{ knp_pagination_filter(reserva_vuelos,filtros) }}
+
+            <a class="btn btn-link" href="{{ path('app_reserva_vuelo_index') }}">Sin Filtros</a>
+        </div>
+
+        <table class="table">
+            <thead>
+            <th>
+                Fecha Reserva
+            </th>
+            <th>
+                Horas ocupación
+            </th>
+            <th>
+                Avión
+            </th>
+            <th>
+                Reserva Aprobada
+            </th>
+            <th>
+                {% if is_granted('ROLE_TESORERO') %}
+                    Realizada Por
+                {% endif %}
+            </th>
+            <th>
+            </th>
+            </thead>
+            <tbody>
+            {% for reserva_vuelo in reserva_vuelos %}
+                <tr>
+                    <td>{{ reserva_vuelo.reserva.fecha|date('Y-m-d') }}</td>
+                    <td>{{ reserva_vuelo.duracion }}</td>
+                    <td>
+                        {{ reserva_vuelo.avion.matricula }}
+                    </td>
+                    <td>
+                        {% if reserva_vuelo.reserva.aprobado %}
+                            <p class="text-success">Si</p>
+                        {% else %}
+                            <p class="text-danger">No</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if is_granted('ROLE_TESORERO') %}
+                            {% if reserva_vuelo.reserva.socio %}
+                                {{ reserva_vuelo.reserva.socio.usuario.nombre }} {{ reserva_vuelo.reserva.socio.usuario.apellido }}
+                            {% elseif reserva_vuelo.reserva.piloto %}
+                                {{ reserva_vuelo.reserva.piloto.usuario.nombre }} {{ reserva_vuelo.reserva.piloto.usuario.apellido }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if is_granted('ROLE_TESORERO') %}
+                            <a class="btn btn-warning"
+                               href="{{ path('app_reserva_vuelo_edit', {'id': reserva_vuelo.id}) }}">Editar</a>
+                        {% endif %}
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p class="text-center fw-bold">
+            Registros totales: {{ reserva_vuelos.count }}
+        </p>
+
+        <div class="d-flex justify-content-center">
+            {{ knp_pagination_render(reserva_vuelos) }}
+        </div>
+    </div>
+{% endblock %}

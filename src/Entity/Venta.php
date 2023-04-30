@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VentaRepository::class)]
 class Venta
@@ -17,33 +18,38 @@ class Venta
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("string")]
     private ?string $observaciones = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha = null;
 
     #[ORM\ManyToOne(inversedBy: 'ventas')]
-    private ?Socio $socio_id = null;
+    private ?Socio $socio = null;
 
     #[ORM\ManyToOne(inversedBy: 'ventas')]
-    private ?Piloto $piloto_id = null;
+    private ?Piloto $piloto = null;
 
     #[ORM\ManyToOne(inversedBy: 'ventas')]
-    private ?Tesorero $tesorero_id = null;
+    private ?Tesorero $tesorero = null;
 
     #[ORM\OneToMany(mappedBy: 'venta_id', targetEntity: CuentaCorriente::class)]
     private Collection $cuentaCorrientes;
 
-    #[ORM\ManyToMany(targetEntity: Producto::class, mappedBy: 'productoVenta')]
-    private Collection $productos;
-
-    #[ORM\OneToMany(mappedBy: 'venta_id', targetEntity: ProductoVenta::class)]
+    #[ORM\OneToMany(mappedBy: 'venta', targetEntity: ProductoVenta::class,cascade: ['persist'])]
+    #[Assert\NotBlank()]
     private Collection $productoVentas;
+
+
+    #[ORM\ManyToOne(inversedBy: 'ventas')]
+    private ?Abono $abono = null;
 
     public function __construct()
     {
         $this->cuentaCorrientes = new ArrayCollection();
-        $this->productos = new ArrayCollection();
         $this->productoVentas = new ArrayCollection();
     }
 
@@ -76,38 +82,38 @@ class Venta
         return $this;
     }
 
-    public function getSocioId(): ?Socio
+    public function getSocio(): ?Socio
     {
-        return $this->socio_id;
+        return $this->socio;
     }
 
-    public function setSocioId(?Socio $socio_id): self
+    public function setSocio(?Socio $socio): self
     {
-        $this->socio_id = $socio_id;
+        $this->socio = $socio;
 
         return $this;
     }
 
-    public function getPilotoId(): ?Piloto
+    public function getPiloto(): ?Piloto
     {
-        return $this->piloto_id;
+        return $this->piloto;
     }
 
-    public function setPilotoId(?Piloto $piloto_id): self
+    public function setPiloto(?Piloto $piloto): self
     {
-        $this->piloto_id = $piloto_id;
+        $this->piloto = $piloto;
 
         return $this;
     }
 
-    public function getTesoreroId(): ?Tesorero
+    public function getTesorero(): ?Tesorero
     {
-        return $this->tesorero_id;
+        return $this->tesorero;
     }
 
-    public function setTesoreroId(?Tesorero $tesorero_id): self
+    public function setTesorero(?Tesorero $tesorero): self
     {
-        $this->tesorero_id = $tesorero_id;
+        $this->tesorero = $tesorero;
 
         return $this;
     }
@@ -150,25 +156,6 @@ class Venta
         return $this->productos;
     }
 
-    public function addProducto(Producto $producto): self
-    {
-        if (!$this->productos->contains($producto)) {
-            $this->productos->add($producto);
-            $producto->addProductoVentum($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProducto(Producto $producto): self
-    {
-        if ($this->productos->removeElement($producto)) {
-            $producto->removeProductoVentum($this);
-        }
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, ProductoVenta>
      */
@@ -181,7 +168,7 @@ class Venta
     {
         if (!$this->productoVentas->contains($productoVenta)) {
             $this->productoVentas->add($productoVenta);
-            $productoVenta->setVentaId($this);
+            $productoVenta->setVenta($this);
         }
 
         return $this;
@@ -191,11 +178,30 @@ class Venta
     {
         if ($this->productoVentas->removeElement($productoVenta)) {
             // set the owning side to null (unless already changed)
-            if ($productoVenta->getVentaId() === $this) {
-                $productoVenta->setVentaId(null);
+            if ($productoVenta->getVenta() === $this) {
+                $productoVenta->setVenta(null);
             }
         }
 
         return $this;
     }
+
+    public function getAbono(): ?Abono
+    {
+        return $this->abono;
+    }
+
+    public function setAbono(?Abono $abono): self
+    {
+        $this->abono = $abono;
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+       return $this->observaciones;
+    }
+
+
 }

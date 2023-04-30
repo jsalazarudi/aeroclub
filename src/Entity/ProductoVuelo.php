@@ -18,11 +18,11 @@ class ProductoVuelo
 
     #[ORM\ManyToOne(inversedBy: 'productoVuelos')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Producto $producto_id = null;
+    private ?Producto $producto = null;
 
     #[ORM\ManyToOne(inversedBy: 'productoVuelos')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Vuelo $vuelo_id = null;
+    private ?Vuelo $vuelo = null;
 
     public function getId(): ?int
     {
@@ -41,26 +41,26 @@ class ProductoVuelo
         return $this;
     }
 
-    public function getProductoId(): ?Producto
+    public function getProducto(): ?Producto
     {
-        return $this->producto_id;
+        return $this->producto;
     }
 
-    public function setProductoId(?Producto $producto_id): self
+    public function setProducto(?Producto $producto): self
     {
-        $this->producto_id = $producto_id;
+        $this->producto = $producto;
 
         return $this;
     }
 
-    public function getVueloId(): ?Vuelo
+    public function getVuelo(): ?Vuelo
     {
-        return $this->vuelo_id;
+        return $this->vuelo;
     }
 
-    public function setVueloId(?Vuelo $vuelo_id): self
+    public function setVuelo(?Vuelo $vuelo): self
     {
-        $this->vuelo_id = $vuelo_id;
+        $this->vuelo = $vuelo;
 
         return $this;
     }

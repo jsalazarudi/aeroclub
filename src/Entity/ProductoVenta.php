@@ -18,11 +18,14 @@ class ProductoVenta
 
     #[ORM\ManyToOne(inversedBy: 'productoVentas')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Producto $producto_id = null;
+    private ?Producto $producto = null;
 
     #[ORM\ManyToOne(inversedBy: 'productoVentas')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Venta $venta_id = null;
+    private ?Venta $venta = null;
+
+    #[ORM\ManyToOne(inversedBy: 'ventas')]
+    private ?ListaPrecio $lista_precio = null;
 
     public function getId(): ?int
     {
@@ -41,26 +44,38 @@ class ProductoVenta
         return $this;
     }
 
-    public function getProductoId(): ?Producto
+    public function getProducto(): ?Producto
     {
-        return $this->producto_id;
+        return $this->producto;
     }
 
-    public function setProductoId(?Producto $producto_id): self
+    public function setProducto(?Producto $producto): self
     {
-        $this->producto_id = $producto_id;
+        $this->producto = $producto;
 
         return $this;
     }
 
-    public function getVentaId(): ?Venta
+    public function getVenta(): ?Venta
     {
-        return $this->venta_id;
+        return $this->venta;
     }
 
-    public function setVentaId(?Venta $venta_id): self
+    public function setVenta(?Venta $venta): self
     {
-        $this->venta_id = $venta_id;
+        $this->venta = $venta;
+
+        return $this;
+    }
+
+    public function getListaPrecio(): ?ListaPrecio
+    {
+        return $this->lista_precio;
+    }
+
+    public function setListaPrecio(?ListaPrecio $lista_precio): self
+    {
+        $this->lista_precio = $lista_precio;
 
         return $this;
     }

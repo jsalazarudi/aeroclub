@@ -1,0 +1,15 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Editar Reserva Vuelo{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center mb-2">Editar Reserva Vuelo</h1>
+        <div class="text-center">
+            <a class="btn btn-secondary mb-3" href="{{ path('app_reserva_vuelo_index') }} ">Regresar</a>
+            {#            {{ include('reserva_hangar/_delete_form.html.twig') }}#}
+        </div>
+
+        {{ include('reserva_vuelo/_form.html.twig') }}
+    </div>
+{% endblock %}

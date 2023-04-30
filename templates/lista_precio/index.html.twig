@@ -50,6 +50,9 @@
                         {% elseif lista_precio.avion %}
                             <h4>Avión</h4>
                             {{ lista_precio.avion.matricula }}
+                        {% elseif lista_precio.producto %}
+                            <h4>Producto</h4>
+                            {{ lista_precio.producto.descripcion }}
                         {% endif %}
                     </td>
                     <td>

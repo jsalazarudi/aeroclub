@@ -116,15 +116,11 @@ class AbonoController extends AbstractController
 
             // VALIDACION VUELOS
             foreach ($abono->getMovimientoCuentaVuelos() as $movimientoCuentaVuelo) {
+
                 $avion = $movimientoCuentaVuelo->getVuelo()->getAvion();
-
-                /** @var string $ultimaFechaHistorialListaPrecios */
-                $ultimaFechaHistorialListaPrecios = $listaPrecioRepository->createQueryBuilder('lp')
-                    ->join('lp.historial_lista_precio', 'hlp')
-                    ->select('MAX(hlp.fecha) AS fecha')
-                    ->getQuery()
-                    ->getSingleScalarResult();
-
+                if (!$avion) {
+                    $avion = $movimientoCuentaVuelo->getVuelo()->getReservaVuelo()->getAvion();
+                }
 
                 $listaPrecioQuery = $listaPrecioRepository->createQueryBuilder('lp')
                     ->join('lp.historial_lista_precio', 'historial')
@@ -135,6 +131,8 @@ class AbonoController extends AbstractController
 
                 if ($this->isGranted('ROLE_ALUMNO')) {
                     $listaPrecioQuery->andWhere('lp.alumno = true');
+                } else {
+                    $listaPrecioQuery->andWhere('lp.socio = true');
                 }
 
                 /** @var ListaPrecio $listaPrecio */
@@ -144,6 +142,31 @@ class AbonoController extends AbstractController
 
                 $movimientoCuentaVuelo->setAbono($abono);
                 $movimientoCuentaVuelo->setListaPrecio($listaPrecio);
+
+            }
+
+            // VALIDACION VENTAS
+            foreach ($abono->getVentas() as $venta) {
+                foreach ($venta->getProductoVentas() as $producto) {
+                    $listaPrecioQuery = $listaPrecioRepository->createQueryBuilder('lp')
+                        ->join('lp.historial_lista_precio', 'historial')
+                        ->where('lp.producto = :producto')
+                        ->andWhere('historial.fecha = :fecha')
+                        ->setParameter('producto', $producto->getProducto())
+                        ->setParameter('fecha', $ultimaFechaHistorialListaPrecios);
+
+                    if ($this->isGranted('ROLE_SOCIO')) {
+                        $listaPrecioQuery->andWhere('lp.socio = true');
+                    }
+
+                    /** @var ListaPrecio $listaPrecio */
+                    $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
+                    $totalAbono += $listaPrecio->getPrecio() * $producto->getCantidad();
+
+                    $producto->setListaPrecio($listaPrecio);
+                }
+
+                $venta->setAbono($abono);
             }
 
             $abono->setValor($totalAbono);

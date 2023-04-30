@@ -51,6 +51,19 @@
 </div>
 <div class="row">
     <div class="col mb-3">
+        {{ form_label(form.producto) }}
+
+        {% if form_errors(form.producto) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.producto) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.producto) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col mb-3">
         {{ form_label(form.precio) }}
 
         {% if form_errors(form.precio) %}

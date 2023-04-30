@@ -48,11 +48,15 @@ class Abono
     #[ORM\OneToMany(mappedBy: 'abono', targetEntity: MovimientoCuentaVuelo::class)]
     private Collection $movimientoCuentaVuelos;
 
+    #[ORM\OneToMany(mappedBy: 'abono', targetEntity: Venta::class)]
+    private Collection $ventas;
+
     public function __construct()
     {
         $this->cuentaCorrientes = new ArrayCollection();
         $this->reservasHangar = new ArrayCollection();
         $this->movimientoCuentaVuelos = new ArrayCollection();
+        $this->ventas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -228,6 +232,36 @@ class Abono
             // set the owning side to null (unless already changed)
             if ($movimientoCuentaVuelo->getAbono() === $this) {
                 $movimientoCuentaVuelo->setAbono(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Venta>
+     */
+    public function getVentas(): Collection
+    {
+        return $this->ventas;
+    }
+
+    public function addVenta(Venta $venta): self
+    {
+        if (!$this->ventas->contains($venta)) {
+            $this->ventas->add($venta);
+            $venta->setAbono($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVenta(Venta $venta): self
+    {
+        if ($this->ventas->removeElement($venta)) {
+            // set the owning side to null (unless already changed)
+            if ($venta->getAbono() === $this) {
+                $venta->setAbono(null);
             }
         }
 

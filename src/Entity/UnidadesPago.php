@@ -22,7 +22,7 @@ class UnidadesPago
 
     #[ORM\ManyToOne(inversedBy: 'unidadesPagos')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Servicio $servicio_id = null;
+    private ?Servicio $servicio = null;
 
     public function getId(): ?int
     {
@@ -53,14 +53,14 @@ class UnidadesPago
         return $this;
     }
 
-    public function getServicioId(): ?Servicio
+    public function getServicio(): ?Servicio
     {
-        return $this->servicio_id;
+        return $this->servicio;
     }
 
-    public function setServicioId(?Servicio $servicio_id): self
+    public function setServicio(?Servicio $servicio): self
     {
-        $this->servicio_id = $servicio_id;
+        $this->servicio = $servicio;
 
         return $this;
     }

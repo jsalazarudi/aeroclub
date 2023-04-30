@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_reserva_vuelo_delete', {'id': reserva_vuelo.id}) }}" onsubmit="return confirm('Esta seguro de eliminar la reserva del vuelo?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reserva_vuelo.id) }}">
+    <button class="btn btn-danger">Eliminar</button>
+</form>
