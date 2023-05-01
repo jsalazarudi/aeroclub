@@ -15,7 +15,7 @@ class Tesorero
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\OneToMany(mappedBy: 'habilitado_por_tesorero_id', targetEntity: Alumno::class)]
+    #[ORM\OneToMany(mappedBy: 'habilitado_por_tesorero', targetEntity: Alumno::class)]
     private Collection $alumnos;
 
     #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: Abono::class)]
@@ -24,13 +24,13 @@ class Tesorero
     #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: Venta::class)]
     private Collection $ventas;
 
-    #[ORM\OneToMany(mappedBy: 'tesorero_id', targetEntity: MovimientoStock::class)]
+    #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: MovimientoStock::class)]
     private Collection $movimientoStocks;
 
     #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: Gasto::class)]
     private Collection $gastos;
 
-    #[ORM\OneToMany(mappedBy: 'tesorero_id', targetEntity: Nota::class)]
+    #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: Nota::class)]
     private Collection $notas;
 
 
@@ -66,7 +66,7 @@ class Tesorero
     {
         if (!$this->alumnos->contains($alumno)) {
             $this->alumnos->add($alumno);
-            $alumno->setHabilitadoPorTesoreroId($this);
+            $alumno->setHabilitadoPorTesorero($this);
         }
 
         return $this;
@@ -76,8 +76,8 @@ class Tesorero
     {
         if ($this->alumnos->removeElement($alumno)) {
             // set the owning side to null (unless already changed)
-            if ($alumno->getHabilitadoPorTesoreroId() === $this) {
-                $alumno->setHabilitadoPorTesoreroId(null);
+            if ($alumno->getHabilitadoPorTesorero() === $this) {
+                $alumno->setHabilitadoPorTesorero(null);
             }
         }
 

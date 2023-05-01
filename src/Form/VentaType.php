@@ -40,10 +40,11 @@ class VentaType extends AbstractType
                 ],
                 'allow_add' => true,
                 'prototype_options'  => [
-                    'help' => 'Puedes registrar productos a este vuelo',
+                    'help' => 'Puedes registrar productos a esta venta',
                 ],
                 'by_reference' => false,
-                'label' => 'Productos utilizados en el Vuelo'
+                'label' => 'Productos a comprar',
+                'allow_delete' => true
             ])
         ;
     }

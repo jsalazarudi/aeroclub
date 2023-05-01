@@ -32,13 +32,13 @@ class Avion
     #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha_mantenimiento = null;
 
-    #[ORM\OneToMany(mappedBy: 'avion_id', targetEntity: Vuelo::class)]
+    #[ORM\OneToMany(mappedBy: 'avion', targetEntity: Vuelo::class)]
     private Collection $vuelos;
 
-    #[ORM\OneToMany(mappedBy: 'avion_id', targetEntity: ReservaVuelo::class)]
+    #[ORM\OneToMany(mappedBy: 'avion', targetEntity: ReservaVuelo::class)]
     private Collection $reservaVuelos;
 
-    #[ORM\OneToMany(mappedBy: 'Avion', targetEntity: ListaPrecio::class)]
+    #[ORM\OneToMany(mappedBy: 'avion', targetEntity: ListaPrecio::class)]
     private Collection $listaPrecios;
 
     #[ORM\Column]
@@ -104,7 +104,7 @@ class Avion
     {
         if (!$this->vuelos->contains($vuelo)) {
             $this->vuelos->add($vuelo);
-            $vuelo->setAvionId($this);
+            $vuelo->setAvion($this);
         }
 
         return $this;
@@ -114,8 +114,8 @@ class Avion
     {
         if ($this->vuelos->removeElement($vuelo)) {
             // set the owning side to null (unless already changed)
-            if ($vuelo->getAvionId() === $this) {
-                $vuelo->setAvionId(null);
+            if ($vuelo->getAvion() === $this) {
+                $vuelo->setAvion(null);
             }
         }
 
@@ -134,7 +134,7 @@ class Avion
     {
         if (!$this->reservaVuelos->contains($reservaVuelo)) {
             $this->reservaVuelos->add($reservaVuelo);
-            $reservaVuelo->setAvionId($this);
+            $reservaVuelo->setAvion($this);
         }
 
         return $this;
@@ -144,8 +144,8 @@ class Avion
     {
         if ($this->reservaVuelos->removeElement($reservaVuelo)) {
             // set the owning side to null (unless already changed)
-            if ($reservaVuelo->getAvionId() === $this) {
-                $reservaVuelo->setAvionId(null);
+            if ($reservaVuelo->getAvion() === $this) {
+                $reservaVuelo->setAvion(null);
             }
         }
 

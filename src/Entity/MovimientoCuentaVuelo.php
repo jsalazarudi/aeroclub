@@ -22,8 +22,6 @@ class MovimientoCuentaVuelo
     #[ORM\JoinColumn(nullable: false)]
     private ?Vuelo $vuelo = null;
 
-    #[ORM\OneToMany(mappedBy: 'movimiento_cuenta_vuelo_id', targetEntity: CuentaCorriente::class)]
-    private Collection $cuentaCorrientes;
 
     #[ORM\ManyToOne(inversedBy: 'movimientoCuentaVuelos')]
     private ?ListaPrecio $lista_precio = null;
@@ -33,11 +31,6 @@ class MovimientoCuentaVuelo
 
     #[ORM\ManyToOne(inversedBy: 'movimientoCuentaVuelos')]
     private ?Abono $abono = null;
-
-    public function __construct()
-    {
-        $this->cuentaCorrientes = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -64,36 +57,6 @@ class MovimientoCuentaVuelo
     public function setVuelo(Vuelo $vuelo): self
     {
         $this->vuelo = $vuelo;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, CuentaCorriente>
-     */
-    public function getCuentaCorrientes(): Collection
-    {
-        return $this->cuentaCorrientes;
-    }
-
-    public function addCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if (!$this->cuentaCorrientes->contains($cuentaCorriente)) {
-            $this->cuentaCorrientes->add($cuentaCorriente);
-            $cuentaCorriente->setMovimientoCuentaVueloId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if ($this->cuentaCorrientes->removeElement($cuentaCorriente)) {
-            // set the owning side to null (unless already changed)
-            if ($cuentaCorriente->getMovimientoCuentaVueloId() === $this) {
-                $cuentaCorriente->setMovimientoCuentaVueloId(null);
-            }
-        }
 
         return $this;
     }

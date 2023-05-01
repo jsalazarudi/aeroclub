@@ -25,7 +25,7 @@ class Producto
     #[ORM\OneToMany(mappedBy: 'producto', targetEntity: ListaPrecio::class)]
     private Collection $listaPrecios;
 
-    #[ORM\OneToMany(mappedBy: 'producto_id', targetEntity: MovimientoStock::class)]
+    #[ORM\OneToMany(mappedBy: 'producto', targetEntity: MovimientoStock::class)]
     private Collection $movimientoStocks;
 
     #[ORM\OneToMany(mappedBy: 'producto', targetEntity: ProductoVuelo::class)]

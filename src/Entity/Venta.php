@@ -36,9 +36,6 @@ class Venta
     #[ORM\ManyToOne(inversedBy: 'ventas')]
     private ?Tesorero $tesorero = null;
 
-    #[ORM\OneToMany(mappedBy: 'venta_id', targetEntity: CuentaCorriente::class)]
-    private Collection $cuentaCorrientes;
-
     #[ORM\OneToMany(mappedBy: 'venta', targetEntity: ProductoVenta::class,cascade: ['persist'])]
     #[Assert\NotBlank()]
     private Collection $productoVentas;
@@ -49,7 +46,6 @@ class Venta
 
     public function __construct()
     {
-        $this->cuentaCorrientes = new ArrayCollection();
         $this->productoVentas = new ArrayCollection();
     }
 
@@ -116,44 +112,6 @@ class Venta
         $this->tesorero = $tesorero;
 
         return $this;
-    }
-
-    /**
-     * @return Collection<int, CuentaCorriente>
-     */
-    public function getCuentaCorrientes(): Collection
-    {
-        return $this->cuentaCorrientes;
-    }
-
-    public function addCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if (!$this->cuentaCorrientes->contains($cuentaCorriente)) {
-            $this->cuentaCorrientes->add($cuentaCorriente);
-            $cuentaCorriente->setVentaId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if ($this->cuentaCorrientes->removeElement($cuentaCorriente)) {
-            // set the owning side to null (unless already changed)
-            if ($cuentaCorriente->getVentaId() === $this) {
-                $cuentaCorriente->setVentaId(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Producto>
-     */
-    public function getProductos(): Collection
-    {
-        return $this->productos;
     }
 
     /**

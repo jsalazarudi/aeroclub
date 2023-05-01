@@ -45,13 +45,6 @@ class ReservaHangar
     #[ORM\ManyToOne(inversedBy: 'reservasHangar')]
     private ?Abono $abono = null;
 
-    #[ORM\OneToMany(mappedBy: 'reserva_hangar', targetEntity: CuentaCorriente::class)]
-    private Collection $cuentaCorrientes;
-
-    public function __construct()
-    {
-        $this->cuentaCorrientes = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -147,36 +140,4 @@ class ReservaHangar
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, CuentaCorriente>
-     */
-    public function getCuentaCorrientes(): Collection
-    {
-        return $this->cuentaCorrientes;
-    }
-
-    public function addCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if (!$this->cuentaCorrientes->contains($cuentaCorriente)) {
-            $this->cuentaCorrientes->add($cuentaCorriente);
-            $cuentaCorriente->setReservaHangar($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if ($this->cuentaCorrientes->removeElement($cuentaCorriente)) {
-            // set the owning side to null (unless already changed)
-            if ($cuentaCorriente->getReservaHangar() === $this) {
-                $cuentaCorriente->setReservaHangar(null);
-            }
-        }
-
-        return $this;
-    }
-
-
 }

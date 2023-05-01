@@ -29,14 +29,8 @@ class Servicio
     #[Assert\Type("string")]
     private ?string $descripcion = null;
 
-    #[ORM\OneToMany(mappedBy: 'servicio', targetEntity: UnidadesPago::class)]
-    private Collection $unidadesPagos;
-
     #[ORM\OneToMany(mappedBy: 'servicio', targetEntity: ListaPrecio::class)]
     private Collection $listaPrecios;
-
-    #[ORM\OneToMany(mappedBy: 'servicio_id', targetEntity: CuentaCorriente::class)]
-    private Collection $cuentaCorrientes;
 
     #[ORM\OneToMany(mappedBy: 'servicio', targetEntity: ReservaHangar::class)]
     private Collection $reservaHangars;
@@ -58,9 +52,7 @@ class Servicio
 
     public function __construct()
     {
-        $this->unidadesPagos = new ArrayCollection();
         $this->listaPrecios = new ArrayCollection();
-        $this->cuentaCorrientes = new ArrayCollection();
         $this->reservaHangars = new ArrayCollection();
         $this->mensualidades = new ArrayCollection();
         $this->movimientoCuentaVuelos = new ArrayCollection();
@@ -96,36 +88,6 @@ class Servicio
     }
 
     /**
-     * @return Collection<int, UnidadesPago>
-     */
-    public function getUnidadesPagos(): Collection
-    {
-        return $this->unidadesPagos;
-    }
-
-    public function addUnidadesPago(UnidadesPago $unidadesPago): self
-    {
-        if (!$this->unidadesPagos->contains($unidadesPago)) {
-            $this->unidadesPagos->add($unidadesPago);
-            $unidadesPago->setServicio($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUnidadesPago(UnidadesPago $unidadesPago): self
-    {
-        if ($this->unidadesPagos->removeElement($unidadesPago)) {
-            // set the owning side to null (unless already changed)
-            if ($unidadesPago->getServicio() === $this) {
-                $unidadesPago->setServicio(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, ListaPrecio>
      */
     public function getListaPrecios(): Collection
@@ -155,35 +117,6 @@ class Servicio
         return $this;
     }
 
-    /**
-     * @return Collection<int, CuentaCorriente>
-     */
-    public function getCuentaCorrientes(): Collection
-    {
-        return $this->cuentaCorrientes;
-    }
-
-    public function addCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if (!$this->cuentaCorrientes->contains($cuentaCorriente)) {
-            $this->cuentaCorrientes->add($cuentaCorriente);
-            $cuentaCorriente->setServicioId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if ($this->cuentaCorrientes->removeElement($cuentaCorriente)) {
-            // set the owning side to null (unless already changed)
-            if ($cuentaCorriente->getServicioId() === $this) {
-                $cuentaCorriente->setServicioId(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function __toString(): string
     {

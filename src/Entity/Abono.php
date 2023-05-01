@@ -36,9 +36,6 @@ class Abono
     #[ORM\ManyToOne(inversedBy: 'abonos')]
     private ?Piloto $piloto = null;
 
-    #[ORM\OneToMany(mappedBy: 'abono_id', targetEntity: CuentaCorriente::class)]
-    private Collection $cuentaCorrientes;
-
     #[ORM\ManyToOne(inversedBy: 'abonos')]
     private ?Alumno $alumno = null;
 
@@ -56,7 +53,6 @@ class Abono
 
     public function __construct()
     {
-        $this->cuentaCorrientes = new ArrayCollection();
         $this->reservasHangar = new ArrayCollection();
         $this->movimientoCuentaVuelos = new ArrayCollection();
         $this->ventas = new ArrayCollection();
@@ -136,36 +132,6 @@ class Abono
     public function setPiloto(?Piloto $piloto): self
     {
         $this->piloto = $piloto;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, CuentaCorriente>
-     */
-    public function getCuentaCorrientes(): Collection
-    {
-        return $this->cuentaCorrientes;
-    }
-
-    public function addCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if (!$this->cuentaCorrientes->contains($cuentaCorriente)) {
-            $this->cuentaCorrientes->add($cuentaCorriente);
-            $cuentaCorriente->setAbonoId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if ($this->cuentaCorrientes->removeElement($cuentaCorriente)) {
-            // set the owning side to null (unless already changed)
-            if ($cuentaCorriente->getAbonoId() === $this) {
-                $cuentaCorriente->setAbonoId(null);
-            }
-        }
 
         return $this;
     }

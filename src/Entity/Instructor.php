@@ -16,13 +16,11 @@ class Instructor
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToMany(mappedBy: 'habilitado_por_instructor_id', targetEntity: Alumno::class)]
+    #[ORM\OneToMany(mappedBy: 'habilitado_por_instructor', targetEntity: Alumno::class)]
     private Collection $alumnos;
 
-    #[ORM\OneToMany(mappedBy: 'instructor_id', targetEntity: InstructorVuelo::class)]
-    private Collection $instructorVuelos;
 
-    #[ORM\OneToOne(targetEntity: Usuario::class,mappedBy: 'instructor', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'instructor', targetEntity: Usuario::class, cascade: ['persist', 'remove'])]
     #[Assert\Type(type: Usuario::class)]
     #[Assert\Valid]
     private ?Usuario $usuario = null;
@@ -30,7 +28,6 @@ class Instructor
     public function __construct()
     {
         $this->alumnos = new ArrayCollection();
-        $this->instructorVuelos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -50,7 +47,7 @@ class Instructor
     {
         if (!$this->alumnos->contains($alumno)) {
             $this->alumnos->add($alumno);
-            $alumno->setHabilitadoPorInstructorId($this);
+            $alumno->setHabilitadoPorInstructor($this);
         }
 
         return $this;
@@ -60,38 +57,8 @@ class Instructor
     {
         if ($this->alumnos->removeElement($alumno)) {
             // set the owning side to null (unless already changed)
-            if ($alumno->getHabilitadoPorInstructorId() === $this) {
-                $alumno->setHabilitadoPorInstructorId(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, InstructorVuelo>
-     */
-    public function getInstructorVuelos(): Collection
-    {
-        return $this->instructorVuelos;
-    }
-
-    public function addInstructorVuelo(InstructorVuelo $instructorVuelo): self
-    {
-        if (!$this->instructorVuelos->contains($instructorVuelo)) {
-            $this->instructorVuelos->add($instructorVuelo);
-            $instructorVuelo->setInstructorId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeInstructorVuelo(InstructorVuelo $instructorVuelo): self
-    {
-        if ($this->instructorVuelos->removeElement($instructorVuelo)) {
-            // set the owning side to null (unless already changed)
-            if ($instructorVuelo->getInstructorId() === $this) {
-                $instructorVuelo->setInstructorId(null);
+            if ($alumno->getHabilitadoPorInstructor() === $this) {
+                $alumno->setHabilitadoPorInstructor(null);
             }
         }
 

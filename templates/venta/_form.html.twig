@@ -56,6 +56,26 @@
 <script>
     document.addEventListener('DOMContentLoaded',function (){
 
+        const addTagFormDeleteLink = (item) => {
+            const removeFormButton = document.createElement('button');
+            removeFormButton.innerText = 'Eliminar Producto';
+            removeFormButton.classList.add('btn','btn-danger');
+
+            item.append(removeFormButton);
+
+            removeFormButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                // remove the li for the tag form
+                item.remove();
+            });
+        }
+
+        document
+            .querySelectorAll('ul.tags li')
+            .forEach((tag) => {
+                addTagFormDeleteLink(tag)
+            })
+
         const addFormToCollection = (e) => {
             const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
 
@@ -72,6 +92,8 @@
             collectionHolder.appendChild(item);
 
             collectionHolder.dataset.index++;
+
+            addTagFormDeleteLink(item);
         };
 
         document.querySelectorAll('.add_item_link')

@@ -31,9 +31,6 @@ class ListaPrecio
     #[ORM\ManyToOne(inversedBy: 'listaPrecios')]
     private ?Producto $producto = null;
 
-    #[ORM\OneToMany(mappedBy: 'lista_precio_id', targetEntity: CuentaCorriente::class)]
-    private Collection $cuentaCorrientes;
-
     #[ORM\Column]
     private ?bool $socio = null;
 
@@ -49,8 +46,8 @@ class ListaPrecio
     #[ORM\Column(nullable: true)]
     private ?bool $alumno = null;
 
-    #[ORM\OneToMany(mappedBy: 'lista_precio', targetEntity: Venta::class)]
-    private Collection $ventas;
+    #[ORM\OneToMany(mappedBy: 'lista_precio', targetEntity: ProductoVenta::class)]
+    private Collection $productoVentas;
 
     #[ORM\Column]
     private ?bool $bautismo = null;
@@ -60,10 +57,9 @@ class ListaPrecio
 
     public function __construct()
     {
-        $this->cuentaCorrientes = new ArrayCollection();
         $this->reservasHangar = new ArrayCollection();
         $this->movimientoCuentaVuelos = new ArrayCollection();
-        $this->ventas = new ArrayCollection();
+        $this->productoVentas = new ArrayCollection();
         $this->pagoMensualidads = new ArrayCollection();
     }
 
@@ -116,36 +112,6 @@ class ListaPrecio
     public function setProducto(?Producto $producto): self
     {
         $this->producto = $producto;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, CuentaCorriente>
-     */
-    public function getCuentaCorrientes(): Collection
-    {
-        return $this->cuentaCorrientes;
-    }
-
-    public function addCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if (!$this->cuentaCorrientes->contains($cuentaCorriente)) {
-            $this->cuentaCorrientes->add($cuentaCorriente);
-            $cuentaCorriente->setListaPrecioId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCuentaCorriente(CuentaCorriente $cuentaCorriente): self
-    {
-        if ($this->cuentaCorrientes->removeElement($cuentaCorriente)) {
-            // set the owning side to null (unless already changed)
-            if ($cuentaCorriente->getListaPrecioId() === $this) {
-                $cuentaCorriente->setListaPrecioId(null);
-            }
-        }
 
         return $this;
     }
@@ -247,29 +213,29 @@ class ListaPrecio
     }
 
     /**
-     * @return Collection<int, Venta>
+     * @return Collection<int, ProductoVenta>
      */
-    public function getVentas(): Collection
+    public function getProductoVentas(): Collection
     {
-        return $this->ventas;
+        return $this->productoVentas;
     }
 
-    public function addVenta(Venta $venta): self
+    public function addProductoVenta(ProductoVenta $productoVentas): self
     {
-        if (!$this->ventas->contains($venta)) {
-            $this->ventas->add($venta);
-            $venta->setListaPrecio($this);
+        if (!$this->productoVentas->contains($productoVentas)) {
+            $this->productoVentas->add($productoVentas);
+            $productoVentas->setListaPrecio($this);
         }
 
         return $this;
     }
 
-    public function removeVenta(Venta $venta): self
+    public function removeProductoVenta(ProductoVenta $productoVentas): self
     {
-        if ($this->ventas->removeElement($venta)) {
+        if ($this->productoVentas->removeElement($productoVentas)) {
             // set the owning side to null (unless already changed)
-            if ($venta->getListaPrecio() === $this) {
-                $venta->setListaPrecio(null);
+            if ($productoVentas->getListaPrecio() === $this) {
+                $productoVentas->setListaPrecio(null);
             }
         }
 

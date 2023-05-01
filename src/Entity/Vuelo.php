@@ -39,9 +39,6 @@ class Vuelo
     #[Assert\NotBlank()]
     private ?Avion $avion = null;
 
-    #[ORM\OneToMany(mappedBy: 'vuelo_id', targetEntity: InstructorVuelo::class)]
-    private Collection $instructorVuelos;
-
     #[ORM\OneToMany(mappedBy: 'vuelo', targetEntity: ProductoVuelo::class,cascade: ['persist','remove'])]
     private Collection $productoVuelos;
 
@@ -53,7 +50,6 @@ class Vuelo
 
     public function __construct()
     {
-        $this->instructorVuelos = new ArrayCollection();
         $this->productoVuelos = new ArrayCollection();
     }
 
@@ -118,37 +114,6 @@ class Vuelo
     public function setAvion(?Avion $avion): self
     {
         $this->avion = $avion;
-
-        return $this;
-    }
-
-
-    /**
-     * @return Collection<int, InstructorVuelo>
-     */
-    public function getInstructorVuelos(): Collection
-    {
-        return $this->instructorVuelos;
-    }
-
-    public function addInstructorVuelo(InstructorVuelo $instructorVuelo): self
-    {
-        if (!$this->instructorVuelos->contains($instructorVuelo)) {
-            $this->instructorVuelos->add($instructorVuelo);
-            $instructorVuelo->setVueloId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeInstructorVuelo(InstructorVuelo $instructorVuelo): self
-    {
-        if ($this->instructorVuelos->removeElement($instructorVuelo)) {
-            // set the owning side to null (unless already changed)
-            if ($instructorVuelo->getVueloId() === $this) {
-                $instructorVuelo->setVueloId(null);
-            }
-        }
 
         return $this;
     }
