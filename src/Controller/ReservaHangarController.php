@@ -146,6 +146,15 @@ class ReservaHangarController extends AbstractController
     public function edit(Request $request, ReservaHangar $reservaHangar, ReservaHangarRepository $reservaHangarRepository): Response
     {
         $form = $this->createForm(ReservaHangarType::class, $reservaHangar);
+
+        if ($this->isGranted("ROLE_TESORERO")) {
+            $form->remove('dias_ocupacion');
+            $form->remove('hangar');
+            $formReserva = $form->get('reserva');
+            $formReserva->remove('fecha_inicio');
+            $formReserva->remove('fecha_fin');
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

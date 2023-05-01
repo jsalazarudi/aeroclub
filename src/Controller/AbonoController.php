@@ -10,6 +10,9 @@ use App\Entity\Usuario;
 use App\Form\AbonoType;
 use App\Repository\AbonoRepository;
 use App\Repository\ListaPrecioRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Dompdf\Dompdf;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -131,12 +134,39 @@ class AbonoController extends AbstractController
 
                 if ($this->isGranted('ROLE_ALUMNO')) {
                     $listaPrecioQuery->andWhere('lp.alumno = true');
-                } else {
+                }
+
+                // VALIDAR SI ES UN VUELO TURISMO
+                if($movimientoCuentaVuelo->getVuelo()->isEsVueloTuristico()) {
+                    $listaPrecioQuery->andWhere('lp.bautismo = true');
+                }
+                else {
                     $listaPrecioQuery->andWhere('lp.socio = true');
                 }
 
                 /** @var ListaPrecio $listaPrecio */
-                $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
+                try {
+                    $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
+                } catch (NoResultException $e) {
+                    $this->addFlash(
+                        'error',
+                        'No hay lista de precios relacionadas'
+                    );
+                    return $this->render('abono/new.html.twig', [
+                        'abono' => $abono,
+                        'form' => $form,
+                    ]);
+
+                } catch (NonUniqueResultException $e){
+                    $this->addFlash(
+                        'error',
+                        'Hay conflicto entre dos listas de precios'
+                    );
+                    return $this->render('abono/new.html.twig', [
+                        'abono' => $abono,
+                        'form' => $form,
+                    ]);
+                }
 
                 $totalAbono += $listaPrecio->getPrecio() * $movimientoCuentaVuelo->getUnidadesGastadas();
 
@@ -212,6 +242,7 @@ class AbonoController extends AbstractController
         if ($this->isGranted('ROLE_TESORERO')) {
             $form->remove('reservasHangar');
             $form->remove('movimientoCuentaVuelos');
+            $form->remove('ventas');
             $form->remove('fecha');
         }
 
@@ -223,7 +254,7 @@ class AbonoController extends AbstractController
             return $this->redirectToRoute('app_abono_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('abono/edit.html.twig', [
+        return $this->render('abono/edit.html.twig', [
             'abono' => $abono,
             'form' => $form,
         ]);
@@ -237,6 +268,53 @@ class AbonoController extends AbstractController
         }
 
         return $this->redirectToRoute('app_abono_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/recibo',name: 'app_abono_recibo',methods: ['GET'])]
+    public function recibo(Request $request, Abono $abono): Response
+    {
+        $usuario = null;
+        if ($this->isGranted('ROLE_PILOTO')) {
+            $usuario = $this->getUser()->getPiloto();
+        }
+
+        if ( $this->isGranted('ROLE_SOCIO')) {
+            $usuario = $this->getUser()->getSocio();
+        }
+
+        $total = $abono->getValor();
+
+        $reservasHangar = $abono->getReservasHangar();
+        $vuelos = $abono->getMovimientoCuentaVuelos();
+        $ventas = $abono->getVentas();
+
+
+        $html = $this->renderView('abono/recibo.html.twig',[
+            'logoAeroclob' => $this->imageToBase64(),
+            'usuario' => $usuario,
+            'total' => $total,
+            'vuelos' => $vuelos,
+            'ventas' => $ventas,
+            'reservasHangar' => $reservasHangar
+        ]);
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+
+        return new Response(
+            $dompdf->stream('Recibo',['Attachment' => false]),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/pdf']
+        );
+    }
+
+    private function imageToBase64()
+    {
+        $path = $this->getParameter('kernel.project_dir').'/public/Logoaeroclub.png';
+        $type = pathinfo($path, PATHINFO_EXTENSION);
+        $data = file_get_contents($path);
+        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        return $base64;
     }
 
     /**

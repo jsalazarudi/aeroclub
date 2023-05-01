@@ -112,13 +112,12 @@ class VueloMotorController extends AbstractController
             $formVuelo->remove('reservaVuelo');
         }
 
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
             $productosCargados = $vueloMotor->getVuelo()->getProductoVuelos();
-            $movimientosStock = [];
+            $movimientosStocks = [];
             foreach ($productosCargados as $productoCargado) {
 
                 $entrada = $movimientoStockRepository->createQueryBuilder('m')

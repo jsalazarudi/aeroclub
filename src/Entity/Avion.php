@@ -41,6 +41,9 @@ class Avion
     #[ORM\OneToMany(mappedBy: 'Avion', targetEntity: ListaPrecio::class)]
     private Collection $listaPrecios;
 
+    #[ORM\Column]
+    private ?bool $es_planeador = null;
+
     public function __construct()
     {
         $this->vuelos = new ArrayCollection();
@@ -180,6 +183,18 @@ class Avion
                 $listaPrecio->setAvion(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isEsPlaneador(): ?bool
+    {
+        return $this->es_planeador;
+    }
+
+    public function setEsPlaneador(bool $es_planeador): self
+    {
+        $this->es_planeador = $es_planeador;
 
         return $this;
     }

@@ -33,7 +33,7 @@
                 Servicios abonados
             </th>
             <th>
-                Reserva Aprobada
+                Abono Aprobado
             </th>
             <th>
                 {% if is_granted('ROLE_TESORERO') %}
@@ -56,7 +56,7 @@
                         {% endif %}
                         {% for reservaHangar in abono.reservasHangar %}
                             {% set valorServicioHangar = reservaHangar.listaPrecio.precio * reservaHangar.unidadesGastadas %}
-                            {{ reservaHangar.reserva.fecha|date('Y-m-d') ~ ' Costo: ' ~ valorServicioHangar|format_currency('ARS') }}
+                            {{ reservaHangar.reserva.fechaInicio|date('Y-m-d') ~ ' Costo: ' ~ valorServicioHangar|format_currency('ARS') }}
                         {% endfor %}
 
                         {% if abono.movimientoCuentaVuelos|length %}
@@ -66,6 +66,17 @@
                             {% set valorVuelo = vuelo.listaPrecio.precio * vuelo.unidadesGastadas %}
                             {{ vuelo.vuelo.fecha|date('Y-m-d') ~ ' Costo: ' ~ valorVuelo|format_currency('ARS') }}
                         {% endfor %}
+
+                        {% if abono.ventas|length %}
+                            <h5>Ventas</h5>
+                        {% endif %}
+                        {% for venta in abono.ventas %}
+                            {% for producto in venta.productoVentas %}
+                                {% set valorProducto = producto.listaPrecio.precio * producto.cantidad %}
+                                {{ venta.fecha|date('Y-m-d') ~ ' Costo: ' ~ valorProducto|format_currency('ARS') }}
+                            {% endfor %}
+                        {% endfor %}
+
                     </td>
                     <td>
                         {% if abono.aprobado %}
@@ -89,6 +100,13 @@
                         {% if is_granted('ROLE_TESORERO') %}
                             <a class="btn btn-warning"
                                href="{{ path('app_abono_edit', {'id': abono.id}) }}">Editar</a>
+                        {% elseif (is_granted('ROLE_SOCIO') or is_granted('ROLE_PILOTO')) and abono.aprobado %}
+                            <a class="btn btn-warning"
+                               href="{{ path('app_abono_recibo', {'id': abono.id}) }}">Ver Recibo</a>
+                        {% endif %}
+                        {% if abono.aprobado %}
+
+
                         {% endif %}
                     </td>
                 </tr>

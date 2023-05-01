@@ -26,6 +26,7 @@ class ReservaVueloType extends AbstractType
             ])
             ->add('avion',EntityType::class,[
                 'class' => Avion::class,
+                'label' => 'Avión',
                 'choice_label' => 'matricula',
                 'attr' => [
                     'class' => 'form-control'

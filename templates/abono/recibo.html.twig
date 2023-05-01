@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Recibo</title>
+</head>
+<body>
+    <div style="text-align: center">
+        <h2>Recibo Abono Aprobado</h2>
+        <img src="{{ logoAeroclob }}" width="200px">
+        <h5>Para {{ usuario.usuario.nombre }} {{ usuario.usuario.apellido }}</h5>
+        <h5>Por valor de {{ total|format_currency('ARS') }}</h5>
+        <p>Que corresponde a:</p>
+        {% if vuelos %}
+            {% for vuelo in vuelos  %}
+                <p>Valor Vuelo {{ (vuelo.listaPrecio.precio * vuelo.unidadesGastadas)|format_currency('ARS') }}</p>
+                {% if vuelo.vuelo.esVueloTuristico %}
+                    <strong>Vuelo Bautismo</strong>
+                {% endif %}
+                {% if vuelo.vuelo.reservaVuelo %}
+                    <strong>Avion {{ vuelo.vuelo.reservaVuelo.avion.matricula }}</strong>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {% if ventas %}
+            {% for venta in ventas  %}
+                {% for producto in venta.productoVentas %}
+                    <p>Valor Producto: {{ (producto.listaPrecio.precio * producto.cantidad)|format_currency('ARS') }}</p>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+        {% if reservasHangar %}
+            {% for reservaHangar in reservasHangar  %}
+                <p>Valor Reserva Hangar: {{ (reservaHangar.listaPrecio.precio * reservaHangar.unidadesGastadas)|format_currency('ARS') }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+</body>
+</html>

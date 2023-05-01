@@ -26,44 +26,57 @@
             {{ form_widget(form.unidades_gastadas) }}
         </div>
     </div>
+{% else %}
+    <div class="row">
+        <div class="col mb-3">
+            {{ form_label(form.reserva.fecha_inicio) }}
+
+            {% if form_errors(form.reserva.fecha_inicio) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.reserva.fecha_inicio) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.reserva.fecha_inicio) }}
+        </div>
+        <div class="col mb-3">
+            {{ form_label(form.reserva.fecha_fin) }}
+
+            {% if form_errors(form.reserva.fecha_fin) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.reserva.fecha_fin) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.reserva.fecha_fin) }}
+        </div>
+        <div class="col mb-3">
+            {{ form_label(form.dias_ocupacion) }}
+
+            {% if form_errors(form.dias_ocupacion) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.dias_ocupacion) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.dias_ocupacion) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mb-3">
+            {{ form_label(form.hangar) }}
+
+            {% if form_errors(form.hangar) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.hangar) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.hangar) }}
+        </div>
+    </div>
 {% endif %}
-<div class="row">
-    <div class="col mb-3">
-        {{ form_label(form.reserva.fecha) }}
 
-        {% if form_errors(form.reserva.fecha) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.reserva.fecha) }}
-            </div>
-        {% endif %}
-
-        {{ form_widget(form.reserva.fecha) }}
-    </div>
-    <div class="col mb-3">
-        {{ form_label(form.dias_ocupacion) }}
-
-        {% if form_errors(form.dias_ocupacion) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.dias_ocupacion) }}
-            </div>
-        {% endif %}
-
-        {{ form_widget(form.dias_ocupacion) }}
-    </div>
-</div>
-<div class="row">
-    <div class="col mb-3">
-        {{ form_label(form.hangar) }}
-
-        {% if form_errors(form.hangar) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.hangar) }}
-            </div>
-        {% endif %}
-
-        {{ form_widget(form.hangar) }}
-    </div>
-</div>
 <div class="text-center mt-3">
     <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
 </div>

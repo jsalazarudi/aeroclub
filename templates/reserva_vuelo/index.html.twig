@@ -25,7 +25,10 @@
         <table class="table">
             <thead>
             <th>
-                Fecha Reserva
+                Fecha Inicio Reserva
+            </th>
+            <th>
+                Fecha Fin Reserva
             </th>
             <th>
                 Horas ocupación
@@ -47,7 +50,8 @@
             <tbody>
             {% for reserva_vuelo in reserva_vuelos %}
                 <tr>
-                    <td>{{ reserva_vuelo.reserva.fecha|date('Y-m-d') }}</td>
+                    <td>{{ reserva_vuelo.reserva.fechaInicio|date('Y-m-d H:i:s') }}</td>
+                    <td>{{ reserva_vuelo.reserva.fechaFin|date('Y-m-d H:i:s') }}</td>
                     <td>{{ reserva_vuelo.duracion }}</td>
                     <td>
                         {{ reserva_vuelo.avion.matricula }}

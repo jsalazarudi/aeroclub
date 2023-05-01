@@ -163,7 +163,6 @@
                 </div>
             {% endif %}
 
-
             <ul class="productosVuelos"
                 data-index="{{ form.vuelo.productoVuelos|length > 0 ? form.vuelo.productoVuelos|last.vars.name + 1 : 0 }}"
                 data-prototype="{{ form_widget(form.vuelo.productoVuelos.vars.prototype)|e('html_attr') }}">
@@ -175,7 +174,7 @@
                 {% endfor %}
             </ul>
             <button type="button" class="add_item_link btn btn-info" data-collection-holder-class="productosVuelos">Agregar Producto</button>
-
+            {{ form_widget(form.vuelo.productoVuelos) }}
         </div>
     </div>
 {% endif %}

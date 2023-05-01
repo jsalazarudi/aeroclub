@@ -31,6 +31,9 @@
                 Ultima Fecha Mantenimiento
             </th>
             <th>
+                Es Planeador
+            </th>
+            <th>
 
             </th>
             </thead>
@@ -40,6 +43,13 @@
                     <td>{{ avion.matricula }}</td>
                     <td>{{ avion.fechaInspeccion|date('Y-m-d') }}</td>
                     <td>{{ avion.fechaMantenimiento|date('Y-m-d') }}</td>
+                    <td>
+                        {% if avion.esPlaneador %}
+                            <p class="text-success">Si</p>
+                        {% else %}
+                            <p class="text-danger">No</p>
+                        {% endif %}
+                    </td>
                     <td>
                         <a class="btn btn-warning" href="{{ path('app_avion_edit', {'id': avion.id}) }}">Editar</a>
                     </td>

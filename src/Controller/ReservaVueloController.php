@@ -8,6 +8,8 @@ use App\Entity\Tesorero;
 use App\Entity\Usuario;
 use App\Form\ReservaVueloType;
 use App\Repository\ReservaVueloRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -79,9 +81,38 @@ class ReservaVueloController extends AbstractController
             } elseif ($this->isGranted('ROLE_PILOTO')) {
                 $reservaVuelo->getReserva()->setPiloto($tipoUsuario);
             }
-            $reservaVueloRepository->save($reservaVuelo, true);
 
-            return $this->redirectToRoute('app_reserva_vuelo_index', [], Response::HTTP_SEE_OTHER);
+            /** @var \DateTimeInterface $fechaInicio */
+            $fechaInicio = $reservaVuelo->getReserva()->getFechaInicio();
+            $fechaFin = $reservaVuelo->getReserva()->getFechaFin();
+
+            // Validar que no se crucen con otras reservas APROBADAS
+            $conflictoVuelos = null;
+            try {
+                $conflictoVuelos = $reservaVueloRepository->createQueryBuilder('rv')
+                    ->join('rv.reserva', 'r')
+                    ->where('r.aprobado = true')
+                    ->andWhere('rv.avion = :avion')
+                    ->andWhere('r.fecha_inicio BETWEEN :fecha_inicio AND :fecha_fin OR r.fecha_fin BETWEEN :fecha_inicio AND :fecha_fin')
+                    ->setParameter('fecha_inicio', $fechaInicio->format('Y-m-d H:i:s'))
+                    ->setParameter('fecha_fin', $fechaFin->format('Y-m-d H:i:s'))
+                    ->setParameter('avion', $reservaVuelo->getAvion())
+                    ->getQuery()
+                    ->getSingleResult();
+            } catch (NoResultException $e) {
+                $reservaVueloRepository->save($reservaVuelo, true);
+                return $this->redirectToRoute('app_reserva_vuelo_index', [], Response::HTTP_SEE_OTHER);
+
+            } catch (NonUniqueResultException $e) {
+            }
+
+            $messageFlash = sprintf('El avion %s ya se encuentra con una reserva aprobada entre las %s y %s', $conflictoVuelos->getAvion()->getMatricula(),
+                $conflictoVuelos->getReserva()->getFechaInicio()->format('Y-m-d H:i:s'), $conflictoVuelos->getReserva()->getFechaFin()->format('Y-m-d H:i:s'));
+
+            $this->addFlash(
+                'error',
+                $messageFlash
+            );
         }
 
         return $this->render('reserva_vuelo/new.html.twig', [
@@ -102,6 +133,15 @@ class ReservaVueloController extends AbstractController
     public function edit(Request $request, ReservaVuelo $reservaVuelo, ReservaVueloRepository $reservaVueloRepository): Response
     {
         $form = $this->createForm(ReservaVueloType::class, $reservaVuelo);
+
+        if ($this->isGranted('ROLE_TESORERO')) {
+            $form->remove('duracion');
+            $form->remove('avion');
+            $formReserva = $form->get('reserva');
+            $formReserva->remove('fecha_inicio');
+            $formReserva->remove('fecha_fin');
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

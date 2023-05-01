@@ -36,6 +36,9 @@
                 Precio para Alumno
             </th>
             <th>
+                Bautismo
+            </th>
+            <th>
 
             </th>
             </thead>
@@ -66,6 +69,13 @@
                     </td>
                     <td>
                         {% if lista_precio.alumno %}
+                            <p class="text-success">Si</p>
+                        {% else %}
+                            <p class="text-danger">No</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if lista_precio.bautismo %}
                             <p class="text-success">Si</p>
                         {% else %}
                             <p class="text-danger">No</p>

@@ -25,7 +25,10 @@
         <table class="table">
             <thead>
             <th>
-                Fecha Reserva
+                Fecha Inicio Reserva
+            </th>
+            <th>
+                Fecha Fin Reserva
             </th>
             <th>
                 Unidades gastadas
@@ -53,7 +56,8 @@
             <tbody>
             {% for reserva_hangar in reservas %}
                 <tr>
-                    <td>{{ reserva_hangar.reserva.fecha|date('Y-m-d') }}</td>
+                    <td>{{ reserva_hangar.reserva.fechaInicio|date('Y-m-d') }}</td>
+                    <td>{{ reserva_hangar.reserva.fechaFin|date('Y-m-d') }}</td>
                     <td>
                         {{ reserva_hangar.unidadesGastadas }}
                     </td>

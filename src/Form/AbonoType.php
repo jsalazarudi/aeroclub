@@ -37,14 +37,6 @@ class AbonoType extends AbstractType
                 ],
                 'required' => false
             ])
-//            ->add('valor',IntegerType::class,[
-//                'attr' => [
-//                    'class' => 'form-control'
-//                ],
-//                'label_attr' => [
-//                    'class' => 'text-muted fs-3'
-//                ]
-//            ])
             ->add('reservasHangar', EntityType::class, [
                 'label' => 'Seleccione los hangarajes que desea cancelar:',
                 'class' => ReservaHangar::class,
@@ -76,7 +68,7 @@ class AbonoType extends AbstractType
 
                 },
                 'choice_label' => function (ReservaHangar $reservaHangar) {
-                    return sprintf("Fecha: %s Costo Unidades: %s", $reservaHangar->getReserva()->getFecha()->format('Y-m-d'), $reservaHangar->getUnidadesGastadas());
+                    return sprintf("Fecha: %s Costo Unidades: %s", $reservaHangar->getReserva()->getFechaInicio()->format('Y-m-d'), $reservaHangar->getUnidadesGastadas());
                 },
                 'choice_attr' => function (ReservaHangar $reservaHangar, $key, $index) {
                     return ['class' => 'form-check-input me-2 ms-2'];

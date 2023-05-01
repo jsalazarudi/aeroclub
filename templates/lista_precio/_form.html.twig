@@ -24,6 +24,18 @@
         {% endif %}
 
     </div>
+    <div class="col form-check form-switch">
+        {{ form_label(form.bautismo) }}
+
+        {{ form_widget(form.bautismo) }}
+
+        {% if form_errors(form.bautismo) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.bautismo) }}
+            </div>
+        {% endif %}
+
+    </div>
 </div>
 <div class="row">
     <div class="col mb-3">

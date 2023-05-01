@@ -96,7 +96,7 @@ class ReservaVuelo
     public function __toString(): string
     {
         return sprintf('Reserva del %s con avión %s',
-            $this->getReserva()->getFecha()->format('Y-m-d'),
+            $this->getReserva()->getFechaInicio()->format('Y-m-d'),
             $this->getAvion()->getMatricula()
         );
     }

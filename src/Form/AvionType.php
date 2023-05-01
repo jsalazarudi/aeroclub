@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Avion;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -42,6 +43,15 @@ class AvionType extends AbstractType
                 'label_attr' => [
                     'class' => 'text-muted fs-3'
                 ]
+            ])
+            ->add('es_planeador',CheckboxType::class, [
+                'attr' => [
+                    'class' => 'form-check-input fs-4'
+                ],
+                'label_attr' => [
+                    'class' => 'form-check-label text-muted fs-3'
+                ],
+                'required' => false
             ]);
     }
 

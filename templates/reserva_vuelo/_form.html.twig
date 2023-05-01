@@ -13,44 +13,57 @@
             {{ form_widget(form.reserva.aprobado) }}
         </div>
     </div>
+{% else %}
+    <div class="row">
+        <div class="col mb-3">
+            {{ form_label(form.reserva.fecha_inicio) }}
+
+            {% if form_errors(form.reserva.fecha_inicio) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.reserva.fecha_inicio) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.reserva.fecha_inicio) }}
+        </div>
+        <div class="col mb-3">
+            {{ form_label(form.reserva.fecha_fin) }}
+
+            {% if form_errors(form.reserva.fecha_fin) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.reserva.fecha_fin) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.reserva.fecha_fin) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mb-3">
+            {{ form_label(form.duracion) }}
+
+            {% if form_errors(form.duracion) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.duracion) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.duracion) }}
+        </div>
+        <div class="col mb-3">
+            {{ form_label(form.avion) }}
+
+            {% if form_errors(form.avion) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.avion) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.avion) }}
+        </div>
+    </div>
 {% endif %}
-<div class="row">
-    <div class="col mb-3">
-        {{ form_label(form.reserva.fecha) }}
 
-        {% if form_errors(form.reserva.fecha) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.reserva.fecha) }}
-            </div>
-        {% endif %}
-
-        {{ form_widget(form.reserva.fecha) }}
-    </div>
-    <div class="col mb-3">
-        {{ form_label(form.duracion) }}
-
-        {% if form_errors(form.duracion) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.duracion) }}
-            </div>
-        {% endif %}
-
-        {{ form_widget(form.duracion) }}
-    </div>
-</div>
-<div class="row">
-    <div class="col mb-3">
-        {{ form_label(form.avion) }}
-
-        {% if form_errors(form.avion) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.avion) }}
-            </div>
-        {% endif %}
-
-        {{ form_widget(form.avion) }}
-    </div>
-</div>
 <div class="text-center mt-3">
     <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
 </div>

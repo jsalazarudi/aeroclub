@@ -36,6 +36,7 @@
         {{ form_widget(form.vuelo.fecha) }}
     </div>
 </div>
+{% if is_granted('ROLE_ALUMNO') %}
 <div class="row">
     <div class="col mb-3">
         {{ form_label(form.vuelo.curso) }}
@@ -60,6 +61,24 @@
         {{ form_widget(form.vuelo.avion) }}
     </div>
 </div>
+{% endif %}
+
+{% if is_granted('ROLE_PILOTO') or is_granted('ROLE_SOCIO') %}
+    <div class="row">
+        <div class="col mb-3">
+            {{ form_label(form.vuelo.reservaVuelo) }}
+
+            {% if form_errors(form.vuelo.reservaVuelo) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.vuelo.reservaVuelo) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.vuelo.reservaVuelo) }}
+        </div>
+    </div>
+{% endif %}
+
 <div class="row">
     <div class="col mb-3">
         {{ form_label(form.tiempo_remolque) }}
@@ -108,7 +127,65 @@
         {{ form_widget(form.tiempo_acumulado) }}
     </div>
 </div>
+
+{% if is_granted('ROLE_PILOTO') or is_granted('ROLE_SOCIO') %}
+    <div class="row">
+        <div class="col mb-3">
+            {{ form_label(form.vuelo.productoVuelos) }}
+
+            {% if form_errors(form.vuelo.productoVuelos) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.vuelo.productoVuelos) }}
+                </div>
+            {% endif %}
+
+
+            <ul class="productosVuelos"
+                data-index="{{ form.vuelo.productoVuelos|length > 0 ? form.vuelo.productoVuelos|last.vars.name + 1 : 0 }}"
+                data-prototype="{{ form_widget(form.vuelo.productoVuelos.vars.prototype)|e('html_attr') }}">
+                {% for productoVuelo in form.vuelo.productoVuelos %}
+                    <li>
+                        {{ form_errors(productoVuelo) }}
+                        {{ form_widget(productoVuelo) }}
+                    </li>
+                {% endfor %}
+            </ul>
+            <button type="button" class="add_item_link btn btn-info" data-collection-holder-class="productosVuelos">Agregar Producto</button>
+            {{ form_widget(form.vuelo.productoVuelos) }}
+        </div>
+    </div>
+{% endif %}
+
 <div class="text-center mt-3">
     <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
 </div>
 {{ form_end(form) }}
+
+<script>
+
+    document.addEventListener('DOMContentLoaded',function (){
+
+        const addFormToCollection = (e) => {
+            const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+
+            const item = document.createElement('li');
+
+            item.innerHTML = collectionHolder
+                .dataset
+                .prototype
+                .replace(
+                    /__name__/g,
+                    collectionHolder.dataset.index
+                );
+
+            collectionHolder.appendChild(item);
+
+            collectionHolder.dataset.index++;
+        };
+
+        document.querySelectorAll('.add_item_link')
+            .forEach(btn => {
+                btn.addEventListener("click",addFormToCollection)
+            });
+    })
+</script>

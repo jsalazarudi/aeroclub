@@ -52,6 +52,9 @@ class ListaPrecio
     #[ORM\OneToMany(mappedBy: 'lista_precio', targetEntity: Venta::class)]
     private Collection $ventas;
 
+    #[ORM\Column]
+    private ?bool $bautismo = null;
+
     public function __construct()
     {
         $this->cuentaCorrientes = new ArrayCollection();
@@ -265,6 +268,18 @@ class ListaPrecio
                 $venta->setListaPrecio(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isBautismo(): ?bool
+    {
+        return $this->bautismo;
+    }
+
+    public function setBautismo(bool $bautismo): self
+    {
+        $this->bautismo = $bautismo;
 
         return $this;
     }

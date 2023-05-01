@@ -92,6 +92,16 @@ class ListaPrecioType extends AbstractType
                 ],
                 'required' => false
             ])
+            ->add('bautismo', CheckboxType::class, [
+                'label' => 'Vuelo Bautismo',
+                'attr' => [
+                    'class' => 'form-check-input fs-4'
+                ],
+                'label_attr' => [
+                    'class' => 'form-check-label text-muted fs-3'
+                ],
+                'required' => false
+            ])
         ;
     }
 

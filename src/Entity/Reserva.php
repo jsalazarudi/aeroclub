@@ -15,12 +15,6 @@ class Reserva
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\Type("\DateTimeInterface")]
-    #[Assert\NotBlank()]
-
-    private ?\DateTimeInterface $fecha = null;
-
     #[ORM\ManyToOne(inversedBy: 'reservas')]
     private ?Piloto $piloto = null;
 
@@ -30,21 +24,19 @@ class Reserva
     #[ORM\Column(nullable: true)]
     private ?bool $aprobado = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\Assert\NotBlank()]
+    #[Assert\Type("\DateTimeInterface")]
+    private ?\DateTimeInterface $fecha_inicio = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\Assert\NotBlank()]
+    #[Assert\Type("\DateTimeInterface")]
+    private ?\DateTimeInterface $fecha_fin = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getFecha(): ?\DateTimeInterface
-    {
-        return $this->fecha;
-    }
-
-    public function setFecha(\DateTimeInterface $fecha): self
-    {
-        $this->fecha = $fecha;
-
-        return $this;
     }
 
     public function getPiloto(): ?Piloto
@@ -79,6 +71,30 @@ class Reserva
     public function setAprobado(?bool $aprobado): self
     {
         $this->aprobado = $aprobado;
+
+        return $this;
+    }
+
+    public function getFechaInicio(): ?\DateTimeInterface
+    {
+        return $this->fecha_inicio;
+    }
+
+    public function setFechaInicio(\DateTimeInterface $fecha_inicio): self
+    {
+        $this->fecha_inicio = $fecha_inicio;
+
+        return $this;
+    }
+
+    public function getFechaFin(): ?\DateTimeInterface
+    {
+        return $this->fecha_fin;
+    }
+
+    public function setFechaFin(\DateTimeInterface $fecha_fin): self
+    {
+        $this->fecha_fin = $fecha_fin;
 
         return $this;
     }
