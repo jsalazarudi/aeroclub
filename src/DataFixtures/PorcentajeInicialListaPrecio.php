@@ -14,11 +14,16 @@ class PorcentajeInicialListaPrecio extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $historialListaPrecio = new HistorialListaPrecio();
-        $historialListaPrecio->setFecha(new \DateTime('now'));
-        $historialListaPrecio->setPorcentajeCambio(0);
+        $historial = $manager->getRepository(HistorialListaPrecio::class)->findOneBy(['porcentaje_cambio' => 0]);
 
-        $manager->persist($historialListaPrecio);
-        $manager->flush();
+        if (!$historial) {
+            $historialListaPrecio = new HistorialListaPrecio();
+            $historialListaPrecio->setFecha(new \DateTime('now'));
+            $historialListaPrecio->setPorcentajeCambio(0);
+
+            $manager->persist($historialListaPrecio);
+            $manager->flush();
+        }
+
     }
 }
