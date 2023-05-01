@@ -45,7 +45,9 @@
             {% endfor %}
         </ul>
         <button type="button" class="add_item_link btn btn-info" data-collection-holder-class="productosVentas">Agregar Producto</button>
-        {{ form_widget(form.productoVentas) }}
+        {% if form.productoVentas|length == 0 %}
+            {{ form_widget(form.productoVentas) }}
+        {% endif %}
     </div>
 </div>
 <div class="text-center mt-3">

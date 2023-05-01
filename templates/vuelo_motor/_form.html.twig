@@ -174,7 +174,9 @@
                 {% endfor %}
             </ul>
             <button type="button" class="add_item_link btn btn-info" data-collection-holder-class="productosVuelos">Agregar Producto</button>
-            {{ form_widget(form.vuelo.productoVuelos) }}
+            {% if form.vuelo.productoVuelos|length == 0 %}
+                {{ form_widget(form.vuelo.productoVuelos) }}
+            {% endif %}
         </div>
     </div>
 {% endif %}
