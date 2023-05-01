@@ -42,6 +42,7 @@ security:
         - { path: ^/nota, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
         - { path: ^/reserva, roles: [ROLE_PILOTO,ROLE_SOCIO,ROLE_TESORERO] }
         - { path: ^/hangar, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/curso, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR,ROLE_INSTRUCTOR] }
 
 when@test:
     security:

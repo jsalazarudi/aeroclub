@@ -40,7 +40,8 @@ class CursoType extends AbstractType
                 ],
                 'label_attr' => [
                     'class' => 'text-muted fs-3'
-                ]
+                ],
+                'placeholder' => 'Seleccione un alumno'
             ]);
     }
 
