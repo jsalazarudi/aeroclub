@@ -77,6 +77,12 @@
                             {% endfor %}
                         {% endfor %}
 
+                        {% for mensualidad in abono.pagoMensualidads %}
+                            <h5>{{ mensualidad.mensualidad.servicio.descripcion }}</h5>
+                            {% set valorMensualidad = mensualidad.listaPrecio.precio  %}
+                            {{ mensualidad.fecha|date('Y-m-d') ~ ' Costo: ' ~ valorMensualidad|format_currency('ARS') }}
+                        {% endfor %}
+
                     </td>
                     <td>
                         {% if abono.aprobado %}

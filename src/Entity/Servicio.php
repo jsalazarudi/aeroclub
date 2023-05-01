@@ -53,6 +53,9 @@ class Servicio
     #[ORM\OneToMany(mappedBy: 'servicio', targetEntity: MovimientoCuentaVuelo::class)]
     private Collection $movimientoCuentaVuelos;
 
+    #[ORM\Column]
+    private ?bool $es_mensual = null;
+
     public function __construct()
     {
         $this->unidadesPagos = new ArrayCollection();
@@ -297,6 +300,18 @@ class Servicio
                 $movimientoCuentaVuelo->setServicio(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isEsMensual(): ?bool
+    {
+        return $this->es_mensual;
+    }
+
+    public function setEsMensual(bool $es_mensual): self
+    {
+        $this->es_mensual = $es_mensual;
 
         return $this;
     }

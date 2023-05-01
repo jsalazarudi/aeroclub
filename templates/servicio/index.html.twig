@@ -28,6 +28,9 @@
                 Descripción
             </th>
             <th>
+                Pago Mensual
+            </th>
+            <th>
 
             </th>
             </thead>
@@ -36,6 +39,13 @@
                 <tr>
                     <td>{{ servicio.codigo }}</td>
                     <td>{{ servicio.descripcion }}</td>
+                    <td>
+                        {% if servicio.esMensual %}
+                            <p class="text-success">Si</p>
+                        {% else %}
+                            <p class="text-danger">No</p>
+                        {% endif %}
+                    </td>
                     <td>
                         <a class="btn btn-warning" href="{{ path('app_servicio_edit', {'id': servicio.id}) }}">Editar</a>
                     </td>

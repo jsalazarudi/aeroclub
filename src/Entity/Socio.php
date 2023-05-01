@@ -49,7 +49,7 @@ class Socio
     #[Assert\Valid]
     private ?Usuario $usuario = null;
 
-    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Mensualidad::class)]
+    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Mensualidad::class, cascade: ['persist'])]
     private Collection $mensualidades;
    public function __construct()
     {
@@ -220,22 +220,22 @@ class Socio
         return $this->mensualidades;
     }
 
-    public function addMensualidade(Mensualidad $mensualidade): self
+    public function addMensualidade(Mensualidad $mensualidad): self
     {
-        if (!$this->mensualidades->contains($mensualidade)) {
-            $this->mensualidades->add($mensualidade);
-            $mensualidade->setSocio($this);
+        if (!$this->mensualidades->contains($mensualidad)) {
+            $this->mensualidades->add($mensualidad);
+            $mensualidad->setSocio($this);
         }
 
         return $this;
     }
 
-    public function removeMensualidade(Mensualidad $mensualidade): self
+    public function removeMensualidade(Mensualidad $mensualidad): self
     {
-        if ($this->mensualidades->removeElement($mensualidade)) {
+        if ($this->mensualidades->removeElement($mensualidad)) {
             // set the owning side to null (unless already changed)
-            if ($mensualidade->getSocio() === $this) {
-                $mensualidade->setSocio(null);
+            if ($mensualidad->getSocio() === $this) {
+                $mensualidad->setSocio(null);
             }
         }
 

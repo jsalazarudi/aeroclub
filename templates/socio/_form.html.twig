@@ -30,5 +30,83 @@
         {{ form_widget(form.numero_socio) }}
     </div>
 </div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.mensualidades) }}
+
+        {% if form_errors(form.mensualidades) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.mensualidades) }}
+            </div>
+        {% endif %}
+
+
+        <ul class="productosVuelos"
+            data-index="{{ form.mensualidades|length > 0 ? form.mensualidades|last.vars.name + 1 : 0 }}"
+            data-prototype="{{ form_widget(form.mensualidades.vars.prototype)|e('html_attr') }}">
+            {% for mensualidad in form.mensualidades %}
+                <li>
+                    {{ form_errors(mensualidad) }}
+                    {{ form_widget(mensualidad) }}
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="button" class="add_item_link btn btn-info" data-collection-holder-class="productosVuelos">Agregar Servicio</button>
+        {% if form.mensualidades|length == 0 %}
+            {{ form_widget(form.mensualidades) }}
+        {% endif  %}
+    </div>
+</div>
 {{ include('usuario/_form.html.twig') }}
 {{ form_end(form) }}
+
+<script>
+
+    document.addEventListener('DOMContentLoaded',function (){
+
+        const addTagFormDeleteLink = (item) => {
+            const removeFormButton = document.createElement('button');
+            removeFormButton.innerText = 'Eliminar Servicio';
+            removeFormButton.classList.add('btn','btn-danger');
+
+            item.append(removeFormButton);
+
+            removeFormButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                // remove the li for the tag form
+                item.remove();
+            });
+        }
+
+        document
+            .querySelectorAll('ul.tags li')
+            .forEach((tag) => {
+                addTagFormDeleteLink(tag)
+            })
+
+        const addFormToCollection = (e) => {
+            const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+
+            const item = document.createElement('li');
+
+            item.innerHTML = collectionHolder
+                .dataset
+                .prototype
+                .replace(
+                    /__name__/g,
+                    collectionHolder.dataset.index
+                );
+
+            collectionHolder.appendChild(item);
+
+            collectionHolder.dataset.index++;
+
+            addTagFormDeleteLink(item);
+        };
+
+        document.querySelectorAll('.add_item_link')
+            .forEach(btn => {
+                btn.addEventListener("click",addFormToCollection)
+            });
+    })
+</script>

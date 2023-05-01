@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\PagoMensualidad;
 use App\Entity\Socio;
 use App\Entity\Usuario;
 use App\Form\SocioType;
+use App\Repository\PagoMensualidadRepository;
 use App\Repository\SocioRepository;
 use App\Repository\UsuarioRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -40,7 +42,7 @@ class SocioController extends AbstractController
     }
 
     #[Route('/new', name: 'aeroclub_socio_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, SocioRepository $socioRepository): Response
+    public function new(Request $request, SocioRepository $socioRepository, PagoMensualidadRepository $pagoMensualidadRepository): Response
     {
         $socio = new Socio();
         $socio->setUsuario(new Usuario());
@@ -53,8 +55,23 @@ class SocioController extends AbstractController
             $socio->getUsuario()->setRoles(['ROLE_SOCIO']);
             $socio->getUsuario()->setActivo(true);
 
-            $socioRepository->save($socio, true);
+            // ANTES DE GUARDAR, SETIAR LOS PAGOS PENDIENTES MENSUALES
+            // EN BASE A LA FECHA INICIO Y FECHA FIN DE LA MENSUALIDAD
+            foreach ($socio->getMensualidades() as $mensualidad) {
+                $inicio = $mensualidad->getFechaInicio();
+                $fin = $mensualidad->getFechaFin();
+                $interval = new \DateInterval('P1M');
+                $range = new \DatePeriod($inicio,$interval,$fin);
 
+                foreach ($range as $date) {
+                    $pagoMensualidad = new PagoMensualidad();
+                    $pagoMensualidad->setFecha($date);
+                    $pagoMensualidad->setMensualidad($mensualidad);
+                    $pagoMensualidadRepository->save($pagoMensualidad);
+                }
+            }
+
+            $socioRepository->save($socio, true);
             return $this->redirectToRoute('aeroclub_socio_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -75,12 +92,31 @@ class SocioController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'aeroclub_socio_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Socio $socio, SocioRepository $socioRepository): Response
+    public function edit(Request $request, Socio $socio, SocioRepository $socioRepository, PagoMensualidadRepository $pagoMensualidadRepository): Response
     {
         $form = $this->createForm(SocioType::class, $socio);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // ANTES DE GUARDAR, SETIAR LOS PAGOS PENDIENTES MENSUALES
+            // EN BASE A LA FECHA INICIO Y FECHA FIN DE LA MENSUALIDAD
+            foreach ($socio->getMensualidades() as $mensualidad) {
+                if (!$mensualidad->getId()) {
+                    $inicio = $mensualidad->getFechaInicio();
+                    $fin = $mensualidad->getFechaFin();
+                    $interval = new \DateInterval('P1M');
+                    $range = new \DatePeriod($inicio,$interval,$fin);
+
+                    foreach ($range as $date) {
+                        $pagoMensualidad = new PagoMensualidad();
+                        $pagoMensualidad->setFecha($date);
+                        $pagoMensualidad->setMensualidad($mensualidad);
+                        $pagoMensualidadRepository->save($pagoMensualidad);
+                    }
+                }
+            }
+
             $socioRepository->save($socio, true);
 
             return $this->redirectToRoute('aeroclub_socio_index', [], Response::HTTP_SEE_OTHER);

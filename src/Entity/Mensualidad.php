@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MensualidadRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -25,11 +27,23 @@ class Mensualidad
     #[ORM\JoinColumn(nullable: false)]
     private ?Servicio $servicio = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank()]
     #[Assert\Type("\DateTimeInterface")]
+    private ?\DateTimeInterface $fecha_inicio = null;
 
-    private ?\DateTimeInterface $hasta = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank()]
+    #[Assert\Type("\DateTimeInterface")]
+    private ?\DateTimeInterface $fecha_fin = null;
+
+    #[ORM\OneToMany(mappedBy: 'mensualidad', targetEntity: PagoMensualidad::class)]
+    private Collection $pagoMensualidads;
+
+    public function __construct()
+    {
+        $this->pagoMensualidads = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -60,14 +74,56 @@ class Mensualidad
         return $this;
     }
 
-    public function getHasta(): ?\DateTimeInterface
+    public function getFechaInicio(): ?\DateTimeInterface
     {
-        return $this->hasta;
+        return $this->fecha_inicio;
     }
 
-    public function setHasta(\DateTimeInterface $hasta): self
+    public function setFechaInicio(\DateTimeInterface $fecha_inicio): self
     {
-        $this->hasta = $hasta;
+        $this->fecha_inicio = $fecha_inicio;
+
+        return $this;
+    }
+
+    public function getFechaFin(): ?\DateTimeInterface
+    {
+        return $this->fecha_fin;
+    }
+
+    public function setFechaFin(\DateTimeInterface $fecha_fin): self
+    {
+        $this->fecha_fin = $fecha_fin;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PagoMensualidad>
+     */
+    public function getPagoMensualidads(): Collection
+    {
+        return $this->pagoMensualidads;
+    }
+
+    public function addPagoMensualidad(PagoMensualidad $pagoMensualidad): self
+    {
+        if (!$this->pagoMensualidads->contains($pagoMensualidad)) {
+            $this->pagoMensualidads->add($pagoMensualidad);
+            $pagoMensualidad->setMensualidad($this);
+        }
+
+        return $this;
+    }
+
+    public function removePagoMensualidad(PagoMensualidad $pagoMensualidad): self
+    {
+        if ($this->pagoMensualidads->removeElement($pagoMensualidad)) {
+            // set the owning side to null (unless already changed)
+            if ($pagoMensualidad->getMensualidad() === $this) {
+                $pagoMensualidad->setMensualidad(null);
+            }
+        }
 
         return $this;
     }

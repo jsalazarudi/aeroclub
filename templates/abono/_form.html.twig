@@ -60,6 +60,20 @@
 
     <div class="row">
         <div class="col mb-3">
+            {{ form_label(form.pagoMensualidads) }}
+
+            {% if form_errors(form.pagoMensualidads) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.pagoMensualidads) }}
+                </div>
+            {% endif %}
+
+            {{ form_widget(form.pagoMensualidads) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col mb-3">
             {{ form_label(form.fecha) }}
 
             {% if form_errors(form.fecha) %}

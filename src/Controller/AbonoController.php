@@ -95,26 +95,30 @@ class AbonoController extends AbstractController
 
                 $servicio = $reservaHangar->getServicio();
 
-                $listaPrecioQuery = $listaPrecioRepository->createQueryBuilder('lp')
-                    ->join('lp.servicio', 'servicio')
-                    ->join('lp.historial_lista_precio', 'historial')
-                    ->where('servicio = :servicio')
-                    ->andWhere('historial.fecha = :fecha')
-                    ->setParameter('servicio', $servicio)
-                    ->setParameter('fecha', $ultimaFechaHistorialListaPrecios);
+                if (!$servicio->isEsMensual()) {
 
-                if ($this->isGranted('ROLE_SOCIO')) {
-                    $listaPrecioQuery->andWhere('lp.socio = true');
-                } else {
-                    $listaPrecioQuery->andWhere('lp.socio = false OR lp.socio IS NULL');
+                    $listaPrecioQuery = $listaPrecioRepository->createQueryBuilder('lp')
+                        ->join('lp.servicio', 'servicio')
+                        ->join('lp.historial_lista_precio', 'historial')
+                        ->where('servicio = :servicio')
+                        ->andWhere('historial.fecha = :fecha')
+                        ->setParameter('servicio', $servicio)
+                        ->setParameter('fecha', $ultimaFechaHistorialListaPrecios);
+
+                    if ($this->isGranted('ROLE_SOCIO')) {
+                        $listaPrecioQuery->andWhere('lp.socio = true');
+                    } else {
+                        $listaPrecioQuery->andWhere('lp.socio = false OR lp.socio IS NULL');
+                    }
+
+                    /** @var ListaPrecio $listaPrecio */
+                    $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
+                    $totalAbono += $listaPrecio->getPrecio() * $reservaHangar->getUnidadesGastadas();
+
+                    $reservaHangar->setAbono($abono);
+                    $reservaHangar->setListaPrecio($listaPrecio);
                 }
 
-                /** @var ListaPrecio $listaPrecio */
-                $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
-                $totalAbono += $listaPrecio->getPrecio() * $reservaHangar->getUnidadesGastadas();
-
-                $reservaHangar->setAbono($abono);
-                $reservaHangar->setListaPrecio($listaPrecio);
             }
 
             // VALIDACION VUELOS
@@ -199,6 +203,47 @@ class AbonoController extends AbstractController
                 $venta->setAbono($abono);
             }
 
+            // VALIDACION SERVICIOS MENSUALES
+            foreach ($abono->getPagoMensualidads() as $mensualidad)  {
+
+                $listaPrecioQuery = $listaPrecioRepository->createQueryBuilder('lp')
+                    ->join('lp.historial_lista_precio', 'historial')
+                    ->where('lp.servicio = :servicio')
+                    ->andWhere('historial.fecha = :fecha')
+                    ->setParameter('servicio', $mensualidad->getMensualidad()->getServicio())
+                    ->setParameter('fecha', $ultimaFechaHistorialListaPrecios);
+
+                /** @var ListaPrecio $listaPrecio */
+                try {
+                    $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
+                } catch (NoResultException $e) {
+                    $this->addFlash(
+                        'error',
+                        'No hay lista de precios relacionadas'
+                    );
+                    return $this->render('abono/new.html.twig', [
+                        'abono' => $abono,
+                        'form' => $form,
+                    ]);
+
+                } catch (NonUniqueResultException $e){
+                    $this->addFlash(
+                        'error',
+                        'Hay conflicto entre dos listas de precios'
+                    );
+                    return $this->render('abono/new.html.twig', [
+                        'abono' => $abono,
+                        'form' => $form,
+                    ]);
+                }
+
+                $totalAbono += $listaPrecio->getPrecio();
+
+                $mensualidad->setAbono($abono);
+                $mensualidad->setListaPrecio($listaPrecio);
+
+            }
+
             $abono->setValor($totalAbono);
 
             if ($this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_ALUMNO')) {
@@ -244,6 +289,7 @@ class AbonoController extends AbstractController
             $form->remove('movimientoCuentaVuelos');
             $form->remove('ventas');
             $form->remove('fecha');
+            $form->remove('pagoMensualidads');
         }
 
         $form->handleRequest($request);
@@ -287,6 +333,7 @@ class AbonoController extends AbstractController
         $reservasHangar = $abono->getReservasHangar();
         $vuelos = $abono->getMovimientoCuentaVuelos();
         $ventas = $abono->getVentas();
+        $pagoMensualidades = $abono->getPagoMensualidads();
 
 
         $html = $this->renderView('abono/recibo.html.twig',[
@@ -295,7 +342,8 @@ class AbonoController extends AbstractController
             'total' => $total,
             'vuelos' => $vuelos,
             'ventas' => $ventas,
-            'reservasHangar' => $reservasHangar
+            'reservasHangar' => $reservasHangar,
+            'pagoMensualidades' => $pagoMensualidades
         ]);
         $dompdf = new Dompdf();
         $dompdf->loadHtml($html);

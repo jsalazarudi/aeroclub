@@ -51,12 +51,16 @@ class Abono
     #[ORM\OneToMany(mappedBy: 'abono', targetEntity: Venta::class)]
     private Collection $ventas;
 
+    #[ORM\OneToMany(mappedBy: 'abono', targetEntity: PagoMensualidad::class)]
+    private Collection $pagoMensualidads;
+
     public function __construct()
     {
         $this->cuentaCorrientes = new ArrayCollection();
         $this->reservasHangar = new ArrayCollection();
         $this->movimientoCuentaVuelos = new ArrayCollection();
         $this->ventas = new ArrayCollection();
+        $this->pagoMensualidads = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -262,6 +266,36 @@ class Abono
             // set the owning side to null (unless already changed)
             if ($venta->getAbono() === $this) {
                 $venta->setAbono(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PagoMensualidad>
+     */
+    public function getPagoMensualidads(): Collection
+    {
+        return $this->pagoMensualidads;
+    }
+
+    public function addPagoMensualidad(PagoMensualidad $pagoMensualidad): self
+    {
+        if (!$this->pagoMensualidads->contains($pagoMensualidad)) {
+            $this->pagoMensualidads->add($pagoMensualidad);
+            $pagoMensualidad->setAbono($this);
+        }
+
+        return $this;
+    }
+
+    public function removePagoMensualidad(PagoMensualidad $pagoMensualidad): self
+    {
+        if ($this->pagoMensualidads->removeElement($pagoMensualidad)) {
+            // set the owning side to null (unless already changed)
+            if ($pagoMensualidad->getAbono() === $this) {
+                $pagoMensualidad->setAbono(null);
             }
         }
 

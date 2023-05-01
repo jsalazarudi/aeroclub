@@ -50,6 +50,16 @@ class ServicioType extends AbstractType
                 ],
                 'required' => false
             ])
+            ->add('es_mensual',CheckboxType::class, [
+                'label' => 'Pago Mensual',
+                'attr' => [
+                    'class' => 'form-check-input fs-4'
+                ],
+                'label_attr' => [
+                    'class' => 'form-check-label text-muted fs-3'
+                ],
+                'required' => false
+            ])
         ;
     }
 

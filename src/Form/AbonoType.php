@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Abono;
 use App\Entity\MovimientoCuentaVuelo;
+use App\Entity\PagoMensualidad;
 use App\Entity\ReservaHangar;
 use App\Entity\Venta;
 use Doctrine\ORM\EntityRepository;
@@ -147,7 +148,38 @@ class AbonoType extends AbstractType
                 'choice_attr' => function (Venta $venta, $key, $index) {
                     return ['class' => 'form-check-input me-2 ms-2'];
                 }
-            ]);
+            ])
+            ->add('pagoMensualidads', EntityType::class, [
+                'label' => 'Seleccione las mensualidades que desea cancelar:',
+                'class' => PagoMensualidad::class,
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
+                ],
+                'multiple' => true,
+                'expanded' => true,
+                'query_builder' => function (EntityRepository $er) use ($options) {
+
+                    $mensualidadQuery = $er->createQueryBuilder('pm')
+                        ->join('pm.mensualidad','m')
+                        ->where('pm.abono IS NULL');
+
+                    if ($options['tipo_usuario'] == 'ROLE_SOCIO') {
+                        $mensualidadQuery->andWhere('m.socio = :socio')
+                            ->setParameter('socio', $options['usuario']);
+                    }
+
+                    return $mensualidadQuery;
+
+                },
+                'choice_attr' => function (PagoMensualidad $pagoMensualidad, $key, $index) {
+                    return ['class' => 'form-check-input me-2 ms-2'];
+                }
+            ])
+
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

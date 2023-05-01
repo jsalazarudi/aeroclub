@@ -37,6 +37,12 @@
                 <p>Valor Reserva Hangar: {{ (reservaHangar.listaPrecio.precio * reservaHangar.unidadesGastadas)|format_currency('ARS') }}</p>
             {% endfor %}
         {% endif %}
+        {% if pagoMensualidades %}
+            {% for mensualidad in pagoMensualidades  %}
+                <strong>{{ mensualidad.mensualidad.servicio.descripcion }}</strong>
+                <p>Valor: {{ (mensualidad.listaPrecio.precio)|format_currency('ARS') }}</p>
+            {% endfor %}
+        {% endif %}
     </div>
 </body>
 </html>

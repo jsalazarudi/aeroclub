@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Socio;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -46,6 +47,20 @@ class SocioType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ],
                 'label' => 'Número Socio',
+            ])
+            ->add('mensualidades',CollectionType::class,[
+                'entry_type' => MensualidadType::class,
+                'entry_options' => ['label' => false],
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
+                ],
+                'allow_add' => true,
+                'allow_delete' => true,
+                'prototype_options'  => [
+                    'help' => 'Puedes registrar servicios mensuales del socio',
+                ],
+                'by_reference' => false,
+                'label' => 'Servicios mensuales del socio'
             ])
             ->add('usuario',UsuarioType::class);
     }
