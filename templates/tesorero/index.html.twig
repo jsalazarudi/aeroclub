@@ -8,11 +8,13 @@
         {% block content_usuarios %}
             {% for usuario in usuarios %}
                 <tr>
+                    <td>{{ usuario.dni }}</td>
                     <td>{{ usuario.nombre }}</td>
                     <td>{{ usuario.apellido }}</td>
                     <td>{{ usuario.email }}</td>
                     <td>
-                        <a class="btn btn-warning" href="{{ path('aeroclub_tesorero_edit', {'id': usuario.tesorero.id}) }}">Editar</a>
+                        <a class="btn btn-warning mb-2" href="{{ path('aeroclub_tesorero_edit', {'id': usuario.tesorero.id}) }}">Editar</a>
+                        {{ include('tesorero/_delete_form.html.twig') }}
                     </td>
                 </tr>
             {% endfor %}

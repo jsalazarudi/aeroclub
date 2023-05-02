@@ -60,7 +60,7 @@ class PilotoController extends AbstractController
         return $this->render('piloto/new.html.twig', [
             'piloto' => $piloto,
             'form' => $form,
-            'tipo' => 'Pilotos',
+            'tipo' => 'Piloto',
             'url_ruta_listar' => $this->generateUrl('aeroclub_piloto_index')
         ]);
     }
@@ -88,7 +88,7 @@ class PilotoController extends AbstractController
         return $this->render('piloto/edit.html.twig', [
             'piloto' => $piloto,
             'form' => $form,
-            'tipo' => 'Pilotos',
+            'tipo' => 'Piloto',
             'url_ruta_listar' => $this->generateUrl('aeroclub_piloto_index')
         ]);
     }

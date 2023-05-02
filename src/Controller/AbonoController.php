@@ -78,6 +78,10 @@ class AbonoController extends AbstractController
             $form->remove('aprobado');
         }
 
+        if ($this->isGranted('ROLE_ALUMNO') || $this->isGranted('ROLE_PILOTO')) {
+            $form->remove('pagoMensualidads');
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -136,16 +140,18 @@ class AbonoController extends AbstractController
                     ->setParameter('avion', $avion)
                     ->setParameter('fecha', $ultimaFechaHistorialListaPrecios);
 
-                if ($this->isGranted('ROLE_ALUMNO')) {
-                    $listaPrecioQuery->andWhere('lp.alumno = true');
-                }
 
                 // VALIDAR SI ES UN VUELO TURISMO
                 if($movimientoCuentaVuelo->getVuelo()->isEsVueloTuristico()) {
                     $listaPrecioQuery->andWhere('lp.bautismo = true');
                 }
                 else {
-                    $listaPrecioQuery->andWhere('lp.socio = true');
+                    if ($this->isGranted('ROLE_ALUMNO')) {
+                        $listaPrecioQuery->andWhere('lp.alumno = true');
+                    }
+                    else {
+                        $listaPrecioQuery->andWhere('lp.socio = true');
+                    }
                 }
 
                 /** @var ListaPrecio $listaPrecio */
@@ -194,7 +200,28 @@ class AbonoController extends AbstractController
                     }
 
                     /** @var ListaPrecio $listaPrecio */
-                    $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
+                    try {
+                        $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
+                    } catch (NoResultException $e) {
+                        $this->addFlash(
+                            'error',
+                            'No hay lista de precios relacionadas  al producto'
+                        );
+                        return $this->render('abono/new.html.twig', [
+                            'abono' => $abono,
+                            'form' => $form,
+                        ]);
+
+                    } catch (NonUniqueResultException $e) {
+                        $this->addFlash(
+                            'error',
+                            'Hay conflicto entre dos listas de precios para el producto'
+                        );
+                        return $this->render('abono/new.html.twig', [
+                            'abono' => $abono,
+                            'form' => $form,
+                        ]);
+                    }
                     $totalAbono += $listaPrecio->getPrecio() * $producto->getCantidad();
 
                     $producto->setListaPrecio($listaPrecio);
@@ -292,6 +319,10 @@ class AbonoController extends AbstractController
             $form->remove('pagoMensualidads');
         }
 
+        if ($this->isGranted('ROLE_ALUMNO') || $this->isGranted('ROLE_PILOTO')) {
+            $form->remove('pagoMensualidads');
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -326,6 +357,10 @@ class AbonoController extends AbstractController
 
         if ( $this->isGranted('ROLE_SOCIO')) {
             $usuario = $this->getUser()->getSocio();
+        }
+
+        if ($this->isGranted('ROLE_ALUMNO')) {
+            $usuario = $this->getUser()->getAlumno();
         }
 
         $total = $abono->getValor();

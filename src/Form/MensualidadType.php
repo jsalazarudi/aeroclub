@@ -53,7 +53,8 @@ class MensualidadType extends AbstractType
 
                     return $er->createQueryBuilder('s')
                         ->where('s.es_mensual = true');
-                }
+                },
+                'placeholder' => 'Seleccione el servicio mensual'
             ])
         ;
     }

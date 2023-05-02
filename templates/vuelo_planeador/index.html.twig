@@ -10,13 +10,6 @@
 
         <div class="text-center">
             <a class="btn btn-success mt-2 mb-5" href="{{ path('app_vuelo_planeador_new') }}">Crear Vuelo Planeador</a>
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                'vp.tema_vuelo' : 'Tema Vuelo'
-            } %}
-            {{ knp_pagination_filter(vuelos_planeador,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('app_vuelo_planeador_index') }}">Sin Filtros</a>
         </div>
 
         <table class="table">

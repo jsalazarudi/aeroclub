@@ -10,13 +10,6 @@
 
         <div class="text-center">
             <a class="btn btn-success mt-2 mb-5" href="{{ path('app_hangar_new') }}">Crear Hangar</a>
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                'r.descripcion' : 'Descripcion'
-            } %}
-            {{ knp_pagination_filter(hangars,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('app_hangar_index') }}">Sin Filtros</a>
         </div>
 
         <table class="table">

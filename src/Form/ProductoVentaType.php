@@ -31,9 +31,9 @@ class ProductoVentaType extends AbstractType
                 ],
                 'label_attr' => [
                     'class' => 'text-muted fs-3'
-                ]
+                ],
+                'placeholder' => 'Seleccione el producto que desea obtener'
             ])
-            // ->add('venta_id')
         ;
     }
 

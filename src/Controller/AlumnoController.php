@@ -23,8 +23,7 @@ class AlumnoController extends AbstractController
     public function index(Request $request, UsuarioRepository $usuarioRepository, PaginatorInterface $paginator): Response
     {
         $alumnosActivos = $usuarioRepository->createQueryBuilder('u')
-            ->join('u.alumno', 'a')
-            ->where('u.activo = true');
+            ->join('u.alumno', 'a');
 
         $query = $alumnosActivos->getQuery();
 
@@ -65,7 +64,7 @@ class AlumnoController extends AbstractController
         return $this->render('alumno/new.html.twig', [
             'alumno' => $alumno,
             'form' => $form,
-            'tipo' => 'Alumnos',
+            'tipo' => 'Alumno',
             'url_ruta_listar' => $this->generateUrl('aeroclub_alumno_index')
         ]);
     }
@@ -130,7 +129,7 @@ class AlumnoController extends AbstractController
         return $this->render('alumno/edit.html.twig', [
             'alumno' => $alumno,
             'form' => $form,
-            'tipo' => 'Alumnos',
+            'tipo' => 'Alumno',
             'url_ruta_listar' => $this->generateUrl('aeroclub_alumno_index')
         ]);
     }
@@ -139,8 +138,7 @@ class AlumnoController extends AbstractController
     public function delete(Request $request, Alumno $alumno, AlumnoRepository $alumnoRepository): Response
     {
         if ($this->isCsrfTokenValid('delete' . $alumno->getId(), $request->request->get('_token'))) {
-            $alumno->getUsuario()->setActivo(false);
-            $alumnoRepository->save($alumno, true);
+            $alumnoRepository->remove($alumno, true);
         }
 
         return $this->redirectToRoute('aeroclub_alumno_index', [], Response::HTTP_SEE_OTHER);

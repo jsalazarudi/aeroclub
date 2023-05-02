@@ -28,7 +28,7 @@
         {% if ventas %}
             {% for venta in ventas  %}
                 {% for producto in venta.productoVentas %}
-                    <p>Valor Producto: {{ (producto.listaPrecio.precio * producto.cantidad)|format_currency('ARS') }}</p>
+                    <p>Valor {{ producto.producto.descripcion }}: {{ (producto.listaPrecio.precio * producto.cantidad)|format_currency('ARS') }}</p>
                 {% endfor %}
             {% endfor %}
         {% endif %}

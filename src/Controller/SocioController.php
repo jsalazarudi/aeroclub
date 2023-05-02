@@ -78,7 +78,7 @@ class SocioController extends AbstractController
         return $this->render('socio/new.html.twig', [
             'socio' => $socio,
             'form' => $form,
-            'tipo' => 'Socios',
+            'tipo' => 'Socio',
             'url_ruta_listar' => $this->generateUrl('aeroclub_socio_index')
         ]);
     }

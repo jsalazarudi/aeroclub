@@ -39,6 +39,7 @@ class VueloType extends AbstractType
                 ]
             ])
             ->add('es_vuelo_turistico', CheckboxType::class, [
+                'label' => 'Es vuelo bautismo',
                 'attr' => [
                     'class' => 'form-check-input fs-4'
                 ],
@@ -120,6 +121,7 @@ class VueloType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ],
                 'allow_add' => true,
+                'allow_delete' => true,
                 'prototype_options'  => [
                     'help' => 'Puedes registrar productos a este vuelo',
                 ],

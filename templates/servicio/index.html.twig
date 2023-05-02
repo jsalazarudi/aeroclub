@@ -10,13 +10,6 @@
 
         <div class="text-center">
             <a class="btn btn-success mt-2 mb-5" href="{{ path('app_servicio_new') }}">Crear Servicio</a>
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                's.descripcion' : 'Descripción'
-            } %}
-            {{ knp_pagination_filter(servicios,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('app_servicio_index') }}">Sin Filtros</a>
         </div>
 
         <table class="table">

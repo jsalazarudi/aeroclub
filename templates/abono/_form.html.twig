@@ -58,19 +58,21 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col mb-3">
-            {{ form_label(form.pagoMensualidads) }}
+    {% if is_granted('ROLE_SOCIO') %}
+        <div class="row">
+            <div class="col mb-3">
+                {{ form_label(form.pagoMensualidads) }}
 
-            {% if form_errors(form.pagoMensualidads) %}
-                <div class="alert alert-danger">
-                    {{ form_errors(form.pagoMensualidads) }}
-                </div>
-            {% endif %}
+                {% if form_errors(form.pagoMensualidads) %}
+                    <div class="alert alert-danger">
+                        {{ form_errors(form.pagoMensualidads) }}
+                    </div>
+                {% endif %}
 
-            {{ form_widget(form.pagoMensualidads) }}
+                {{ form_widget(form.pagoMensualidads) }}
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     <div class="row">
         <div class="col mb-3">

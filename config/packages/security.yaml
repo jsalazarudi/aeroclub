@@ -32,7 +32,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/tesorero, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/tesorero, roles: [ROLE_ADMINISTRADOR] }
         - { path: ^/usuario, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR,ROLE_INSTRUCTOR] }
         - { path: ^/home, roles: [ROLE_TESORERO,ROLE_ALUMNO,ROLE_ADMINISTRADOR,ROLE_SOCIO,ROLE_PILOTO,ROLE_INSTRUCTOR] }
         - { path: ^/alumno, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR,ROLE_INSTRUCTOR,ROLE_ALUMNO] }

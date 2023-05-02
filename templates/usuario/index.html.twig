@@ -3,27 +3,32 @@
     <h1 class="text-center mt-2 mb-2">Listado {{ tipo }}</h1>
 
     <div class="text-center">
-        <a class="btn btn-success mt-2 mb-5" href="{{ url_ruta_crear }}">Crear {{ tipo }}</a>
-        <p class="fw-bold">Filtrar por:</p>
-        {% set filtros = {
-            'u.nombre' : 'Nombre',
-            'u.apellido': 'Apellido'
-        } %}
-        {{ knp_pagination_filter(usuarios,filtros) }}
+        {% if is_granted('ROLE_TESORERO') %}
+            <a class="btn btn-success mt-2 mb-5" href="{{ url_ruta_crear }}">Crear {{ tipo }}</a>
+        {% endif %}
 
-        <a class="btn btn-link" href="{{ url_ruta_listar }}">Sin Filtros</a>
+        {% if is_granted('ROLE_ADMINISTRADOR') and tipo == 'Tesorero' %}
+            <a class="btn btn-success mt-2 mb-5" href="{{ url_ruta_crear }}">Crear {{ tipo }}</a>
+        {% endif %}
+
+        {% if is_granted('ROLE_INSTRUCTOR') and tipo == 'Alumnos' %}
+            <a class="btn btn-success mt-2 mb-5" href="{{ url_ruta_crear }}">Crear {{ tipo }}</a>
+        {% endif %}
+
+        <a class="btn btn-secondary mt-2 mb-5" href="{{ path('app_usuario_index') }}" >Regresar</a>
     </div>
 
     <table class="table">
         <thead>
-        <th {% if usuarios.isSorted('u.nombre') %} class="table-active" {% endif %}>
-            {{ knp_pagination_sortable(usuarios,'Nombre','u.nombre') }}
+        <th>Dni</th>
+        <th>
+           Nombre
         </th>
-        <th {% if usuarios.isSorted('u.apellido') %} class="table-active" {% endif %}>
-            {{ knp_pagination_sortable(usuarios,'Apellido','u.apellido') }}
+        <th>
+           Apellido
         </th>
-        <th {% if usuarios.isSorted('u.correo') %} class="table-active" {% endif %}>
-            {{ knp_pagination_sortable(usuarios,'Email','u.email') }}
+        <th>
+           Correo
         </th>
         <th></th>
         </thead>

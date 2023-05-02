@@ -80,10 +80,13 @@ class ReservaHangarController extends AbstractController
 
         $form->handleRequest($request);
 
+        $resultMensualidadQuery = null;
+
         if ($form->isSubmitted() && $form->isValid()) {
 
             $tipoUsuario = $this->getTipoUsuario();
             if ($this->isGranted('ROLE_SOCIO')) {
+
                 $reservaHangar->getReserva()->setSocio($tipoUsuario);
 
                 $mensualidadQuery = $mensualidadRepository->createQueryBuilder('m')
@@ -100,15 +103,43 @@ class ReservaHangarController extends AbstractController
                 try {
                     /** @var Mensualidad $resultMensualidadQuery */
                     $resultMensualidadQuery = $mensualidadQuery->getSingleResult();
+
                 } catch (NoResultException $e) {
-                    $servicio = $servicioRepository->createQueryBuilder('s')
+
+                    $servicioQuery = $servicioRepository->createQueryBuilder('s')
                         ->where('s.es_hangaraje = true')
                         ->andWhere('s.defecto = true')
-                        ->getQuery()
-                        ->getSingleResult();
+                        ->getQuery();
 
-                    $reservaHangar->setServicio($servicio);
+                    try {
+                        $resultServicioQuery = $servicioQuery->getSingleResult();
+
+
+                    }catch (NoResultException $e) {
+                        $this->addFlash('error',"Debe registrar una servicio de tipo hangaraje");
+                        return $this->render('reserva_hangar/new.html.twig', [
+                            'reserva_hangar' => $reservaHangar,
+                            'form' => $form,
+                        ]);
+                    } catch (NonUniqueResultException $e) {
+                        $this->addFlash('error',"Servicio de tipo hangaraje duplicado");
+                        return $this->render('reserva_hangar/new.html.twig', [
+                            'reserva_hangar' => $reservaHangar,
+                            'form' => $form,
+                        ]);
+                    }
+
+                    $reservaHangar->setServicio($resultServicioQuery);
+
+                    $reservaHangarRepository->save($reservaHangar, true);
+                    return $this->redirectToRoute('app_reserva_hangar_index', [], Response::HTTP_SEE_OTHER);
+
                 } catch (NonUniqueResultException $e) {
+                    $this->addFlash('error',"Servicio de tipo hangaraje duplicado");
+                    return $this->render('reserva_hangar/new.html.twig', [
+                        'reserva_hangar' => $reservaHangar,
+                        'form' => $form,
+                    ]);
                 }
 
                 $reservaHangar->setServicio($resultMensualidadQuery->getServicio());
@@ -116,11 +147,25 @@ class ReservaHangarController extends AbstractController
             } elseif ($this->isGranted('ROLE_PILOTO')) {
                 $reservaHangar->getReserva()->setPiloto($tipoUsuario);
 
-                $servicio = $servicioRepository->createQueryBuilder('s')
-                    ->where('s.es_hangaraje = true')
-                    ->andWhere('s.defecto = true')
-                    ->getQuery()
-                    ->getSingleResult();
+                try {
+                    $servicio = $servicioRepository->createQueryBuilder('s')
+                        ->where('s.es_hangaraje = true')
+                        ->andWhere('s.defecto = true')
+                        ->getQuery()
+                        ->getSingleResult();
+                } catch (NoResultException $e) {
+                    $this->addFlash('error',"Debe registrar una servicio de tipo hangaraje");
+                    return $this->render('reserva_hangar/new.html.twig', [
+                        'reserva_hangar' => $reservaHangar,
+                        'form' => $form,
+                    ]);
+                } catch (NonUniqueResultException $e) {
+                    $this->addFlash('error',"Servicio de tipo hangaraje duplicado");
+                    return $this->render('reserva_hangar/new.html.twig', [
+                        'reserva_hangar' => $reservaHangar,
+                        'form' => $form,
+                    ]);
+                }
 
                 $reservaHangar->setServicio($servicio);
             }

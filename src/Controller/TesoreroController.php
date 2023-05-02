@@ -34,7 +34,7 @@ class TesoreroController extends AbstractController
 
         return $this->render('tesorero/index.html.twig', [
             'usuarios' => $tesoreros,
-            'tipo' => 'Tesoreros',
+            'tipo' => 'Tesorero',
             'url_ruta_crear' => $this->generateUrl('aeroclub_tesorero_new'),
             'url_ruta_listar' => $this->generateUrl('aeroclub_tesorero_index')
         ]);
@@ -60,7 +60,7 @@ class TesoreroController extends AbstractController
         return $this->render('tesorero/new.html.twig', [
             'tesorero' => $tesorero,
             'form' => $form,
-            'tipo' => 'Tesoreros',
+            'tipo' => 'Tesorero',
             'url_ruta_listar' => $this->generateUrl('aeroclub_tesorero_index')
         ]);
     }
@@ -88,7 +88,7 @@ class TesoreroController extends AbstractController
         return $this->render('tesorero/edit.html.twig', [
             'tesorero' => $tesorero,
             'form' => $form,
-            'tipo' => 'Tesoreros',
+            'tipo' => 'Tesorero',
             'url_ruta_listar' => $this->generateUrl('aeroclub_tesorero_index')
         ]);
     }
@@ -97,8 +97,7 @@ class TesoreroController extends AbstractController
     public function delete(Request $request, Tesorero $tesorero, TesoreroRepository $tesoreroRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$tesorero->getId(), $request->request->get('_token'))) {
-            $tesorero->getUsuario()->setActivo(false);
-            $tesoreroRepository->save($tesorero, true);
+            $tesoreroRepository->remove($tesorero,true);
         }
 
         return $this->redirectToRoute('aeroclub_tesorero_index', [], Response::HTTP_SEE_OTHER);

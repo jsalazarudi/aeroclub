@@ -1,4 +1,4 @@
-<form method="post" action="{{ path('aeroclub_tesorero_delete', {'id': tesorero.id}) }}" onsubmit="return confirm('Esta seguro de desactivar al tesorero?');">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tesorero.id) }}">
-    <button class="btn btn-danger">Desactivar</button>
+<form method="post" action="{{ path('aeroclub_tesorero_delete', {'id': usuario.tesorero.id}) }}" onsubmit="return confirm('Esta seguro de eliminar al tesorero?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ usuario.tesorero.id) }}">
+    <button class="btn btn-danger">Eliminar</button>
 </form>

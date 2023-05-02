@@ -34,7 +34,7 @@ class Tesorero
     private Collection $notas;
 
 
-    #[ORM\OneToOne(targetEntity: Usuario::class, mappedBy: 'tesorero', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'tesorero', targetEntity: Usuario::class, cascade: ['persist', 'remove'])]
     #[Assert\Type(type: Usuario::class)]
     #[Assert\Valid]
     private ?Usuario $usuario = null;

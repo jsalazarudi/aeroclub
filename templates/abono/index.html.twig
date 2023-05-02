@@ -12,13 +12,6 @@
             {% if is_granted('ROLE_SOCIO') or is_granted('ROLE_PILOTO') or is_granted('ROLE_ALUMNO') %}
                 <a class="btn btn-success mt-2 mb-5" href="{{ path('app_abono_new') }}">Crear Solicitud</a>
             {% endif %}
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                'r.valor' : 'Valor'
-            } %}
-            {{ knp_pagination_filter(abonos,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('app_abono_index') }}">Sin Filtros</a>
         </div>
 
         <table class="table">
@@ -106,7 +99,7 @@
                         {% if is_granted('ROLE_TESORERO') %}
                             <a class="btn btn-warning"
                                href="{{ path('app_abono_edit', {'id': abono.id}) }}">Editar</a>
-                        {% elseif (is_granted('ROLE_SOCIO') or is_granted('ROLE_PILOTO')) and abono.aprobado %}
+                        {% elseif (is_granted('ROLE_SOCIO') or is_granted('ROLE_PILOTO')  or is_granted('ROLE_ALUMNO') )  and abono.aprobado %}
                             <a class="btn btn-warning"
                                href="{{ path('app_abono_recibo', {'id': abono.id}) }}">Ver Recibo</a>
                         {% endif %}

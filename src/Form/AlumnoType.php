@@ -6,6 +6,7 @@ use App\Entity\Alumno;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -23,7 +24,7 @@ class AlumnoType extends AbstractType
                 ],
                 'required' => false
             ])
-            ->add('fecha_vencimiento_licencia_medica', DateTimeType::class, [
+            ->add('fecha_vencimiento_licencia_medica', DateType::class, [
                 'widget' => 'single_text',
                 'attr' => [
                     'class' => 'form-control'

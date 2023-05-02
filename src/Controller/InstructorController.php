@@ -60,7 +60,7 @@ class InstructorController extends AbstractController
         return $this->render('instructor/new.html.twig', [
             'instructor' => $instructor,
             'form' => $form,
-            'tipo' => 'Instructores',
+            'tipo' => 'Instructor',
             'url_ruta_listar' => $this->generateUrl('aeroclub_instructor_index')
         ]);
     }
@@ -88,7 +88,7 @@ class InstructorController extends AbstractController
         return $this->render('instructor/edit.html.twig', [
             'instructor' => $instructor,
             'form' => $form,
-            'tipo' => 'Alumnos',
+            'tipo' => 'Instructor',
             'url_ruta_listar' => $this->generateUrl('aeroclub_instructor_index')
         ]);
     }

@@ -33,7 +33,8 @@ class ReservaHangarType extends AbstractType
                 ],
                 'label_attr' => [
                     'class' => 'text-muted fs-3'
-                ]
+                ],
+                'placeholder' => 'Seleccione el hangar'
             ])
             ->add('unidades_gastadas',IntegerType::class,[
                 'attr' => [

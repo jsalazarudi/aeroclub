@@ -109,6 +109,7 @@ class VueloMotorController extends AbstractController
 
         if ($isAlumno) {
             $formVuelo = $form->get('vuelo');
+            $formVuelo->remove('productoVuelos');
             $formVuelo->remove('reservaVuelo');
         }
 

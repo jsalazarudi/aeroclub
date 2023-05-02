@@ -33,9 +33,6 @@ class VueloPlaneadorController extends AbstractController
         }
 
         $isSocioPiloto = $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO');
-        if ($isSocioPiloto) {
-        }
-
 
 
         $query = $vueloPlaneadorQuery->getQuery();
@@ -87,6 +84,7 @@ class VueloPlaneadorController extends AbstractController
         if ($isAlumno) {
             $formVuelo = $form->get('vuelo');
             $formVuelo->remove('reservaVuelo');
+            $formVuelo->remove('productoVuelos');
         }
 
         $form->handleRequest($request);
