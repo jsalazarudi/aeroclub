@@ -28,19 +28,19 @@
             {% endif %}
 
 
-            {% if is_granted('ROLE_INSTRUCTOR') %}
-            <div class="col">
-                <div class="card">
-                    <img src="{{ asset('usuarios/alumno.png') }}" class="card-img-top w-25" alt="">
-                    <div class="card-body">
-                        <a class="fw-bold fs-5" href="{{ path('aeroclub_alumno_index') }}">Alumno</a>
+            {% if is_granted('ROLE_INSTRUCTOR') or is_granted('ROLE_TESORERO') or is_granted('ROLE_ADMINISTRADOR') %}
+                <div class="col">
+                    <div class="card">
+                        <img src="{{ asset('usuarios/alumno.png') }}" class="card-img-top w-25" alt="">
+                        <div class="card-body">
+                            <a class="fw-bold fs-5" href="{{ path('aeroclub_alumno_index') }}">Alumno</a>
+                        </div>
                     </div>
                 </div>
-            </div>
             {% endif %}
         </div>
 
-        {% if is_granted('ROLE_TESORERO') %}
+        {% if is_granted('ROLE_TESORERO') or is_granted('ROLE_ADMINISTRADOR') %}
             <div class="row">
 
                 <div class="col">
