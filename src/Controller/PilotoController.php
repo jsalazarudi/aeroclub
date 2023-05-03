@@ -20,8 +20,7 @@ class PilotoController extends AbstractController
     public function index(Request $request, UsuarioRepository $usuarioRepository, PaginatorInterface $paginator): Response
     {
         $pilotosActivos = $usuarioRepository->createQueryBuilder('u')
-            ->join('u.piloto','p')
-            ->where('u.activo = true');
+            ->join('u.piloto','p');
 
         $query = $pilotosActivos->getQuery();
 
@@ -50,7 +49,6 @@ class PilotoController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $piloto->getUsuario()->setRoles(['ROLE_PILOTO']);
-            $piloto->getUsuario()->setActivo(true);
 
             $pilotoRepository->save($piloto, true);
 
@@ -97,8 +95,7 @@ class PilotoController extends AbstractController
     public function delete(Request $request, Piloto $piloto, PilotoRepository $pilotoRepository): Response
     {
         if ($this->isCsrfTokenValid('delete' . $piloto->getId(), $request->request->get('_token'))) {
-            $piloto->getUsuario()->setActivo(false);
-            $pilotoRepository->save($piloto, true);
+            $pilotoRepository->remove($piloto, true);
         }
 
         return $this->redirectToRoute('aeroclub_piloto_index', [], Response::HTTP_SEE_OTHER);

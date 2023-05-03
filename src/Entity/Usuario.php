@@ -55,8 +55,6 @@ class Usuario implements UserInterface,PasswordAuthenticatedUserInterface
     #[Assert\Type('string')]
     private ?string $ciudad = null;
 
-    #[ORM\Column]
-    private ?bool $activo = null;
 
     #[ORM\Column(type: 'string')]
     #[Assert\NotBlank()]
@@ -66,23 +64,23 @@ class Usuario implements UserInterface,PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json')]
     private array $roles = [];
 
-    #[ORM\OneToOne(targetEntity: Tesorero::class,inversedBy: 'usuario', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'usuario', targetEntity: Tesorero::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'tesorero_id',referencedColumnName: 'id')]
     private ?Tesorero $tesorero = null;
 
-    #[ORM\OneToOne(targetEntity: Alumno::class,inversedBy: 'usuario', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'usuario', targetEntity: Alumno::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'alumno_id',referencedColumnName: 'id')]
     private ?Alumno $alumno = null;
 
-    #[ORM\OneToOne(targetEntity: Socio::class,inversedBy: 'usuario', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'usuario', targetEntity: Socio::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'socio_id',referencedColumnName: 'id')]
     private ?Socio $socio = null;
 
-    #[ORM\OneToOne(targetEntity: Instructor::class,inversedBy: 'usuario', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'usuario', targetEntity: Instructor::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'instructor_id',referencedColumnName: 'id')]
     private ?Instructor $instructor = null;
 
-    #[ORM\OneToOne(targetEntity: Piloto::class,inversedBy: 'usuario', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'usuario', targetEntity: Piloto::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(name: 'piloto_id',referencedColumnName: 'id')]
     private ?Piloto $piloto = null;
 
@@ -171,18 +169,6 @@ class Usuario implements UserInterface,PasswordAuthenticatedUserInterface
     public function setCiudad(string $ciudad): self
     {
         $this->ciudad = $ciudad;
-
-        return $this;
-    }
-
-    public function isActivo(): ?bool
-    {
-        return $this->activo;
-    }
-
-    public function setActivo(bool $activo): self
-    {
-        $this->activo = $activo;
 
         return $this;
     }

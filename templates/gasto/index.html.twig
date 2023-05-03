@@ -11,13 +11,6 @@
         <div class="text-center">
             <a class="btn btn-success mt-2 mb-5" href="{{ path('app_gasto_new') }}">Crear Gasto</a>
             <a class="btn btn-success mt-2 mb-5" href="{{ path('app_gasto_exportar') }}">Exportar Gastos</a>
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                'g.descripcion' : 'Descripcion'
-            } %}
-            {{ knp_pagination_filter(gastos,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('app_gasto_index') }}">Sin Filtros</a>
         </div>
 
         <table class="table">

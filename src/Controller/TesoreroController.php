@@ -21,8 +21,7 @@ class TesoreroController extends AbstractController
     public function index(Request $request,UsuarioRepository $usuarioRepository, PaginatorInterface $paginator): Response
     {
         $tesorerosActivos = $usuarioRepository->createQueryBuilder('u')
-            ->join('u.tesorero','t')
-            ->where('u.activo = true');
+            ->join('u.tesorero','t');
 
         $query = $tesorerosActivos->getQuery();
 
@@ -51,7 +50,6 @@ class TesoreroController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $tesorero->getUsuario()->setRoles(['ROLE_TESORERO']);
-            $tesorero->getUsuario()->setActivo(true);
 
             $tesoreroRepository->save($tesorero, true);
             return $this->redirectToRoute('aeroclub_tesorero_index', [], Response::HTTP_SEE_OTHER);

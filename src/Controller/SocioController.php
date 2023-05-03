@@ -22,8 +22,7 @@ class SocioController extends AbstractController
     public function index(Request $request, UsuarioRepository $usuarioRepository, PaginatorInterface $paginator): Response
     {
         $sociosActivos = $usuarioRepository->createQueryBuilder('u')
-            ->join('u.socio','s')
-            ->where('u.activo = true');
+            ->join('u.socio','s');
 
         $query = $sociosActivos->getQuery();
 
@@ -53,7 +52,6 @@ class SocioController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $socio->getUsuario()->setRoles(['ROLE_SOCIO']);
-            $socio->getUsuario()->setActivo(true);
 
             // ANTES DE GUARDAR, SETIAR LOS PAGOS PENDIENTES MENSUALES
             // EN BASE A LA FECHA INICIO Y FECHA FIN DE LA MENSUALIDAD
@@ -134,8 +132,7 @@ class SocioController extends AbstractController
     public function delete(Request $request, Socio $socio, SocioRepository $socioRepository): Response
     {
         if ($this->isCsrfTokenValid('delete' . $socio->getId(), $request->request->get('_token'))) {
-            $socio->getUsuario()->setActivo(false);
-            $socioRepository->save($socio, true);
+            $socioRepository->remove($socio, true);
         }
 
         return $this->redirectToRoute('aeroclub_socio_index', [], Response::HTTP_SEE_OTHER);

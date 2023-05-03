@@ -10,13 +10,6 @@
 
         <div class="text-center">
             <a class="btn btn-success mt-2 mb-5" href="{{ path('app_nota_new') }}">Crear Notas</a>
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                'n.fecha_recordatorio' : 'Fecha Recordatorio'
-            } %}
-            {{ knp_pagination_filter(notas,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('app_nota_index') }}">Sin Filtros</a>
         </div>
 
         <table class="table">

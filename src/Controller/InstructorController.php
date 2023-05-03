@@ -20,8 +20,7 @@ class InstructorController extends AbstractController
     public function index(Request $request, UsuarioRepository $usuarioRepository, PaginatorInterface $paginator): Response
     {
         $instructoresActivos = $usuarioRepository->createQueryBuilder('u')
-            ->join('u.instructor','i')
-            ->where('u.activo = true');
+            ->join('u.instructor','i');
 
         $query = $instructoresActivos->getQuery();
 
@@ -50,7 +49,6 @@ class InstructorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $instructor->getUsuario()->setRoles(['ROLE_INSTRUCTOR']);
-            $instructor->getUsuario()->setActivo(true);
 
             $instructorRepository->save($instructor, true);
 
@@ -97,8 +95,7 @@ class InstructorController extends AbstractController
     public function delete(Request $request, Instructor $instructor, InstructorRepository $instructorRepository): Response
     {
         if ($this->isCsrfTokenValid('delete' . $instructor->getId(), $request->request->get('_token'))) {
-            $instructor->getUsuario()->setActivo(false);
-            $instructorRepository->save($instructor, true);
+            $instructorRepository->remove($instructor, true);
         }
 
         return $this->redirectToRoute('aeroclub_instructor_index', [], Response::HTTP_SEE_OTHER);

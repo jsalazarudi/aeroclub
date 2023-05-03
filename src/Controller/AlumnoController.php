@@ -52,7 +52,6 @@ class AlumnoController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $alumno->getUsuario()->setRoles(['ROLE_ALUMNO']);
-            $alumno->getUsuario()->setActivo(true);
 
             $this->validarHabilitadoParaVolar($alumno);
 

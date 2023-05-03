@@ -11,13 +11,6 @@
         <div class="text-center">
             <a class="btn btn-success mt-2 mb-5" href="{{ path('app_historial_lista_precio_new') }}">Crear nuevo
                 historial</a>
-            <p class="fw-bold">Filtrar por:</p>
-            {% set filtros = {
-                'hl.fecha' : 'Fecha'
-            } %}
-            {{ knp_pagination_filter(historial_lista_precios,filtros) }}
-
-            <a class="btn btn-link" href="{{ path('app_historial_lista_precio_index') }}">Sin Filtros</a>
         </div>
 
         <table class="table">

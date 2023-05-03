@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ReservaVuelo{% endblock %}
+
+{% block body %}
+    <h1>ReservaVuelo</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ reserva_vuelo.id }}</td>
+            </tr>
+            <tr>
+                <th>Duracion</th>
+                <td>{{ reserva_vuelo.duracion }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_reserva_vuelo_index') }}">back to list</a>
+
+    <a href="{{ path('app_reserva_vuelo_edit', {'id': reserva_vuelo.id}) }}">edit</a>
+
+    {{ include('reserva_vuelo/_delete_form.html.twig') }}
+{% endblock %}

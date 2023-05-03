@@ -29,7 +29,7 @@ class VentaController extends AbstractController
 
         if ($this->isGranted('ROLE_PILOTO')) {
             $piloto = $this->getUser()->getPiloto();
-            $ventasQuery->where('v.piloto = :socio')
+            $ventasQuery->where('v.piloto = :piloto')
                 ->setParameter('piloto',$piloto);
         }
 

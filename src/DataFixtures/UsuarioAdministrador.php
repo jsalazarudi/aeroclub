@@ -44,7 +44,6 @@ class UsuarioAdministrador extends Fixture implements ContainerAwareInterface
             $administrador->setTelefono('123456');
             $administrador->setDomicilio('Aeroclub Necochea');
             $administrador->setCiudad('Necochea');
-            $administrador->setActivo(true);
             $administrador->setPassword($this->passwordHasher->hashPassword($administrador, $this->container->getParameter('password_admin')));
             $administrador->setRoles(['ROLE_ADMINISTRADOR']);
 
