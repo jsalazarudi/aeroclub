@@ -67,11 +67,7 @@
                     </td>
                     <td>
                         {% if is_granted('ROLE_TESORERO') %}
-                            {% if reserva_hangar.reserva.socio %}
-                                {{ reserva_hangar.reserva.socio.usuario.nombre }} {{ reserva_hangar.reserva.socio.usuario.apellido }}
-                            {% elseif reserva_hangar.reserva.piloto %}
-                                {{ reserva_hangar.reserva.piloto.usuario.nombre }} {{ reserva_hangar.reserva.piloto.usuario.apellido }}
-                            {% endif %}
+                            {{ reserva_hangar.reserva.usuario.nombre }} {{ reserva_hangar.reserva.usuario.apellido }}
                         {% endif %}
                     </td>
                     <td>

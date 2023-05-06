@@ -15,12 +15,6 @@ class Reserva
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'reservas')]
-    private ?Piloto $piloto = null;
-
-    #[ORM\ManyToOne(inversedBy: 'reservas')]
-    private ?Socio $socio = null;
-
     #[ORM\Column(nullable: true)]
     private ?bool $aprobado = null;
 
@@ -34,33 +28,13 @@ class Reserva
     #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha_fin = null;
 
+    #[ORM\ManyToOne(inversedBy: 'reservas')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Usuario $usuario = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getPiloto(): ?Piloto
-    {
-        return $this->piloto;
-    }
-
-    public function setPiloto(?Piloto $piloto): self
-    {
-        $this->piloto = $piloto;
-
-        return $this;
-    }
-
-    public function getSocio(): ?Socio
-    {
-        return $this->socio;
-    }
-
-    public function setSocio(?Socio $socio): self
-    {
-        $this->socio = $socio;
-
-        return $this;
     }
 
     public function isAprobado(): ?bool
@@ -95,6 +69,18 @@ class Reserva
     public function setFechaFin(\DateTimeInterface $fecha_fin): self
     {
         $this->fecha_fin = $fecha_fin;
+
+        return $this;
+    }
+
+    public function getUsuario(): ?Usuario
+    {
+        return $this->usuario;
+    }
+
+    public function setUsuario(?Usuario $usuario): self
+    {
+        $this->usuario = $usuario;
 
         return $this;
     }

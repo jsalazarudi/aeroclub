@@ -25,26 +25,10 @@ class Piloto
     #[ORM\Column(type: Types::TEXT)]
     private ?string $tipo_licencia = null;
 
-    #[ORM\OneToMany(mappedBy: 'piloto', targetEntity: Reserva::class)]
-    private Collection $reservas;
-
-    #[ORM\OneToMany(mappedBy: 'piloto', targetEntity: Abono::class)]
-    private Collection $abonos;
-
-    #[ORM\OneToMany(mappedBy: 'piloto', targetEntity: Venta::class)]
-    private Collection $ventas;
-
     #[ORM\OneToOne(targetEntity: Usuario::class,mappedBy: 'piloto', cascade: ['persist', 'remove'])]
     #[Assert\Type(type: Usuario::class)]
     #[Assert\Valid]
     private ?Usuario $usuario = null;
-
-    public function __construct()
-    {
-        $this->reservas = new ArrayCollection();
-        $this->abonos = new ArrayCollection();
-        $this->ventas = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -71,96 +55,6 @@ class Piloto
     public function setTipoLicencia(string $tipo_licencia): self
     {
         $this->tipo_licencia = $tipo_licencia;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Reserva>
-     */
-    public function getReservas(): Collection
-    {
-        return $this->reservas;
-    }
-
-    public function addReserva(Reserva $reserva): self
-    {
-        if (!$this->reservas->contains($reserva)) {
-            $this->reservas->add($reserva);
-            $reserva->setPiloto($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReserva(Reserva $reserva): self
-    {
-        if ($this->reservas->removeElement($reserva)) {
-            // set the owning side to null (unless already changed)
-            if ($reserva->getPiloto() === $this) {
-                $reserva->setPiloto(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Abono>
-     */
-    public function getAbonos(): Collection
-    {
-        return $this->abonos;
-    }
-
-    public function addAbono(Abono $abono): self
-    {
-        if (!$this->abonos->contains($abono)) {
-            $this->abonos->add($abono);
-            $abono->setPiloto($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAbono(Abono $abono): self
-    {
-        if ($this->abonos->removeElement($abono)) {
-            // set the owning side to null (unless already changed)
-            if ($abono->getPiloto() === $this) {
-                $abono->setPiloto(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Venta>
-     */
-    public function getVentas(): Collection
-    {
-        return $this->ventas;
-    }
-
-    public function addVenta(Venta $venta): self
-    {
-        if (!$this->ventas->contains($venta)) {
-            $this->ventas->add($venta);
-            $venta->setPiloto($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVenta(Venta $venta): self
-    {
-        if ($this->ventas->removeElement($venta)) {
-            // set the owning side to null (unless already changed)
-            if ($venta->getPiloto() === $this) {
-                $venta->setPiloto(null);
-            }
-        }
 
         return $this;
     }

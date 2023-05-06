@@ -22,42 +22,23 @@ class VueloMotorController extends AbstractController
     #[Route('/', name: 'app_vuelo_motor_index', methods: ['GET'])]
     public function index(Request $request, VueloMotorRepository $vueloMotorRepository, PaginatorInterface $paginator): Response
     {
+        $usuario = $this->getUser();
+
         $vuelosMotorQuery = $vueloMotorRepository->createQueryBuilder('vm')
             ->join('vm.vuelo', 'v');
 
-        $isAlumno = $this->isGranted('ROLE_ALUMNO');
-
-        if ($isAlumno) {
-            /** @var Alumno $alumno */
-            $alumno = $this->getUser()->getAlumno();
-
+        if($this->isGranted('ROLE_ALUMNO')) {
             $vuelosMotorQuery->join('v.curso', 'c')
                 ->where('c.alumno = :alumno')
-                ->setParameter('alumno', $alumno);
+                ->setParameter('alumno', $usuario);
         }
 
-        $isSocioPiloto = $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO');
-
-        if ($isSocioPiloto) {
+        if ($this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO')) {
 
             $vuelosMotorQuery->join('v.reservaVuelo','rv')
-                ->join('rv.reserva','r');
-
-            if ($this->isGranted('ROLE_SOCIO')) {
-                /** @var Socio $socio */
-                $socio = $this->getUser()->getSocio();
-
-                $vuelosMotorQuery->where('r.socio = :socio')
-                    ->setParameter('socio',$socio);
-
-            }
-            if ($this->isGranted('ROLE_PILOTO')) {
-                /** @var Piloto $piloto */
-                $piloto = $this->getUser()->getPiloto();
-
-                $vuelosMotorQuery->where('r.piloto = :piloto')
-                    ->setParameter('piloto',$piloto);
-            }
+                ->join('rv.reserva','r')
+                ->where('r.usuario = :usuario')
+                ->setParameter('usuario',$usuario);
         }
 
         $query = $vuelosMotorQuery->getQuery();
@@ -77,9 +58,7 @@ class VueloMotorController extends AbstractController
     #[Route('/new', name: 'app_vuelo_motor_new', methods: ['GET', 'POST'])]
     public function new(Request $request, VueloMotorRepository $vueloMotorRepository, MovimientoStockRepository $movimientoStockRepository): Response
     {
-        $isAlumno = $this->isGranted('ROLE_ALUMNO');
-
-        if ($isAlumno) {
+        if ($this->isGranted('ROLE_ALUMNO')) {
             /** @var Alumno $alumno */
             $alumno = $this->getUser()->getAlumno();
 
@@ -96,7 +75,7 @@ class VueloMotorController extends AbstractController
         $vueloMotor = new VueloMotor();
         $form = $this->createForm(VueloMotorType::class, $vueloMotor, [
             'tipo_usuario' => $this->getUser()->getRoles()[0],
-            'usuario' => $this->getUser()->getSocio() ?? $this->getUser()->getPiloto() ?? $this->getUser()->getAlumno()
+            'usuario' => $this->getUser()
         ]);
 
         $isSocioPiloto = $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO');
@@ -107,7 +86,7 @@ class VueloMotorController extends AbstractController
             $formVuelo->remove('avion');
         }
 
-        if ($isAlumno) {
+        if ($this->isGranted('ROLE_ALUMNO')) {
             $formVuelo = $form->get('vuelo');
             $formVuelo->remove('productoVuelos');
             $formVuelo->remove('reservaVuelo');
@@ -200,11 +179,16 @@ class VueloMotorController extends AbstractController
         if ($isAlumno) {
             $formVuelo = $form->get('vuelo');
             $formVuelo->remove('reservaVuelo');
+            $formVuelo->remove('productoVuelos');
         }
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+
+
+
             $vueloMotorRepository->save($vueloMotor, true);
 
             return $this->redirectToRoute('app_vuelo_motor_index', [], Response::HTTP_SEE_OTHER);

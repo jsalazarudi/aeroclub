@@ -20,20 +20,24 @@ class VueloPlaneadorController extends AbstractController
     #[Route('/', name: 'app_vuelo_planeador_index', methods: ['GET'])]
     public function index(Request $request, VueloPlaneadorRepository $vueloPlaneadorRepository, PaginatorInterface $paginator): Response
     {
-        $vueloPlaneadorQuery = $vueloPlaneadorRepository->createQueryBuilder('vp');
+        $usuario = $this->getUser();
+        $vueloPlaneadorQuery = $vueloPlaneadorRepository->createQueryBuilder('vp')->join('vp.vuelo', 'v');
 
-        $isAlumno = $this->isGranted('ROLE_ALUMNO');
-        if ($isAlumno) {
-            /** @var Alumno $alumno */
-            $alumno = $this->getUser()->getAlumno();
-            $vueloPlaneadorQuery->join('vp.vuelo', 'v')
+        if ($this->isGranted('ROLE_ALUMNO')) {
+
+            $vueloPlaneadorQuery
                 ->join('v.curso', 'c')
                 ->where('c.alumno = :alumno')
-                ->setParameter('alumno', $alumno);
+                ->setParameter('alumno', $usuario);
         }
 
-        $isSocioPiloto = $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO');
+        if ($this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO')) {
 
+            $vueloPlaneadorQuery->join('v.reservaVuelo','rv')
+                ->join('rv.reserva','r')
+                ->where('r.usuario = :usuario')
+                ->setParameter('usuario',$usuario);
+        }
 
         $query = $vueloPlaneadorQuery->getQuery();
 

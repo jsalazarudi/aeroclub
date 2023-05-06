@@ -86,13 +86,7 @@
                     </td>
                     <td>
                         {% if is_granted('ROLE_TESORERO') %}
-                            {% if abono.socio %}
-                                {{ abono.socio.usuario.nombre }} {{ abono.socio.usuario.apellido }}
-                            {% elseif abono.piloto %}
-                                {{ abono.piloto.usuario.nombre }} {{ abono.piloto.usuario.apellido }}
-                            {% elseif abono.alumno %}
-                                {{ abono.alumno.usuario.nombre }} {{ abono.alumno.usuario.apellido }}
-                            {% endif %}
+                            {{ abono.paga.nombre }} {{ abono.paga.apellido }}
                         {% endif %}
                     </td>
                     <td>

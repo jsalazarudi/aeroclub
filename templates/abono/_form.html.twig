@@ -16,19 +16,22 @@
 {% endif %}
 
 {% if not is_granted('ROLE_TESORERO') %}
-    <div class="row">
-        <div class="col mb-3">
-            {{ form_label(form.reservasHangar) }}
 
-            {% if form_errors(form.reservasHangar) %}
-                <div class="alert alert-danger">
-                    {{ form_errors(form.reservasHangar) }}
-                </div>
-            {% endif %}
+    {% if not is_granted('ROLE_ALUMNO') %}
+        <div class="row">
+            <div class="col mb-3">
+                {{ form_label(form.reservasHangar) }}
 
-            {{ form_widget(form.reservasHangar) }}
+                {% if form_errors(form.reservasHangar) %}
+                    <div class="alert alert-danger">
+                        {{ form_errors(form.reservasHangar) }}
+                    </div>
+                {% endif %}
+
+                {{ form_widget(form.reservasHangar) }}
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     <div class="row">
         <div class="col mb-3">
@@ -44,19 +47,22 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col mb-3">
-            {{ form_label(form.ventas) }}
+    {% if not is_granted('ROLE_ALUMNO') %}
+        <div class="row">
+            <div class="col mb-3">
+                {{ form_label(form.ventas) }}
 
-            {% if form_errors(form.ventas) %}
-                <div class="alert alert-danger">
-                    {{ form_errors(form.ventas) }}
-                </div>
-            {% endif %}
+                {% if form_errors(form.ventas) %}
+                    <div class="alert alert-danger">
+                        {{ form_errors(form.ventas) }}
+                    </div>
+                {% endif %}
 
-            {{ form_widget(form.ventas) }}
+                {{ form_widget(form.ventas) }}
+            </div>
         </div>
-    </div>
+    {% endif %}
+
 
     {% if is_granted('ROLE_SOCIO') %}
         <div class="row">

@@ -2,8 +2,9 @@
 
 namespace App\Form;
 
-use App\Entity\Alumno;
 use App\Entity\Curso;
+use App\Entity\Usuario;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -34,13 +35,16 @@ class CursoType extends AbstractType
                 'required' => false
             ])
             ->add('alumno', EntityType::class, [
-                'class' => Alumno::class,
+                'class' => Usuario::class,
                 'attr' => [
                     'class' => 'form-control'
                 ],
                 'label_attr' => [
                     'class' => 'text-muted fs-3'
                 ],
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('u')->join('u.alumno','a');
+                },
                 'placeholder' => 'Seleccione un alumno'
             ]);
     }

@@ -29,13 +29,13 @@ class MovimientoStock
     private ?string $observaciones = null;
 
     #[ORM\ManyToOne(inversedBy: 'movimientoStocks')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?Tesorero $tesorero = null;
-
-    #[ORM\ManyToOne(inversedBy: 'movimientoStocks')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank()]
     private ?Producto $producto = null;
+
+    #[ORM\ManyToOne(inversedBy: 'movimientoStocks')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Usuario $realizado = null;
 
     public function getId(): ?int
     {
@@ -78,18 +78,6 @@ class MovimientoStock
         return $this;
     }
 
-    public function getTesorero(): ?Tesorero
-    {
-        return $this->tesorero;
-    }
-
-    public function setTesorero(?Tesorero $tesorero): self
-    {
-        $this->tesorero = $tesorero;
-
-        return $this;
-    }
-
     public function getProducto(): ?Producto
     {
         return $this->producto;
@@ -98,6 +86,18 @@ class MovimientoStock
     public function setProducto(?Producto $producto): self
     {
         $this->producto = $producto;
+
+        return $this;
+    }
+
+    public function getRealizado(): ?Usuario
+    {
+        return $this->realizado;
+    }
+
+    public function setRealizado(?Usuario $realizado): self
+    {
+        $this->realizado = $realizado;
 
         return $this;
     }

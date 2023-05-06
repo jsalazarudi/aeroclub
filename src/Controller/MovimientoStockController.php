@@ -42,6 +42,9 @@ class MovimientoStockController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $movimientoStock->setRealizado($this->getUser());
+
             if ($tipo == 'ingreso') {
                 $movimientoStock->setTipo('Entrada');
             } elseif ($tipo == 'salida') {
@@ -82,17 +85,6 @@ class MovimientoStockController extends AbstractController
                 $this->redirectToRoute('app_movimiento_stock_new',['tipo' => $tipo]);
             }
 
-            /** @var Tesorero|null $currentUser */
-            $tesorero = $this->getUser()->getTesorero();
-            if ($tesorero) {
-                $movimientoStock->setTesorero($tesorero);
-            } else {
-                $this->addFlash(
-                    'error',
-                    'El usuario no es tesorero'
-                );
-                $this->redirectToRoute('app_movimiento_stock_new',['tipo' => $tipo]);
-            }
 
             $movimientoStockRepository->save($movimientoStock, true);
 

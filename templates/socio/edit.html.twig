@@ -6,7 +6,9 @@
 
     {% embed 'usuario/edit.html.twig' %}
         {% block eliminar_usuario_form %}
-            {{ include('socio/_delete_form.html.twig') }}
+            {% if is_granted('ROLE_ADMINISTRADOR') %}
+                {{ include('socio/_delete_form.html.twig') }}
+            {% endif %}
         {% endblock %}
         {% block edit_fields_usuario %}
             {{ include('socio/_form.html.twig') }}

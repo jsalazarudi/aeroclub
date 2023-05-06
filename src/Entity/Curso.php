@@ -28,10 +28,9 @@ class Curso
     #[ORM\OneToMany(mappedBy: 'curso', targetEntity: Vuelo::class)]
     private Collection $vuelos;
 
-    #[ORM\ManyToOne(inversedBy: 'curso')]
+    #[ORM\ManyToOne(inversedBy: 'cursos')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotBlank()]
-    private ?Alumno $alumno = null;
+    private ?Usuario $alumno = null;
 
     public function __construct()
     {
@@ -79,7 +78,7 @@ class Curso
     {
         if (!$this->vuelos->contains($vuelo)) {
             $this->vuelos->add($vuelo);
-            $vuelo->setCursoId($this);
+            $vuelo->setCurso($this);
         }
 
         return $this;
@@ -89,29 +88,30 @@ class Curso
     {
         if ($this->vuelos->removeElement($vuelo)) {
             // set the owning side to null (unless already changed)
-            if ($vuelo->getCursoId() === $this) {
-                $vuelo->setCursoId(null);
+            if ($vuelo->getCurso() === $this) {
+                $vuelo->setCurso(null);
             }
         }
 
         return $this;
     }
 
-    public function getAlumno(): ?Alumno
-    {
-        return $this->alumno;
-    }
-
-    public function setAlumno(?Alumno $alumno): self
-    {
-        $this->alumno = $alumno;
-
-        return $this;
-    }
 
     public function __toString(): string
     {
         return $this->descripcion;
+    }
+
+    public function getAlumno(): ?Usuario
+    {
+        return $this->alumno;
+    }
+
+    public function setAlumno(?Usuario $alumno): self
+    {
+        $this->alumno = $alumno;
+
+        return $this;
     }
 
 

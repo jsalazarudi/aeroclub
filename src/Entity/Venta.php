@@ -27,22 +27,17 @@ class Venta
     #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha = null;
 
-    #[ORM\ManyToOne(inversedBy: 'ventas')]
-    private ?Socio $socio = null;
-
-    #[ORM\ManyToOne(inversedBy: 'ventas')]
-    private ?Piloto $piloto = null;
-
-    #[ORM\ManyToOne(inversedBy: 'ventas')]
-    private ?Tesorero $tesorero = null;
-
     #[ORM\OneToMany(mappedBy: 'venta', targetEntity: ProductoVenta::class,cascade: ['persist'])]
     #[Assert\NotBlank()]
     private Collection $productoVentas;
 
-
     #[ORM\ManyToOne(inversedBy: 'ventas')]
     private ?Abono $abono = null;
+
+
+    #[ORM\ManyToOne(inversedBy: 'ventas')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Usuario $realizada = null;
 
     public function __construct()
     {
@@ -77,43 +72,6 @@ class Venta
 
         return $this;
     }
-
-    public function getSocio(): ?Socio
-    {
-        return $this->socio;
-    }
-
-    public function setSocio(?Socio $socio): self
-    {
-        $this->socio = $socio;
-
-        return $this;
-    }
-
-    public function getPiloto(): ?Piloto
-    {
-        return $this->piloto;
-    }
-
-    public function setPiloto(?Piloto $piloto): self
-    {
-        $this->piloto = $piloto;
-
-        return $this;
-    }
-
-    public function getTesorero(): ?Tesorero
-    {
-        return $this->tesorero;
-    }
-
-    public function setTesorero(?Tesorero $tesorero): self
-    {
-        $this->tesorero = $tesorero;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, ProductoVenta>
      */
@@ -159,6 +117,18 @@ class Venta
     public function __toString(): string
     {
        return $this->observaciones;
+    }
+
+    public function getRealizada(): ?Usuario
+    {
+        return $this->realizada;
+    }
+
+    public function setRealizada(?Usuario $realizada): self
+    {
+        $this->realizada = $realizada;
+
+        return $this;
     }
 
 

@@ -100,15 +100,9 @@ class VueloType extends AbstractType
                         ->where('r.aprobado = true')
                         ->andWhere('v.reservaVuelo IS NULL')
                         ->andWhere('a.es_planeador = :es_planeador')
-                        ->setParameter('es_planeador',$options['es_planeador']);
-
-                    if ($options['tipo_usuario'] === 'ROLE_SOCIO') {
-                        $reservasAprobadasQuery->andWhere('r.socio = :socio')
-                            ->setParameter('socio', $options['usuario']);
-                    } elseif ($options['tipo_usuario'] === 'ROLE_PILOTO') {
-                        $reservasAprobadasQuery->andWhere('r.piloto = :piloto')
-                            ->setParameter('piloto', $options['usuario']);
-                    }
+                        ->andWhere('r.usuario = :usuario')
+                        ->setParameter('es_planeador',$options['es_planeador'])
+                        ->setParameter('usuario', $options['usuario']);
 
                     return $reservasAprobadasQuery;
 

@@ -3,10 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Abono;
-use App\Entity\Alumno;
 use App\Entity\ListaPrecio;
-use App\Entity\Socio;
-use App\Entity\Usuario;
 use App\Form\AbonoType;
 use App\Repository\AbonoRepository;
 use App\Repository\ListaPrecioRepository;
@@ -25,30 +22,11 @@ class AbonoController extends AbstractController
     #[Route('/', name: 'app_abono_index', methods: ['GET'])]
     public function index(Request $request, AbonoRepository $abonoRepository, PaginatorInterface $paginator): Response
     {
-        $abonosQuery = null;
-        $isTesorero = $this->isGranted('ROLE_TESORERO');
+        $abonosQuery = $abonoRepository->createQueryBuilder('a');
 
-        if ($isTesorero) {
-            $abonosQuery = $abonoRepository->createQueryBuilder('a');
-        }
+        if ($this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_ALUMNO')) {
 
-        $isSocioPilotoAlumno = $this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO')
-            || $this->isGranted('ROLE_ALUMNO');
-
-        if ($isSocioPilotoAlumno && !$isTesorero) {
-            $tipoUsuario = $this->getTipoUsuario();
-            $abonosQuery = $abonoRepository->createQueryBuilder('a');
-
-            if ($this->isGranted('ROLE_SOCIO')) {
-                $abonosQuery->where('a.socio = :socio')
-                    ->setParameter('socio', $tipoUsuario);
-            } elseif ($this->isGranted('ROLE_PILOTO')) {
-                $abonosQuery->where('a.piloto = :piloto')
-                    ->setParameter('piloto', $tipoUsuario);
-            } elseif ($this->isGranted('ROLE_ALUMNO')) {
-                $abonosQuery->where('a.alumno = :alumno')
-                    ->setParameter('alumno', $tipoUsuario);
-            }
+            $abonosQuery->where('a.paga = :usuario')->setParameter('usuario', $this->getUser());
         }
 
         $query = $abonosQuery->getQuery();
@@ -67,34 +45,81 @@ class AbonoController extends AbstractController
     #[Route('/new', name: 'app_abono_new', methods: ['GET', 'POST'])]
     public function new(Request $request, AbonoRepository $abonoRepository, ListaPrecioRepository $listaPrecioRepository): Response
     {
-
         $abono = new Abono();
+
+        $rol = $this->getUser()->getRoles()[0];
         $form = $this->createForm(AbonoType::class, $abono, [
-            'tipo_usuario' => $this->getUser()->getRoles()[0],
-            'usuario' => $this->getTipoUsuario()
+            'tipo_usuario' => $rol,
+            'usuario' => $this->getUser()
         ]);
 
-        if ($this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_ALUMNO')) {
+        if ($this->isGranted('ROLE_ALUMNO')) {
             $form->remove('aprobado');
+            $form->remove('pagoMensualidads');
+            $form->remove('ventas');
+            $form->remove('reservasHangar');
         }
 
-        if ($this->isGranted('ROLE_ALUMNO') || $this->isGranted('ROLE_PILOTO')) {
+        if ($this->isGranted('ROLE_PILOTO')) {
+            $form->remove('aprobado');
             $form->remove('pagoMensualidads');
+        }
+
+        if ($this->isGranted('ROLE_SOCIO')) {
+            $form->remove('aprobado');
         }
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // Evitar procesar si no se ha enviado ningun movimiento
+            if ($abono->getReservasHangar()->isEmpty() && $abono->getMovimientoCuentaVuelos()->isEmpty() &&
+                $abono->getVentas()->isEmpty() && $abono->getPagoMensualidads()->isEmpty()) {
+
+                $this->addFlash(
+                    'error',
+                    'No hay seleccionado ningun movimiento, Por favor seleccionelo'
+                );
+                return $this->render('abono/new.html.twig', [
+                    'abono' => $abono,
+                    'form' => $form,
+                ]);
+            }
+
+            // Obtener historial lista de precio mas reciente
             /** @var string $ultimaFechaHistorialListaPrecios */
-            $ultimaFechaHistorialListaPrecios = $listaPrecioRepository->createQueryBuilder('lp')
+            $ultimaFechaHistorialListaPreciosQuery = $listaPrecioRepository->createQueryBuilder('lp')
                 ->join('lp.historial_lista_precio', 'hlp')
                 ->select('MAX(hlp.fecha) AS fecha')
-                ->getQuery()
-                ->getSingleScalarResult();
+                ->getQuery();
 
-            // VALIDACION RESERVAS HANGAR
+            try {
+                $ultimaFechaHistorialListaPrecios = $ultimaFechaHistorialListaPreciosQuery->getSingleScalarResult();
+            } catch (NoResultException $e) {
+                $this->addFlash(
+                    'error',
+                    'No existe ningun historial de lista de precio. Contactarse con el tesorero para resolver este inconveniente'
+                );
+                return $this->render('abono/new.html.twig', [
+                    'abono' => $abono,
+                    'form' => $form,
+                ]);
+
+            } catch (NonUniqueResultException $e) {
+                $this->addFlash(
+                    'error',
+                    'Se obtuvieron dos historiales. Contactarse con el tesorero para resolver este inconveniente'
+                );
+                return $this->render('abono/new.html.twig', [
+                    'abono' => $abono,
+                    'form' => $form,
+                ]);
+            }
+
+            // Validar relaciones agregadas al abono en el formulario de crear
             $totalAbono = 0;
+            // Validar reservas hangar
             foreach ($abono->getReservasHangar() as $reservaHangar) {
 
                 $servicio = $reservaHangar->getServicio();
@@ -116,16 +141,35 @@ class AbonoController extends AbstractController
                     }
 
                     /** @var ListaPrecio $listaPrecio */
-                    $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
+                    try {
+                        $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
+                    } catch (NoResultException $e) {
+                        $this->addFlash(
+                            'error',
+                            'No se encontro ninguna lista de precio, Por favor contactarse con el tesorero'
+                        );
+                        return $this->render('abono/new.html.twig', [
+                            'abono' => $abono,
+                            'form' => $form,
+                        ]);
+                    } catch (NonUniqueResultException $e) {
+                        $this->addFlash(
+                            'error',
+                            'Se encontraron dos listas de precio, Por favor contactarse con el tesorero'
+                        );
+                        return $this->render('abono/new.html.twig', [
+                            'abono' => $abono,
+                            'form' => $form,
+                        ]);
+                    }
                     $totalAbono += $listaPrecio->getPrecio() * $reservaHangar->getUnidadesGastadas();
 
                     $reservaHangar->setAbono($abono);
                     $reservaHangar->setListaPrecio($listaPrecio);
                 }
-
             }
 
-            // VALIDACION VUELOS
+            // Validar vuelos
             foreach ($abono->getMovimientoCuentaVuelos() as $movimientoCuentaVuelo) {
 
                 $avion = $movimientoCuentaVuelo->getVuelo()->getAvion();
@@ -140,16 +184,13 @@ class AbonoController extends AbstractController
                     ->setParameter('avion', $avion)
                     ->setParameter('fecha', $ultimaFechaHistorialListaPrecios);
 
-
-                // VALIDAR SI ES UN VUELO TURISMO
-                if($movimientoCuentaVuelo->getVuelo()->isEsVueloTuristico()) {
+                // Validar si es un vuelo turistico
+                if ($movimientoCuentaVuelo->getVuelo()->isEsVueloTuristico()) {
                     $listaPrecioQuery->andWhere('lp.bautismo = true');
-                }
-                else {
+                } else {
                     if ($this->isGranted('ROLE_ALUMNO')) {
                         $listaPrecioQuery->andWhere('lp.alumno = true');
-                    }
-                    else {
+                    } else {
                         $listaPrecioQuery->andWhere('lp.socio = true');
                     }
                 }
@@ -167,7 +208,7 @@ class AbonoController extends AbstractController
                         'form' => $form,
                     ]);
 
-                } catch (NonUniqueResultException $e){
+                } catch (NonUniqueResultException $e) {
                     $this->addFlash(
                         'error',
                         'Hay conflicto entre dos listas de precios'
@@ -185,7 +226,7 @@ class AbonoController extends AbstractController
 
             }
 
-            // VALIDACION VENTAS
+            // Validacion ventas
             foreach ($abono->getVentas() as $venta) {
                 foreach ($venta->getProductoVentas() as $producto) {
                     $listaPrecioQuery = $listaPrecioRepository->createQueryBuilder('lp')
@@ -230,8 +271,8 @@ class AbonoController extends AbstractController
                 $venta->setAbono($abono);
             }
 
-            // VALIDACION SERVICIOS MENSUALES
-            foreach ($abono->getPagoMensualidads() as $mensualidad)  {
+            // Validacion Servicios Mensuales
+            foreach ($abono->getPagoMensualidads() as $mensualidad) {
 
                 $listaPrecioQuery = $listaPrecioRepository->createQueryBuilder('lp')
                     ->join('lp.historial_lista_precio', 'historial')
@@ -253,7 +294,7 @@ class AbonoController extends AbstractController
                         'form' => $form,
                     ]);
 
-                } catch (NonUniqueResultException $e){
+                } catch (NonUniqueResultException $e) {
                     $this->addFlash(
                         'error',
                         'Hay conflicto entre dos listas de precios'
@@ -277,16 +318,7 @@ class AbonoController extends AbstractController
                 $abono->setAprobado(false);
             }
 
-            if ($this->isGranted('ROLE_SOCIO')) {
-                $abono->setSocio($this->getUser()->getSocio());
-            } elseif ($this->isGranted('ROLE_PILOTO')) {
-                $abono->setPiloto($this->getUser()->getPiloto());
-            } elseif ($this->isGranted('ROLE_TESORERO')) {
-                $abono->setTesorero($this->getUser()->getTesorero());
-            } elseif ($this->isGranted('ROLE_ALUMNO')) {
-                $abono->setAlumno($this->getUser()->getAlumno());
-            }
-
+            $abono->setPaga($this->getUser());
             $abonoRepository->save($abono, true);
 
             return $this->redirectToRoute('app_abono_index', [], Response::HTTP_SEE_OTHER);
@@ -326,6 +358,9 @@ class AbonoController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($abono->isAprobado()) {
+                $abono->setAprueba($this->getUser());
+            }
             $abonoRepository->save($abono, true);
 
             return $this->redirectToRoute('app_abono_index', [], Response::HTTP_SEE_OTHER);
@@ -347,7 +382,7 @@ class AbonoController extends AbstractController
         return $this->redirectToRoute('app_abono_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/recibo',name: 'app_abono_recibo',methods: ['GET'])]
+    #[Route('/{id}/recibo', name: 'app_abono_recibo', methods: ['GET'])]
     public function recibo(Request $request, Abono $abono): Response
     {
         $usuario = null;
@@ -355,7 +390,7 @@ class AbonoController extends AbstractController
             $usuario = $this->getUser()->getPiloto();
         }
 
-        if ( $this->isGranted('ROLE_SOCIO')) {
+        if ($this->isGranted('ROLE_SOCIO')) {
             $usuario = $this->getUser()->getSocio();
         }
 
@@ -371,7 +406,7 @@ class AbonoController extends AbstractController
         $pagoMensualidades = $abono->getPagoMensualidads();
 
 
-        $html = $this->renderView('abono/recibo.html.twig',[
+        $html = $this->renderView('abono/recibo.html.twig', [
             'logoAeroclob' => $this->imageToBase64(),
             'usuario' => $usuario,
             'total' => $total,
@@ -385,7 +420,7 @@ class AbonoController extends AbstractController
         $dompdf->render();
 
         return new Response(
-            $dompdf->stream('Recibo',['Attachment' => false]),
+            $dompdf->stream('Recibo', ['Attachment' => false]),
             Response::HTTP_OK,
             ['Content-Type' => 'application/pdf']
         );
@@ -393,24 +428,10 @@ class AbonoController extends AbstractController
 
     private function imageToBase64()
     {
-        $path = $this->getParameter('kernel.project_dir').'/public/Logoaeroclub.png';
+        $path = $this->getParameter('kernel.project_dir') . '/public/Logoaeroclub.png';
         $type = pathinfo($path, PATHINFO_EXTENSION);
         $data = file_get_contents($path);
         $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
         return $base64;
-    }
-
-    /**
-     * @return Piloto|Socio|Alumno
-     */
-    private function getTipoUsuario()
-    {
-        /** @var Usuario $currentUser */
-        $currentUser = $this->getUser();
-        /** @var Socio|Piloto|Alumno $tipoUsuario */
-        $tipoUsuario = $currentUser->getSocio() ?? $currentUser->getPiloto() ?? $currentUser->getAlumno();
-
-        return $tipoUsuario;
-
     }
 }

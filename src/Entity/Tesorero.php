@@ -15,17 +15,6 @@ class Tesorero
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-    #[ORM\OneToMany(mappedBy: 'habilitado_por_tesorero', targetEntity: Alumno::class)]
-    private Collection $alumnos;
-
-    #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: Abono::class)]
-    private Collection $abonos;
-
-    #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: Venta::class)]
-    private Collection $ventas;
-
-    #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: MovimientoStock::class)]
-    private Collection $movimientoStocks;
 
     #[ORM\OneToMany(mappedBy: 'tesorero', targetEntity: Gasto::class)]
     private Collection $gastos;
@@ -41,10 +30,6 @@ class Tesorero
 
     public function __construct()
     {
-        $this->alumnos = new ArrayCollection();
-        $this->abonos = new ArrayCollection();
-        $this->ventas = new ArrayCollection();
-        $this->movimientoStocks = new ArrayCollection();
         $this->gastos = new ArrayCollection();
         $this->notas = new ArrayCollection();
     }
@@ -52,126 +37,6 @@ class Tesorero
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return Collection<int, Alumno>
-     */
-    public function getAlumnos(): Collection
-    {
-        return $this->alumnos;
-    }
-
-    public function addAlumno(Alumno $alumno): self
-    {
-        if (!$this->alumnos->contains($alumno)) {
-            $this->alumnos->add($alumno);
-            $alumno->setHabilitadoPorTesorero($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAlumno(Alumno $alumno): self
-    {
-        if ($this->alumnos->removeElement($alumno)) {
-            // set the owning side to null (unless already changed)
-            if ($alumno->getHabilitadoPorTesorero() === $this) {
-                $alumno->setHabilitadoPorTesorero(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Abono>
-     */
-    public function getAbonos(): Collection
-    {
-        return $this->abonos;
-    }
-
-    public function addAbono(Abono $abono): self
-    {
-        if (!$this->abonos->contains($abono)) {
-            $this->abonos->add($abono);
-            $abono->setTesorero($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAbono(Abono $abono): self
-    {
-        if ($this->abonos->removeElement($abono)) {
-            // set the owning side to null (unless already changed)
-            if ($abono->getTesorero() === $this) {
-                $abono->setTesorero(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Venta>
-     */
-    public function getVentas(): Collection
-    {
-        return $this->ventas;
-    }
-
-    public function addVenta(Venta $venta): self
-    {
-        if (!$this->ventas->contains($venta)) {
-            $this->ventas->add($venta);
-            $venta->setTesorero($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVenta(Venta $venta): self
-    {
-        if ($this->ventas->removeElement($venta)) {
-            // set the owning side to null (unless already changed)
-            if ($venta->getTesorero() === $this) {
-                $venta->setTesorero(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, MovimientoStock>
-     */
-    public function getMovimientoStocks(): Collection
-    {
-        return $this->movimientoStocks;
-    }
-
-    public function addMovimientoStock(MovimientoStock $movimientoStock): self
-    {
-        if (!$this->movimientoStocks->contains($movimientoStock)) {
-            $this->movimientoStocks->add($movimientoStock);
-            $movimientoStock->setTesorero($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMovimientoStock(MovimientoStock $movimientoStock): self
-    {
-        if ($this->movimientoStocks->removeElement($movimientoStock)) {
-            // set the owning side to null (unless already changed)
-            if ($movimientoStock->getTesorero() === $this) {
-                $movimientoStock->setTesorero(null);
-            }
-        }
-
-        return $this;
     }
 
     /**

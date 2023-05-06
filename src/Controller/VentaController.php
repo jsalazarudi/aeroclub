@@ -17,21 +17,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class VentaController extends AbstractController
 {
     #[Route('/', name: 'app_venta_index', methods: ['GET'])]
-    public function index(Request $request,VentaRepository $ventaRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, VentaRepository $ventaRepository, PaginatorInterface $paginator): Response
     {
         $ventasQuery = $ventaRepository->createQueryBuilder('v');
 
-        if ($this->isGranted('ROLE_SOCIO')) {
-            $socio = $this->getUser()->getSocio();
-            $ventasQuery->where('v.socio = :socio')
-                ->setParameter('socio',$socio);
+        if ($this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO')) {
+
+            $ventasQuery->where('v.realizada = :usuario')
+                ->setParameter('usuario', $this->getUser());
         }
 
-        if ($this->isGranted('ROLE_PILOTO')) {
-            $piloto = $this->getUser()->getPiloto();
-            $ventasQuery->where('v.piloto = :piloto')
-                ->setParameter('piloto',$piloto);
-        }
 
         $query = $ventasQuery->getQuery();
 
@@ -55,16 +50,9 @@ class VentaController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if ($this->isGranted('ROLE_SOCIO')) {
-                $ventum->setSocio($this->getUser()->getSocio());
-            } elseif ($this->isGranted('ROLE_PILOTO')) {
-                $ventum->setPiloto($this->getUser()->getPiloto());
-            }
-            elseif ($this->isGranted('ROLE_TESORERO')) {
-                $ventum->setTesorero($this->getUser()->getTesorero());
-            }
+            $ventum->setRealizada($this->getUser());
 
-            // MOVER EL STOCK
+            // Mover stock
             $movimientosStock = [];
             foreach ($ventum->getProductoVentas() as $productoVenta) {
 
@@ -89,7 +77,7 @@ class VentaController extends AbstractController
                     $this->addFlash(
                         'error',
                         sprintf("No hay %s cantidades del producto %s para sacar del stock, hay disponibles %s",
-                            $productoVenta->getCantidad(),$productoVenta->getProducto()->getDescripcion(),$stockEntrada - $stockSalida)
+                            $productoVenta->getCantidad(), $productoVenta->getProducto()->getDescripcion(), $stockEntrada - $stockSalida)
                     );
                     return $this->redirectToRoute('app_venta_new');
                 }
@@ -99,13 +87,14 @@ class VentaController extends AbstractController
                 $movimientoStock->setTipo('Salida');
                 $movimientoStock->setObservaciones('Movimiento de Salida desde Venta del aeroclub');
                 $movimientoStock->setProducto($productoVenta->getProducto());
+                $movimientoStock->setRealizado($this->getUser());
 
                 $movimientosStocks[] = $movimientoStock;
             }
 
             $ventaRepository->save($ventum, true);
-            foreach ($movimientosStocks as $movimientosStock){
-                $movimientoStockRepository->save($movimientosStock,true);
+            foreach ($movimientosStocks as $movimientosStock) {
+                $movimientoStockRepository->save($movimientosStock, true);
             }
 
             return $this->redirectToRoute('app_venta_index', [], Response::HTTP_SEE_OTHER);
@@ -146,7 +135,7 @@ class VentaController extends AbstractController
     #[Route('/{id}', name: 'app_venta_delete', methods: ['POST'])]
     public function delete(Request $request, Venta $ventum, VentaRepository $ventaRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$ventum->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $ventum->getId(), $request->request->get('_token'))) {
             $ventaRepository->remove($ventum, true);
         }
 

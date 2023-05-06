@@ -51,22 +51,12 @@ class AbonoType extends AbstractType
                 'expanded' => true,
                 'query_builder' => function (EntityRepository $er) use ($options) {
 
-                    $pendientesReservaHangar = $er->createQueryBuilder('rh')
+                    return $er->createQueryBuilder('rh')
                         ->join('rh.reserva', 'r')
                         ->where('r.aprobado = true')
-                        ->andWhere('rh.abono IS NULL');
-
-
-                    if ($options['tipo_usuario'] === 'ROLE_SOCIO') {
-                        $pendientesReservaHangar->andWhere('r.socio = :socio')
-                            ->setParameter('socio', $options['usuario']);
-                    } elseif ($options['tipo_usuario'] === 'ROLE_PILOTO') {
-                        $pendientesReservaHangar->andWhere('r.piloto = :piloto')
-                            ->setParameter('piloto', $options['usuario']);
-                    }
-
-                    return $pendientesReservaHangar;
-
+                        ->andWhere('rh.abono IS NULL')
+                        ->andWhere('r.usuario = :usuario')
+                        ->setParameter('usuario', $options['usuario']);
                 },
                 'choice_label' => function (ReservaHangar $reservaHangar) {
                     return sprintf("Fecha: %s Costo Unidades: %s", $reservaHangar->getReserva()->getFechaInicio()->format('Y-m-d'), $reservaHangar->getUnidadesGastadas());
@@ -95,25 +85,17 @@ class AbonoType extends AbstractType
                     if ($options['tipo_usuario'] == 'ROLE_ALUMNO') {
                         $movimientoCuentaVuelo
                             ->join('v.curso', 'c')
-                            ->andWhere('c.alumno = :alumno')
-                            ->setParameter('alumno', $options['usuario']);
+                            ->andWhere('c.alumno = :usuario')
+                            ->setParameter('usuario', $options['usuario']);
 
-                    } elseif ($options['tipo_usuario'] == 'ROLE_SOCIO' || $options['tipo_usuario'] == 'ROLE_PILOTO' ) {
+                    } else {
                         $movimientoCuentaVuelo->join('v.reservaVuelo', 'rv')
-                            ->join('rv.reserva','r');
-
-                        if ($options['tipo_usuario'] == 'ROLE_SOCIO') {
-                            $movimientoCuentaVuelo->andWhere('r.socio = :socio')
-                                ->setParameter('socio', $options['usuario']);
-                        } else {
-                            $movimientoCuentaVuelo->andWhere('r.piloto = :piloto')
-                                ->setParameter('piloto', $options['usuario']);
-                        }
-
+                            ->join('rv.reserva', 'r')
+                            ->andWhere('r.usuario = :usuario')
+                            ->setParameter('usuario', $options['usuario']);
                     }
 
                     return $movimientoCuentaVuelo;
-
                 },
                 'choice_attr' => function (MovimientoCuentaVuelo $vuelo, $key, $index) {
                     return ['class' => 'form-check-input me-2 ms-2'];
@@ -132,18 +114,10 @@ class AbonoType extends AbstractType
                 'expanded' => true,
                 'query_builder' => function (EntityRepository $er) use ($options) {
 
-                    $ventasQuery = $er->createQueryBuilder('v');
-
-                    if ($options['tipo_usuario'] == 'ROLE_SOCIO') {
-                        $ventasQuery->andWhere('v.socio = :socio')
-                            ->setParameter('socio', $options['usuario']);
-                    } else {
-                        $ventasQuery->andWhere('v.piloto = :piloto')
-                            ->setParameter('piloto', $options['usuario']);
-                    }
-
-                    return $ventasQuery;
-
+                    return $er->createQueryBuilder('v')
+                        ->where('v.realizada = :usuario')
+                        ->andWhere('v.abono IS NULL')
+                        ->setParameter('usuario', $options['usuario']);
                 },
                 'choice_attr' => function (Venta $venta, $key, $index) {
                     return ['class' => 'form-check-input me-2 ms-2'];
@@ -162,26 +136,19 @@ class AbonoType extends AbstractType
                 'expanded' => true,
                 'query_builder' => function (EntityRepository $er) use ($options) {
 
-                    $mensualidadQuery = $er->createQueryBuilder('pm')
-                        ->join('pm.mensualidad','m')
-                        ->where('pm.abono IS NULL');
-
                     if ($options['tipo_usuario'] == 'ROLE_SOCIO') {
-                        $mensualidadQuery->andWhere('m.socio = :socio')
-                            ->setParameter('socio', $options['usuario']);
+                        return $er->createQueryBuilder('pm')
+                            ->join('pm.mensualidad', 'm')
+                            ->where('pm.abono IS NULL')
+                            ->andWhere('m.socio = :socio')
+                            ->setParameter('socio', $options['usuario']->getSocio());
                     }
-
-                    return $mensualidadQuery;
-
                 },
                 'choice_attr' => function (PagoMensualidad $pagoMensualidad, $key, $index) {
                     return ['class' => 'form-check-input me-2 ms-2'];
                 }
-            ])
-
-        ;
+            ]);
     }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

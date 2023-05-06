@@ -34,16 +34,6 @@ class Socio
     #[Assert\Type('string')]
     private ?string $numero_socio = null;
 
-
-    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Reserva::class)]
-    private Collection $reservas;
-
-    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Abono::class)]
-    private Collection $abonos;
-
-    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Venta::class)]
-    private Collection $ventas;
-
     #[ORM\OneToOne(mappedBy: 'socio', cascade: ['persist', 'remove'])]
     #[Assert\Type(type: Usuario::class)]
     #[Assert\Valid]
@@ -53,9 +43,6 @@ class Socio
     private Collection $mensualidades;
    public function __construct()
     {
-        $this->reservas = new ArrayCollection();
-        $this->abonos = new ArrayCollection();
-        $this->ventas = new ArrayCollection();
         $this->mensualidades = new ArrayCollection();
     }
 
@@ -99,97 +86,6 @@ class Socio
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, Reserva>
-     */
-    public function getReservas(): Collection
-    {
-        return $this->reservas;
-    }
-
-    public function addReserva(Reserva $reserva): self
-    {
-        if (!$this->reservas->contains($reserva)) {
-            $this->reservas->add($reserva);
-            $reserva->setSocio($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReserva(Reserva $reserva): self
-    {
-        if ($this->reservas->removeElement($reserva)) {
-            // set the owning side to null (unless already changed)
-            if ($reserva->getSocio() === $this) {
-                $reserva->setSocio(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Abono>
-     */
-    public function getAbonos(): Collection
-    {
-        return $this->abonos;
-    }
-
-    public function addAbono(Abono $abono): self
-    {
-        if (!$this->abonos->contains($abono)) {
-            $this->abonos->add($abono);
-            $abono->setSocio($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAbono(Abono $abono): self
-    {
-        if ($this->abonos->removeElement($abono)) {
-            // set the owning side to null (unless already changed)
-            if ($abono->getSocio() === $this) {
-                $abono->setSocio(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Venta>
-     */
-    public function getVentas(): Collection
-    {
-        return $this->ventas;
-    }
-
-    public function addVenta(Venta $venta): self
-    {
-        if (!$this->ventas->contains($venta)) {
-            $this->ventas->add($venta);
-            $venta->setSocio($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVenta(Venta $venta): self
-    {
-        if ($this->ventas->removeElement($venta)) {
-            // set the owning side to null (unless already changed)
-            if ($venta->getSocio() === $this) {
-                $venta->setSocio(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getUsuario(): ?Usuario
     {
         return $this->usuario;

@@ -53,7 +53,9 @@ class AlumnoController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $alumno->getUsuario()->setRoles(['ROLE_ALUMNO']);
 
-            $this->validarHabilitadoParaVolar($alumno);
+            if ($alumno->isHabilitadoVolar()) {
+                $alumno->setAprobado($this->getUser());
+            }
 
             $alumnoRepository->save($alumno, true);
 
@@ -119,7 +121,7 @@ class AlumnoController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->validarHabilitadoParaVolar($alumno);
+            $alumno->setAprobado($this->getUser());
             $alumnoRepository->save($alumno, true);
 
             return $this->redirectToRoute('aeroclub_alumno_index', [], Response::HTTP_SEE_OTHER);
@@ -143,20 +145,4 @@ class AlumnoController extends AbstractController
         return $this->redirectToRoute('aeroclub_alumno_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    /**
-     * @param Alumno $alumno
-     * @return void
-     */
-    private function validarHabilitadoParaVolar(Alumno $alumno)
-    {
-        if ($alumno->isHabilitadoVolar()) {
-            /** @var Usuario $currentUser */
-            $currentUser = $this->getUser();
-            if ($this->isGranted('ROLE_TESORERO') && is_null($alumno->getHabilitadoPorTesorero())) {
-                $alumno->setHabilitadoPorTesorero($currentUser->getTesorero());
-            } elseif ($this->isGranted('ROLE_INSTRUCTOR') && is_null($alumno->getHabilitadoPorInstructor())) {
-                $alumno->setHabilitadoPorInstructor($currentUser->getInstructor());
-            }
-        }
-    }
 }

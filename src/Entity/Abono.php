@@ -27,18 +27,6 @@ class Abono
     #[ORM\Column]
     private ?bool $aprobado = null;
 
-    #[ORM\ManyToOne(inversedBy: 'abonos')]
-    private ?Tesorero $tesorero = null;
-
-    #[ORM\ManyToOne(inversedBy: 'abonos')]
-    private ?Socio $socio = null;
-
-    #[ORM\ManyToOne(inversedBy: 'abonos')]
-    private ?Piloto $piloto = null;
-
-    #[ORM\ManyToOne(inversedBy: 'abonos')]
-    private ?Alumno $alumno = null;
-
     #[ORM\OneToMany(mappedBy: 'abono', targetEntity: ReservaHangar::class)]
     private Collection $reservasHangar;
 
@@ -50,6 +38,13 @@ class Abono
 
     #[ORM\OneToMany(mappedBy: 'abono', targetEntity: PagoMensualidad::class)]
     private Collection $pagoMensualidads;
+
+    #[ORM\ManyToOne(inversedBy: 'abonos')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Usuario $paga = null;
+
+    #[ORM\ManyToOne(inversedBy: 'abonos_aprobados')]
+    private ?Usuario $aprueba = null;
 
     public function __construct()
     {
@@ -100,53 +95,6 @@ class Abono
         return $this;
     }
 
-    public function getTesorero(): ?Tesorero
-    {
-        return $this->tesorero;
-    }
-
-    public function setTesorero(?Tesorero $tesorero): self
-    {
-        $this->tesorero = $tesorero;
-
-        return $this;
-    }
-
-    public function getSocio(): ?Socio
-    {
-        return $this->socio;
-    }
-
-    public function setSocio(?Socio $socio): self
-    {
-        $this->socio = $socio;
-
-        return $this;
-    }
-
-    public function getPiloto(): ?Piloto
-    {
-        return $this->piloto;
-    }
-
-    public function setPiloto(?Piloto $piloto): self
-    {
-        $this->piloto = $piloto;
-
-        return $this;
-    }
-
-    public function getAlumno(): ?Alumno
-    {
-        return $this->alumno;
-    }
-
-    public function setAlumno(?Alumno $alumno): self
-    {
-        $this->alumno = $alumno;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, ReservaHangar>
@@ -264,6 +212,30 @@ class Abono
                 $pagoMensualidad->setAbono(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPaga(): ?Usuario
+    {
+        return $this->paga;
+    }
+
+    public function setPaga(?Usuario $paga): self
+    {
+        $this->paga = $paga;
+
+        return $this;
+    }
+
+    public function getAprueba(): ?Usuario
+    {
+        return $this->aprueba;
+    }
+
+    public function setAprueba(?Usuario $aprueba): self
+    {
+        $this->aprueba = $aprueba;
 
         return $this;
     }

@@ -26,29 +26,12 @@ class ReservaHangarController extends AbstractController
     #[Route('/', name: 'app_reserva_hangar_index', methods: ['GET'])]
     public function index(Request $request, ReservaHangarRepository $reservaHangarRepository, PaginatorInterface $paginator): Response
     {
-        $reservasHangarQuery = null;
-        $isTesorero = $this->isGranted('ROLE_TESORERO');
+        $reservasHangarQuery = $reservaHangarRepository->createQueryBuilder('rh')
+            ->join('rh.reserva', 'r');
 
-        if ($isTesorero) {
-            $reservasHangarQuery = $reservaHangarRepository->createQueryBuilder('rh')
-                ->join('rh.reserva', 'r');
-        }
-
-        $isSocioPiloto = $this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO');
-
-        if ($isSocioPiloto && !$isTesorero) {
-            $tipoUsuario = $this->getTipoUsuario();
-            $reservasHangarQuery = $reservaHangarRepository->createQueryBuilder('rh')
-                ->join('rh.reserva', 'r');
-
-            if ($this->isGranted('ROLE_SOCIO')) {
-                $reservasHangarQuery->where('r.socio = :socio')
-                    ->setParameter('socio', $tipoUsuario);
-            } elseif ($this->isGranted('ROLE_PILOTO')) {
-
-                $reservasHangarQuery->where('r.piloto = :piloto')
-                    ->setParameter('piloto', $tipoUsuario);
-            }
+        if ($this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO')) {
+            $reservasHangarQuery->where('r.usuario = :usuario')
+                ->setParameter('usuario', $this->getUser());
         }
 
         $query = $reservasHangarQuery->getQuery();
@@ -65,8 +48,7 @@ class ReservaHangarController extends AbstractController
     }
 
     #[Route('/new', name: 'app_reserva_hangar_new', methods: ['GET', 'POST'])]
-    public function new(Request         $request, ReservaHangarRepository $reservaHangarRepository,
-                        SocioRepository $socioRepository, ServicioRepository $servicioRepository, MensualidadRepository $mensualidadRepository): Response
+    public function new(Request $request, ReservaHangarRepository $reservaHangarRepository,ServicioRepository $servicioRepository, MensualidadRepository $mensualidadRepository): Response
     {
         $reservaHangar = new ReservaHangar();
 
@@ -80,14 +62,11 @@ class ReservaHangarController extends AbstractController
 
         $form->handleRequest($request);
 
-        $resultMensualidadQuery = null;
-
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $tipoUsuario = $this->getTipoUsuario();
-            if ($this->isGranted('ROLE_SOCIO')) {
+            $reservaHangar->getReserva()->setUsuario($this->getUser());
 
-                $reservaHangar->getReserva()->setSocio($tipoUsuario);
+            if ($this->isGranted('ROLE_SOCIO')) {
 
                 $mensualidadQuery = $mensualidadRepository->createQueryBuilder('m')
                     ->join('m.servicio','s')
@@ -95,7 +74,7 @@ class ReservaHangarController extends AbstractController
                     ->andWhere('s.es_hangaraje = true')
                     ->andWhere('m.fecha_fin > :fecha_fin')
                     ->andWhere('m.fecha_inicio < :fecha_inicio')
-                    ->setParameter('socio',$tipoUsuario)
+                    ->setParameter('socio',$this->getUser()->getSocio())
                     ->setParameter('fecha_inicio',$reservaHangar->getReserva()->getFechaInicio()->format('Y-m-d H:i:s'))
                     ->setParameter('fecha_fin',$reservaHangar->getReserva()->getFechaFin()->format('Y-m-d H:i:s'))
                     ->getQuery();
@@ -113,8 +92,6 @@ class ReservaHangarController extends AbstractController
 
                     try {
                         $resultServicioQuery = $servicioQuery->getSingleResult();
-
-
                     }catch (NoResultException $e) {
                         $this->addFlash('error',"Debe registrar una servicio de tipo hangaraje");
                         return $this->render('reserva_hangar/new.html.twig', [
@@ -145,7 +122,6 @@ class ReservaHangarController extends AbstractController
                 $reservaHangar->setServicio($resultMensualidadQuery->getServicio());
 
             } elseif ($this->isGranted('ROLE_PILOTO')) {
-                $reservaHangar->getReserva()->setPiloto($tipoUsuario);
 
                 try {
                     $servicio = $servicioRepository->createQueryBuilder('s')
@@ -192,6 +168,11 @@ class ReservaHangarController extends AbstractController
     #[Route('/{id}/edit', name: 'app_reserva_hangar_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ReservaHangar $reservaHangar, ReservaHangarRepository $reservaHangarRepository): Response
     {
+        if ($this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO')) {
+            $this->addFlash('error', 'No tiene permisos de editar la reserva');
+            return $this->redirectToRoute('app_reserva_hangar_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         $form = $this->createForm(ReservaHangarType::class, $reservaHangar);
 
         if ($this->isGranted("ROLE_TESORERO")) {
@@ -224,19 +205,5 @@ class ReservaHangarController extends AbstractController
         }
 
         return $this->redirectToRoute('app_reserva_hangar_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    /**
-     * @return Piloto|Socio|Tesorero
-     */
-    private function getTipoUsuario()
-    {
-        /** @var Usuario $currentUser */
-        $currentUser = $this->getUser();
-        /** @var Socio|Piloto|Tesorero $tipoUsuario */
-        $tipoUsuario = $currentUser->getSocio() ?? $currentUser->getPiloto() ?? $currentUser->getTesorero();
-
-        return $tipoUsuario;
-
     }
 }

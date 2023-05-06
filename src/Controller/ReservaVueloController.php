@@ -22,29 +22,14 @@ class ReservaVueloController extends AbstractController
     #[Route('/', name: 'app_reserva_vuelo_index', methods: ['GET'])]
     public function index(Request $request, ReservaVueloRepository $reservaVueloRepository, PaginatorInterface $paginator): Response
     {
-        $reservasVueloQuery = null;
-        $isTesorero = $this->isGranted('ROLE_TESORERO');
+        $reservasVueloQuery = $reservaVueloRepository->createQueryBuilder('rv')
+            ->join('rv.reserva', 'r');
 
-        if ($isTesorero) {
+        if ($this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO')) {
             $reservasVueloQuery = $reservaVueloRepository->createQueryBuilder('rv')
-                ->join('rv.reserva', 'r');
-        }
-
-        $isSocioPiloto = $this->isGranted('ROLE_SOCIO') || $this->isGranted('ROLE_PILOTO');
-
-        if ($isSocioPiloto && !$isTesorero) {
-            $tipoUsuario = $this->getTipoUsuario();
-            $reservasVueloQuery = $reservaVueloRepository->createQueryBuilder('rv')
-                ->join('rv.reserva', 'r');
-
-            if ($this->isGranted('ROLE_SOCIO')) {
-                $reservasVueloQuery->where('r.socio = :socio')
-                    ->setParameter('socio', $tipoUsuario);
-            } elseif ($this->isGranted('ROLE_PILOTO')) {
-
-                $reservasVueloQuery->where('r.piloto = :piloto')
-                    ->setParameter('piloto', $tipoUsuario);
-            }
+                ->join('rv.reserva', 'r')
+                ->where('r.usuario = :usuario')
+                ->setParameter('usuario', $this->getUser());
         }
 
         $query = $reservasVueloQuery->getQuery();
@@ -74,19 +59,14 @@ class ReservaVueloController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $tipoUsuario = $this->getTipoUsuario();
 
-            if ($this->isGranted('ROLE_SOCIO')) {
-                $reservaVuelo->getReserva()->setSocio($tipoUsuario);
-            } elseif ($this->isGranted('ROLE_PILOTO')) {
-                $reservaVuelo->getReserva()->setPiloto($tipoUsuario);
-            }
+            $reservaVuelo->getReserva()->setUsuario($this->getUser());
 
             /** @var \DateTimeInterface $fechaInicio */
             $fechaInicio = $reservaVuelo->getReserva()->getFechaInicio();
             $fechaFin = $reservaVuelo->getReserva()->getFechaFin();
 
-            // Validar que no se crucen con otras reservas APROBADAS
+            // Validar que no se crucen con otras reservas aprobadas
             $conflictoVuelos = null;
             try {
                 $conflictoVuelos = $reservaVueloRepository->createQueryBuilder('rv')
@@ -132,6 +112,11 @@ class ReservaVueloController extends AbstractController
     #[Route('/{id}/edit', name: 'app_reserva_vuelo_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, ReservaVuelo $reservaVuelo, ReservaVueloRepository $reservaVueloRepository): Response
     {
+        if ($this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO')) {
+            $this->addFlash('error', 'No tiene permisos de editar la reserva');
+            return $this->redirectToRoute('app_reserva_vuelo_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         $form = $this->createForm(ReservaVueloType::class, $reservaVuelo);
 
         if ($this->isGranted('ROLE_TESORERO')) {
@@ -164,19 +149,5 @@ class ReservaVueloController extends AbstractController
         }
 
         return $this->redirectToRoute('app_reserva_vuelo_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    /**
-     * @return Piloto|Socio|Tesorero
-     */
-    private function getTipoUsuario()
-    {
-        /** @var Usuario $currentUser */
-        $currentUser = $this->getUser();
-        /** @var Socio|Piloto|Tesorero $tipoUsuario */
-        $tipoUsuario = $currentUser->getSocio() ?? $currentUser->getPiloto() ?? $currentUser->getTesorero();
-
-        return $tipoUsuario;
-
     }
 }
