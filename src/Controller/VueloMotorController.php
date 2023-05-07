@@ -90,6 +90,7 @@ class VueloMotorController extends AbstractController
             $formVuelo = $form->get('vuelo');
             $formVuelo->remove('productoVuelos');
             $formVuelo->remove('reservaVuelo');
+            $formVuelo->remove('es_vuelo_turistico');
         }
 
         $form->handleRequest($request);
@@ -180,14 +181,12 @@ class VueloMotorController extends AbstractController
             $formVuelo = $form->get('vuelo');
             $formVuelo->remove('reservaVuelo');
             $formVuelo->remove('productoVuelos');
+            $formVuelo->remove('es_vuelo_turistico');
         }
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-
-
 
             $vueloMotorRepository->save($vueloMotor, true);
 

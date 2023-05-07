@@ -1,16 +1,18 @@
 {{ form_start(form,{'attr': {'class': 'p-2' }}) }}
 <div class="row">
-    <div class="col mb-3 form-check form-switch">
-        {{ form_label(form.vuelo.es_vuelo_turistico) }}
+    {% if not is_granted('ROLE_ALUMNO') %}
+        <div class="col mb-3 form-check form-switch">
+            {{ form_label(form.vuelo.es_vuelo_turistico) }}
 
-        {% if form_errors(form.vuelo.es_vuelo_turistico) %}
-            <div class="alert alert-danger">
-                {{ form_errors(form.vuelo.es_vuelo_turistico) }}
-            </div>
-        {% endif %}
+            {% if form_errors(form.vuelo.es_vuelo_turistico) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form.vuelo.es_vuelo_turistico) }}
+                </div>
+            {% endif %}
 
-        {{ form_widget(form.vuelo.es_vuelo_turistico) }}
-    </div>
+            {{ form_widget(form.vuelo.es_vuelo_turistico) }}
+        </div>
+    {% endif %}
 </div>
 <div class="row">
     <div class="col mb-3">

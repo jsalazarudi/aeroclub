@@ -89,6 +89,7 @@ class VueloPlaneadorController extends AbstractController
             $formVuelo = $form->get('vuelo');
             $formVuelo->remove('reservaVuelo');
             $formVuelo->remove('productoVuelos');
+            $formVuelo->remove('es_vuelo_turistico');
         }
 
         $form->handleRequest($request);

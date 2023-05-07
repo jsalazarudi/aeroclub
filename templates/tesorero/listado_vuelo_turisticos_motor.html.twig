@@ -1,6 +1,6 @@
 {% extends 'theme.html.twig' %}
 
-{% block title %}Listado Vuelos Motor{% endblock %}
+{% block title %}Listado Vuelo Turisticos{% endblock %}
 
 {% block content %}
 
@@ -8,51 +8,40 @@
 
         <h1 class="text-center mt-2 mb-2">Listado Vuelos Motor</h1>
 
-        <div class="text-center">
-            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_vuelo_motor_new') }}">Crear nuevo Vuelo Motor</a>
-        </div>
 
         <table class="table">
             <thead>
-            <th>
-                Curso
-            </th>
-            <th>
-                Avión
-            </th>
-            <th>
-                Aterrizajes
-            </th>
-            <th>
-                Pista Despegue
-            </th>
-            <th>
-                Pista Aterrizaje
-            </th>
-            <th>
-                Horómetro Despegue
-            </th>
-            <th>
-                Horómetro Aterrizaje
-            </th>
-            <th>
-                Unidades gastadas
-            </th>
-            <th>
-                Tipo Vuelo
-            </th>
-            <th>
-
-            </th>
+                <th>
+                    Avión
+                </th>
+                <th>
+                    Aterrizajes
+                </th>
+                <th>
+                    Pista Despegue
+                </th>
+                <th>
+                    Pista Aterrizaje
+                </th>
+                <th>
+                    Horómetro Despegue
+                </th>
+                <th>
+                    Horómetro Aterrizaje
+                </th>
+                <th>
+                    Unidades gastadas
+                </th>
+                <th>
+                    Tipo Vuelo
+                </th>
+                <th>
+                    Realizado por
+                </th>
             </thead>
             <tbody>
             {% for vuelo_motor in vuelos_motor %}
                 <tr>
-                    <td>
-                        {% if vuelo_motor.vuelo.curso is not null %}
-                            {{ vuelo_motor.vuelo.curso.descripcion }}
-                        {% endif %}
-                    </td>
                     <td>
                         {% if vuelo_motor.vuelo.avion|length  %}
                             {{ vuelo_motor.vuelo.avion.matricula }}
@@ -70,13 +59,9 @@
                     </td>
                     <td>
                         {{ vuelo_motor.tipoVuelo }}
-                        <br>
-                        {% if vuelo_motor.vuelo.esVueloTuristico %}
-                            <span class="text-success">Bautismo</span>
-                        {% endif %}
                     </td>
                     <td>
-                        <a class="btn btn-warning" href="{{ path('app_vuelo_motor_edit', {'id': vuelo_motor.id}) }}">Editar</a>
+                        {{ vuelo_motor.vuelo.reservaVuelo.reserva.usuario.nombre }} {{ vuelo_motor.vuelo.reservaVuelo.reserva.usuario.apellido }}
                     </td>
                 </tr>
             {% endfor %}
@@ -91,4 +76,5 @@
             {{ knp_pagination_render(vuelos_motor) }}
         </div>
     </div>
+
 {% endblock %}

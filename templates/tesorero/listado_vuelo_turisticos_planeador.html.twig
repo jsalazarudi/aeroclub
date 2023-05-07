@@ -1,0 +1,63 @@
+{% extends 'theme.html.twig' %}
+
+{% block title %}Listado Vuelos Planeador{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1 class="text-center mt-2 mb-2">Listado Vuelos Planeador</h1>
+
+    <table class="table">
+        <thead>
+        <th>
+            Vuelo
+        </th>
+        <th>
+            Tiempo Remolque
+        </th>
+        <th>
+            Tiempo Libre
+        </th>
+        <th>
+            Tema Vuelo
+        </th>
+        <th>
+            Tiempo Acumulado
+        </th>
+        <th>
+            Realizado por
+        </th>
+        </thead>
+        <tbody>
+        {% for vuelo_planeador in vuelos_planeador %}
+        <tr>
+            <td>{{ vuelo_planeador.vuelo.fecha|date('Y-m-d') ~ ' Avión:' ~ vuelo_planeador.vuelo.reservaVuelo.avion.matricula }}</td>
+            <td>
+                {{ vuelo_planeador.tiempoRemolque }}
+            </td>
+            <td>
+                {{ vuelo_planeador.tiempoLibre }}
+            <td>
+                {{ vuelo_planeador.temaVuelo }}
+            </td>
+            <td>
+                {{ vuelo_planeador.tiempoAcumulado }}
+            </td>
+            <td>
+                {{ vuelo_planeador.vuelo.reservaVuelo.reserva.usuario.nombre }} {{ vuelo_planeador.vuelo.reservaVuelo.reserva.usuario.apellido }}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p class="text-center fw-bold">
+        Registros totales: {{ vuelos_planeador.count }}
+    </p>
+
+    <div class="d-flex justify-content-center">
+        {{ knp_pagination_render(vuelos_planeador) }}
+    </div>
+</div>
+{% endblock %}

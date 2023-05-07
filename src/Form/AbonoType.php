@@ -92,6 +92,7 @@ class AbonoType extends AbstractType
                         $movimientoCuentaVuelo->join('v.reservaVuelo', 'rv')
                             ->join('rv.reserva', 'r')
                             ->andWhere('r.usuario = :usuario')
+                            ->andWhere('v.es_vuelo_turistico != true')
                             ->setParameter('usuario', $options['usuario']);
                     }
 
