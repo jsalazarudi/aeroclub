@@ -95,9 +95,6 @@ class Usuario implements UserInterface,PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'usuario', targetEntity: Reserva::class)]
     private Collection $reservas;
 
-    #[ORM\OneToMany(mappedBy: 'aprobada', targetEntity: Venta::class)]
-    private Collection $ventasAprobadas;
-
     #[ORM\OneToMany(mappedBy: 'realizada', targetEntity: Venta::class)]
     private Collection $ventas;
 
@@ -115,7 +112,6 @@ class Usuario implements UserInterface,PasswordAuthenticatedUserInterface
         $this->abonos = new ArrayCollection();
         $this->abonos_aprobados = new ArrayCollection();
         $this->reservas = new ArrayCollection();
-        $this->ventasAprobadas = new ArrayCollection();
         $this->ventas = new ArrayCollection();
         $this->alumnos = new ArrayCollection();
         $this->movimientoStocks = new ArrayCollection();
@@ -392,36 +388,6 @@ class Usuario implements UserInterface,PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($reserva->getUsuario() === $this) {
                 $reserva->setUsuario(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Venta>
-     */
-    public function getVentasAprobadas(): Collection
-    {
-        return $this->ventasAprobadas;
-    }
-
-    public function addVentasAprobada(Venta $ventasAprobada): self
-    {
-        if (!$this->ventasAprobadas->contains($ventasAprobada)) {
-            $this->ventasAprobadas->add($ventasAprobada);
-            $ventasAprobada->setAprobada($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVentasAprobada(Venta $ventasAprobada): self
-    {
-        if ($this->ventasAprobadas->removeElement($ventasAprobada)) {
-            // set the owning side to null (unless already changed)
-            if ($ventasAprobada->getAprobada() === $this) {
-                $ventasAprobada->setAprobada(null);
             }
         }
 
