@@ -5,9 +5,6 @@
 {% block content %}
 
     {% embed 'usuario/edit.html.twig' %}
-        {% block eliminar_usuario_form %}
-            {{ include('tesorero/_delete_form.html.twig') }}
-        {% endblock %}
         {% block edit_fields_usuario %}
             {{ include('tesorero/_form.html.twig') }}
         {% endblock %}

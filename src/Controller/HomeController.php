@@ -21,26 +21,26 @@ class HomeController extends AbstractController
             $recordatorios = $notaRepository->notasPorTesorero($tesorero);
         }
 
-        $notificacionCurso = null;
+        $notificacionCursos = null;
         /** @var Alumno|null $alumno */
         $alumno = $this->getUser()->getAlumno();
 
         if ($alumno) {
-            $notificacionCurso = $cursoRepository->createQueryBuilder('c')
-                ->select('SUM(mcv.unidades_gastadas)')
+            $notificacionCursos = $cursoRepository->createQueryBuilder('c')
+                ->select('SUM(mcv.unidades_gastadas) AS horas, c.descripcion')
                 ->join('c.vuelos', 'v')
                 ->join('v.movimientoCuentaVuelo', 'mcv')
                 ->where('c.alumno = :alumno')
                 ->andWhere('c.aprobado = false')
-                ->setParameter('alumno', $alumno)
+                ->setParameter('alumno', $this->getUser())
+                ->groupBy('c.id')
                 ->getQuery()
-                ->getSingleScalarResult();
-
+                ->getResult();
         }
 
         return $this->render('home/index.html.twig', [
             'recordatorios' => $recordatorios,
-            'notificacion_curso' => $notificacionCurso
+            'notificacion_cursos' => $notificacionCursos
         ]);
     }
 }

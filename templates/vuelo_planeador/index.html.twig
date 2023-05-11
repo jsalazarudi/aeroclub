@@ -15,7 +15,13 @@
         <table class="table">
             <thead>
             <th>
-                Vuelo
+                Curso
+            </th>
+            <th>
+                Avión
+            </th>
+            <th>
+                Observaciones
             </th>
             <th>
                 Tiempo Remolque
@@ -36,7 +42,21 @@
             <tbody>
             {% for vuelo_planeador in vuelos_planeador %}
                 <tr>
-                    <td>{{ vuelo_planeador.vuelo.fecha|date('Y-m-d') ~ ' Avión:' ~ vuelo_planeador.vuelo.reservaVuelo.avion.matricula }}</td>
+                    <td>
+                        {% if vuelo_planeador.vuelo.curso is not null %}
+                            {{ vuelo_planeador.vuelo.curso.descripcion }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if vuelo_planeador.vuelo.avion|length  %}
+                            {{ vuelo_planeador.vuelo.avion.matricula }}
+                        {% else %}
+                            {{ vuelo_planeador.vuelo.reservaVuelo.avion.matricula }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ vuelo_planeador.vuelo.observaciones }}
+                    </td>
                     <td>
                         {{ vuelo_planeador.tiempoRemolque }}
                     </td>

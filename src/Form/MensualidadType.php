@@ -7,7 +7,7 @@ use App\Entity\Servicio;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\GreaterThan;
@@ -17,7 +17,7 @@ class MensualidadType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('fecha_inicio',DateTimeType::class,[
+            ->add('fecha_inicio',DateType::class,[
                 'widget' => 'single_text',
                 'attr' => [
                     'class' => 'form-control'
@@ -26,7 +26,7 @@ class MensualidadType extends AbstractType
                     'class' => 'text-muted fs-3'
                 ]
             ])
-            ->add('fecha_fin',DateTimeType::class,[
+            ->add('fecha_fin',DateType::class,[
                 'widget' => 'single_text',
                 'attr' => [
                     'class' => 'form-control'

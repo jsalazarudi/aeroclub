@@ -74,7 +74,7 @@ class VueloPlaneadorController extends AbstractController
         $vueloPlaneador = new VueloPlaneador();
         $form = $this->createForm(VueloPlaneadorType::class, $vueloPlaneador,[
             'tipo_usuario' => $this->getUser()->getRoles()[0],
-            'usuario' => $this->getUser()->getSocio() ?? $this->getUser()->getPiloto() ?? $this->getUser()->getAlumno()
+            'usuario' => $this->getUser()
         ]);
 
         $isSocioPiloto = $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO');
@@ -97,8 +97,10 @@ class VueloPlaneadorController extends AbstractController
         $movimientosStocks = [];
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $productosCargados = $vueloPlaneador->getVuelo()->getProductoVuelos();
+            $vueloPlaneador->getVuelo()->setEsVueloTuristico(false);
 
+            // Realizar movimiento stock si existen
+            $productosCargados = $vueloPlaneador->getVuelo()->getProductoVuelos();
             foreach ($productosCargados as $productoCargado) {
 
                 $entrada = $movimientoStockRepository->createQueryBuilder('m')
@@ -164,7 +166,26 @@ class VueloPlaneadorController extends AbstractController
     #[Route('/{id}/edit', name: 'app_vuelo_planeador_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, VueloPlaneador $vueloPlaneador, VueloPlaneadorRepository $vueloPlaneadorRepository): Response
     {
-        $form = $this->createForm(VueloPlaneadorType::class, $vueloPlaneador);
+        $form = $this->createForm(VueloPlaneadorType::class, $vueloPlaneador,[
+            'tipo_usuario' => $this->getUser()->getRoles()[0],
+            'usuario' => $this->getUser()
+        ]);
+        $isAlumno = $this->isGranted('ROLE_ALUMNO');
+        $isSocioPiloto = $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO');
+
+        if ($isSocioPiloto) {
+            $formVuelo = $form->get('vuelo');
+            $formVuelo->remove('curso');
+            $formVuelo->remove('avion');
+        }
+
+        if ($isAlumno) {
+            $formVuelo = $form->get('vuelo');
+            $formVuelo->remove('reservaVuelo');
+            $formVuelo->remove('productoVuelos');
+            $formVuelo->remove('es_vuelo_turistico');
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
