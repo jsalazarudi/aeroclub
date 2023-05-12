@@ -102,10 +102,13 @@ class MovimientoCuentaVuelo
         $vuelo = $this->getVuelo();
 
         if ($vuelo->getReservaVuelo()) {
-            $tipo = 'Alquier Avión';
+
+            $matricula = $vuelo->getReservaVuelo()->getAvion()->getMatricula();
+            $tipo = 'Alquier Avión '.$matricula;
         }
         else {
-            $tipo = 'Escuela de Vuelo';
+            $matricula = $vuelo->getAvion()->getMatricula();
+            $tipo = 'Escuela de Vuelo'.$matricula;
         }
 
         return sprintf('%s del %s Costo:%s',$tipo,$vuelo->getFecha()->format('Y-m-d'),$this->getUnidadesGastadas());

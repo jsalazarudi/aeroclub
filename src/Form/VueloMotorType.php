@@ -86,7 +86,8 @@ class VueloMotorType extends AbstractType
             ])
             ->add('vuelo', VueloType::class, [
                 'usuario' => $options['usuario'],
-                'tipo_usuario' => $options['tipo_usuario']
+                'tipo_usuario' => $options['tipo_usuario'],
+                'is_new' => $options['is_new']
             ])
             ->addEventListener(
                 FormEvents::POST_SUBMIT,
@@ -122,7 +123,8 @@ class VueloMotorType extends AbstractType
         $resolver->setDefaults([
             'data_class' => VueloMotor::class,
             'usuario' => null,
-            'tipo_usuario' => null
+            'tipo_usuario' => null,
+            'is_new' => true
         ]);
     }
 }

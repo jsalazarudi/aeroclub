@@ -4,8 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Alumno;
 use App\Entity\MovimientoStock;
-use App\Entity\Piloto;
-use App\Entity\Socio;
 use App\Entity\VueloMotor;
 use App\Form\VueloMotorType;
 use App\Repository\MovimientoStockRepository;
@@ -27,7 +25,7 @@ class VueloMotorController extends AbstractController
         $vuelosMotorQuery = $vueloMotorRepository->createQueryBuilder('vm')
             ->join('vm.vuelo', 'v');
 
-        if($this->isGranted('ROLE_ALUMNO')) {
+        if ($this->isGranted('ROLE_ALUMNO')) {
             $vuelosMotorQuery->join('v.curso', 'c')
                 ->where('c.alumno = :alumno')
                 ->setParameter('alumno', $usuario);
@@ -35,10 +33,10 @@ class VueloMotorController extends AbstractController
 
         if ($this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO')) {
 
-            $vuelosMotorQuery->join('v.reservaVuelo','rv')
-                ->join('rv.reserva','r')
+            $vuelosMotorQuery->join('v.reservaVuelo', 'rv')
+                ->join('rv.reserva', 'r')
                 ->where('r.usuario = :usuario')
-                ->setParameter('usuario',$usuario);
+                ->setParameter('usuario', $usuario);
         }
 
         $query = $vuelosMotorQuery->getQuery();
@@ -75,7 +73,8 @@ class VueloMotorController extends AbstractController
         $vueloMotor = new VueloMotor();
         $form = $this->createForm(VueloMotorType::class, $vueloMotor, [
             'tipo_usuario' => $this->getUser()->getRoles()[0],
-            'usuario' => $this->getUser()
+            'usuario' => $this->getUser(),
+            'is_new' => true
         ]);
 
         $isSocioPiloto = $this->isGranted('ROLE_PILOTO') || $this->isGranted('ROLE_SOCIO');
@@ -99,6 +98,7 @@ class VueloMotorController extends AbstractController
 
             $vueloMotor->getVuelo()->setEsVueloTuristico(false);
 
+            // Realizar validacion stock producto vuelos
             $productosCargados = $vueloMotor->getVuelo()->getProductoVuelos();
             $movimientosStocks = [];
             foreach ($productosCargados as $productoCargado) {
@@ -107,14 +107,14 @@ class VueloMotorController extends AbstractController
                     ->select('SUM(m.cantidad) AS stockEntrada')
                     ->where('m.producto = :producto')
                     ->andWhere("m.tipo = 'Entrada'")
-                    ->setParameter('producto',$productoCargado->getProducto())
+                    ->setParameter('producto', $productoCargado->getProducto())
                     ->getQuery()->getSingleScalarResult();
 
                 $salida = $movimientoStockRepository->createQueryBuilder('m')
                     ->select('SUM(m.cantidad) AS stockSalida')
                     ->where('m.producto = :producto')
                     ->andWhere("m.tipo = 'Salida'")
-                    ->setParameter('producto',$productoCargado->getProducto())
+                    ->setParameter('producto', $productoCargado->getProducto())
                     ->getQuery()->getSingleScalarResult();
 
                 $stockEntrada = $entrada ?? 0;
@@ -124,9 +124,12 @@ class VueloMotorController extends AbstractController
                     $this->addFlash(
                         'error',
                         sprintf("No hay %s cantidades del producto %s para sacar del stock, hay disponibles %s",
-                            $productoCargado->getCantidad(),$productoCargado->getProducto()->getDescripcion(),$stockEntrada - $stockSalida)
+                            $productoCargado->getCantidad(), $productoCargado->getProducto()->getDescripcion(), $stockEntrada - $stockSalida)
                     );
-                    return $this->redirectToRoute('app_vuelo_motor_new');
+                    return $this->render('vuelo_motor/new.html.twig', [
+                        'vuelo_motor' => $vueloMotor,
+                        'form' => $form,
+                    ]);
                 }
 
                 $movimientoStock = new MovimientoStock();
@@ -134,6 +137,7 @@ class VueloMotorController extends AbstractController
                 $movimientoStock->setTipo('Salida');
                 $movimientoStock->setObservaciones('Movimiento de Salida desde Vuelo del aeroclub');
                 $movimientoStock->setProducto($productoCargado->getProducto());
+                $movimientoStock->setRealizado($this->getUser());
 
                 $movimientosStocks[] = $movimientoStock;
 
@@ -141,8 +145,8 @@ class VueloMotorController extends AbstractController
 
             $vueloMotorRepository->save($vueloMotor, true);
 
-            foreach ($movimientosStocks as $movimientosStock){
-                $movimientoStockRepository->save($movimientosStock,true);
+            foreach ($movimientosStocks as $movimientosStock) {
+                $movimientoStockRepository->save($movimientosStock, true);
             }
 
             return $this->redirectToRoute('app_vuelo_motor_index', [], Response::HTTP_SEE_OTHER);
@@ -163,11 +167,12 @@ class VueloMotorController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_vuelo_motor_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, VueloMotor $vueloMotor, VueloMotorRepository $vueloMotorRepository): Response
+    public function edit(Request $request, VueloMotor $vueloMotor, VueloMotorRepository $vueloMotorRepository, MovimientoStockRepository $movimientoStockRepository): Response
     {
         $form = $this->createForm(VueloMotorType::class, $vueloMotor, [
             'tipo_usuario' => $this->getUser()->getRoles()[0],
-            'usuario' => $this->getUser()
+            'usuario' => $this->getUser(),
+            'is_new' => false
         ]);
 
         $isAlumno = $this->isGranted('ROLE_ALUMNO');
@@ -190,7 +195,56 @@ class VueloMotorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // Realizar validacion stock producto vuelos
+            $productosCargados = $vueloMotor->getVuelo()->getProductoVuelos();
+            $movimientosStocks = [];
+            foreach ($productosCargados as $productoCargado) {
+
+                $entrada = $movimientoStockRepository->createQueryBuilder('m')
+                    ->select('SUM(m.cantidad) AS stockEntrada')
+                    ->where('m.producto = :producto')
+                    ->andWhere("m.tipo = 'Entrada'")
+                    ->setParameter('producto', $productoCargado->getProducto())
+                    ->getQuery()->getSingleScalarResult();
+
+                $salida = $movimientoStockRepository->createQueryBuilder('m')
+                    ->select('SUM(m.cantidad) AS stockSalida')
+                    ->where('m.producto = :producto')
+                    ->andWhere("m.tipo = 'Salida'")
+                    ->setParameter('producto', $productoCargado->getProducto())
+                    ->getQuery()->getSingleScalarResult();
+
+                $stockEntrada = $entrada ?? 0;
+                $stockSalida = $salida ?? 0;
+
+                if ($productoCargado->getCantidad() > ($stockEntrada - $stockSalida)) {
+                    $this->addFlash(
+                        'error',
+                        sprintf("No hay %s cantidades del producto %s para sacar del stock, hay disponibles %s",
+                            $productoCargado->getCantidad(), $productoCargado->getProducto()->getDescripcion(), $stockEntrada - $stockSalida)
+                    );
+                    return $this->render('vuelo_motor/edit.html.twig', [
+                        'vuelo_motor' => $vueloMotor,
+                        'form' => $form,
+                    ]);
+                }
+
+                $movimientoStock = new MovimientoStock();
+                $movimientoStock->setCantidad($productoCargado->getCantidad());
+                $movimientoStock->setTipo('Salida');
+                $movimientoStock->setObservaciones('Movimiento de Salida desde Vuelo del aeroclub');
+                $movimientoStock->setProducto($productoCargado->getProducto());
+                $movimientoStock->setRealizado($this->getUser());
+
+                $movimientosStocks[] = $movimientoStock;
+
+            }
+
             $vueloMotorRepository->save($vueloMotor, true);
+
+            foreach ($movimientosStocks as $movimientosStock) {
+                $movimientoStockRepository->save($movimientosStock, true);
+            }
 
             return $this->redirectToRoute('app_vuelo_motor_index', [], Response::HTTP_SEE_OTHER);
         }

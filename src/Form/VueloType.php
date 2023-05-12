@@ -93,16 +93,20 @@ class VueloType extends AbstractType
                 'placeholder' => 'Seleccione la reserva realizada',
                 'query_builder' => function (EntityRepository $er) use($options){
 
+
                     $reservasAprobadasQuery = $er->createQueryBuilder('rv')
                         ->join('rv.reserva','r')
                         ->join('rv.avion','a')
                         ->leftJoin('rv.vuelo','v')
                         ->where('r.aprobado = true')
-                        ->andWhere('v.reservaVuelo IS NULL')
                         ->andWhere('a.es_planeador = :es_planeador')
                         ->andWhere('r.usuario = :usuario')
                         ->setParameter('es_planeador',$options['es_planeador'])
                         ->setParameter('usuario', $options['usuario']);
+
+                    if ($options['is_new']) {
+                        $reservasAprobadasQuery->andWhere('v.reservaVuelo IS NULL');
+                    }
 
                     return $reservasAprobadasQuery;
 
@@ -132,7 +136,8 @@ class VueloType extends AbstractType
             'data_class' => Vuelo::class,
             'usuario' => null,
             'tipo_usuario' => null,
-            'es_planeador' => false
+            'es_planeador' => false,
+            'is_new' => true
         ]);
     }
 }

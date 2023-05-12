@@ -45,6 +45,8 @@ security:
         - { path: ^/curso, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR,ROLE_INSTRUCTOR] }
         - { path: ^/servicio, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
         - { path: ^/avion, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/movimiento/stock, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/producto, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
 
 when@test:
     security:
