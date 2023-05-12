@@ -17,6 +17,20 @@ class VueloMotorType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $choicesTipoVuelo =  [
+            'Vuelo Privado' => 'Vuelo Privado',
+            'Adaptación' => 'Adaptacion',
+            'Readaptación' => 'Readaptacion',
+            'Instrucción' => 'Instruccion'
+        ];
+
+        if ( $options['tipo_usuario'] === 'ROLE_ALUMNO') {
+            $choicesTipoVuelo =  [
+                'Instrucción' => 'instruccion'
+            ];
+        }
+
+
         $builder
             ->add('aterrizajes', IntegerType::class, [
                 'attr' => [
@@ -61,18 +75,14 @@ class VueloMotorType extends AbstractType
                 ]
             ])
             ->add('tipo_vuelo', ChoiceType::class, [
-                'choices' => [
-                    'Vuelo Privado' => 'vuelo_privado',
-                    'Adaptación' => 'adaptacion',
-                    'Readaptación' => 'readaptacion',
-                    'Instrucción' => 'instruccion'
-                ],
+                'choices' => $choicesTipoVuelo,
                 'attr' => [
                     'class' => 'form-control'
                 ],
                 'label_attr' => [
                     'class' => 'text-muted fs-3'
-                ]
+                ],
+                'placeholder' => 'Seleccione el tipo de vuelo'
             ])
             ->add('vuelo', VueloType::class, [
                 'usuario' => $options['usuario'],

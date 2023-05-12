@@ -97,6 +97,8 @@ class VueloMotorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $vueloMotor->getVuelo()->setEsVueloTuristico(false);
+
             $productosCargados = $vueloMotor->getVuelo()->getProductoVuelos();
             $movimientosStocks = [];
             foreach ($productosCargados as $productoCargado) {
@@ -165,7 +167,7 @@ class VueloMotorController extends AbstractController
     {
         $form = $this->createForm(VueloMotorType::class, $vueloMotor, [
             'tipo_usuario' => $this->getUser()->getRoles()[0],
-            'usuario' => $this->getUser()->getSocio() ?? $this->getUser()->getPiloto() ?? $this->getUser()->getAlumno()
+            'usuario' => $this->getUser()
         ]);
 
         $isAlumno = $this->isGranted('ROLE_ALUMNO');

@@ -16,6 +16,19 @@ class VueloPlaneadorType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $choicesTipoVuelo =  [
+            'Adaptación' => 'adaptacion',
+            'Readaptación' => 'readaptacion',
+            'Entrenamiento' => 'entrenamiento',
+            'Instrucción' => 'instruccion'
+        ];
+
+        if ( $options['tipo_usuario'] === 'ROLE_ALUMNO') {
+            $choicesTipoVuelo =  [
+                'Instrucción' => 'instruccion'
+            ];
+        }
+
         $builder
             ->add('tiempo_remolque', NumberType::class, [
                 'attr' => [
@@ -34,12 +47,7 @@ class VueloPlaneadorType extends AbstractType
                 ]
             ])
             ->add('tema_vuelo', ChoiceType::class, [
-                'choices' => [
-                    'Adaptación' => 'adaptacion',
-                    'Readaptación' => 'readaptacion',
-                    'Entrenamiento' => 'entrenamiento',
-                    'Instrucción' => 'instruccion'
-                ],
+                'choices' => $choicesTipoVuelo,
                 'attr' => [
                     'class' => 'form-control'
                 ],

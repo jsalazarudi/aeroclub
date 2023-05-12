@@ -3,9 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\ReservaVuelo;
-use App\Entity\Socio;
-use App\Entity\Tesorero;
-use App\Entity\Usuario;
 use App\Form\ReservaVueloType;
 use App\Repository\ReservaVueloRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -73,7 +70,7 @@ class ReservaVueloController extends AbstractController
                     ->join('rv.reserva', 'r')
                     ->where('r.aprobado = true')
                     ->andWhere('rv.avion = :avion')
-                    ->andWhere('r.fecha_inicio BETWEEN :fecha_inicio AND :fecha_fin OR r.fecha_fin BETWEEN :fecha_inicio AND :fecha_fin')
+                    ->andWhere('r.fecha_inicio BETWEEN :fecha_inicio AND :fecha_fin OR r.fecha_fin BETWEEN :fecha_inicio AND :fecha_fin OR r.fecha_inicio < :fecha_inicio AND r.fecha_fin > :fecha_fin')
                     ->setParameter('fecha_inicio', $fechaInicio->format('Y-m-d H:i:s'))
                     ->setParameter('fecha_fin', $fechaFin->format('Y-m-d H:i:s'))
                     ->setParameter('avion', $reservaVuelo->getAvion())
@@ -130,9 +127,47 @@ class ReservaVueloController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $reservaVueloRepository->save($reservaVuelo, true);
 
-            return $this->redirectToRoute('app_reserva_vuelo_index', [], Response::HTTP_SEE_OTHER);
+
+            if ($reservaVuelo->getReserva()->isAprobado()) {
+
+                /** @var \DateTimeInterface $fechaInicio */
+                $fechaInicio = $reservaVuelo->getReserva()->getFechaInicio();
+                $fechaFin = $reservaVuelo->getReserva()->getFechaFin();
+
+                // Validar que no se crucen con otras reservas aprobadas
+                $conflictoVuelos = null;
+                try {
+                    $conflictoVuelos = $reservaVueloRepository->createQueryBuilder('rv')
+                        ->join('rv.reserva', 'r')
+                        ->where('r.aprobado = true')
+                        ->andWhere('rv.avion = :avion')
+                        ->andWhere('r.fecha_inicio BETWEEN :fecha_inicio AND :fecha_fin OR r.fecha_fin BETWEEN :fecha_inicio AND :fecha_fin OR r.fecha_inicio < :fecha_inicio AND r.fecha_fin > :fecha_fin')
+                        ->setParameter('fecha_inicio', $fechaInicio->format('Y-m-d H:i:s'))
+                        ->setParameter('fecha_fin', $fechaFin->format('Y-m-d H:i:s'))
+                        ->setParameter('avion', $reservaVuelo->getAvion())
+                        ->getQuery()
+                        ->getSingleResult();
+                } catch (NoResultException $e) {
+                    $reservaVueloRepository->save($reservaVuelo, true);
+                    return $this->redirectToRoute('app_reserva_vuelo_index', [], Response::HTTP_SEE_OTHER);
+
+                } catch (NonUniqueResultException $e) {
+                }
+
+                $messageFlash = sprintf('El avion %s ya se encuentra con una reserva aprobada entre las %s y %s', $conflictoVuelos->getAvion()->getMatricula(),
+                    $conflictoVuelos->getReserva()->getFechaInicio()->format('Y-m-d H:i:s'), $conflictoVuelos->getReserva()->getFechaFin()->format('Y-m-d H:i:s'));
+
+                $this->addFlash(
+                    'error',
+                    $messageFlash
+                );
+
+            } else {
+                $reservaVueloRepository->save($reservaVuelo, true);
+                return $this->redirectToRoute('app_reserva_vuelo_index', [], Response::HTTP_SEE_OTHER);
+            }
+
         }
 
         return $this->render('reserva_vuelo/edit.html.twig', [
