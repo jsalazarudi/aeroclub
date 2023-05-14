@@ -24,6 +24,9 @@ class ProductoVuelo
     #[ORM\JoinColumn(nullable: false)]
     private ?Vuelo $vuelo = null;
 
+    #[ORM\OneToOne(mappedBy: 'producto_vuelo', cascade: ['persist', 'remove'])]
+    private ?MovimientoStock $movimientoStock = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,6 +64,28 @@ class ProductoVuelo
     public function setVuelo(?Vuelo $vuelo): self
     {
         $this->vuelo = $vuelo;
+
+        return $this;
+    }
+
+    public function getMovimientoStock(): ?MovimientoStock
+    {
+        return $this->movimientoStock;
+    }
+
+    public function setMovimientoStock(?MovimientoStock $movimientoStock): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($movimientoStock === null && $this->movimientoStock !== null) {
+            $this->movimientoStock->setProductoVuelo(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($movimientoStock !== null && $movimientoStock->getProductoVuelo() !== $this) {
+            $movimientoStock->setProductoVuelo($this);
+        }
+
+        $this->movimientoStock = $movimientoStock;
 
         return $this;
     }

@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Alumno;
 use App\Entity\MovimientoStock;
+use App\Entity\ProductoVuelo;
+use App\Entity\Usuario;
 use App\Entity\VueloMotor;
 use App\Form\VueloMotorType;
 use App\Repository\MovimientoStockRepository;
@@ -100,27 +102,11 @@ class VueloMotorController extends AbstractController
                 $vueloMotor->getVuelo()->setEsVueloTuristico(false);
             }
 
-            // Realizar validacion stock producto vuelos
-            $productosCargados = $vueloMotor->getVuelo()->getProductoVuelos();
-            $movimientosStocks = [];
-            foreach ($productosCargados as $productoCargado) {
+            /** Movimiento Stock */
+            foreach ($vueloMotor->getVuelo()->getProductoVuelos() as $productoCargado) {
 
-                $entrada = $movimientoStockRepository->createQueryBuilder('m')
-                    ->select('SUM(m.cantidad) AS stockEntrada')
-                    ->where('m.producto = :producto')
-                    ->andWhere("m.tipo = 'Entrada'")
-                    ->setParameter('producto', $productoCargado->getProducto())
-                    ->getQuery()->getSingleScalarResult();
-
-                $salida = $movimientoStockRepository->createQueryBuilder('m')
-                    ->select('SUM(m.cantidad) AS stockSalida')
-                    ->where('m.producto = :producto')
-                    ->andWhere("m.tipo = 'Salida'")
-                    ->setParameter('producto', $productoCargado->getProducto())
-                    ->getQuery()->getSingleScalarResult();
-
-                $stockEntrada = $entrada ?? 0;
-                $stockSalida = $salida ?? 0;
+                $stockEntrada = $movimientoStockRepository->getEntradaProducto($productoCargado->getProducto()) ?? 0;
+                $stockSalida = $movimientoStockRepository->getSalidaProducto($productoCargado->getProducto()) ?? 0;
 
                 if ($productoCargado->getCantidad() > ($stockEntrada - $stockSalida)) {
                     $this->addFlash(
@@ -134,22 +120,12 @@ class VueloMotorController extends AbstractController
                     ]);
                 }
 
-                $movimientoStock = new MovimientoStock();
-                $movimientoStock->setCantidad($productoCargado->getCantidad());
-                $movimientoStock->setTipo('Salida');
-                $movimientoStock->setObservaciones('Movimiento de Salida desde Vuelo del aeroclub');
-                $movimientoStock->setProducto($productoCargado->getProducto());
-                $movimientoStock->setRealizado($this->getUser());
-
-                $movimientosStocks[] = $movimientoStock;
-
+                $movimientoStock = $productoCargado->getMovimientoStock();
+                $movimientoStockActualizado = $this->crearMovimientoStock($productoCargado, $movimientoStock);
+                $productoCargado->setMovimientoStock($movimientoStockActualizado);
             }
 
             $vueloMotorRepository->save($vueloMotor, true);
-
-            foreach ($movimientosStocks as $movimientosStock) {
-                $movimientoStockRepository->save($movimientosStock, true);
-            }
 
             return $this->redirectToRoute('app_vuelo_motor_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -197,27 +173,11 @@ class VueloMotorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // Realizar validacion stock producto vuelos
-            $productosCargados = $vueloMotor->getVuelo()->getProductoVuelos();
-            $movimientosStocks = [];
-            foreach ($productosCargados as $productoCargado) {
+            /** Movimiento Stock */
+            foreach ($vueloMotor->getVuelo()->getProductoVuelos() as $productoCargado) {
 
-                $entrada = $movimientoStockRepository->createQueryBuilder('m')
-                    ->select('SUM(m.cantidad) AS stockEntrada')
-                    ->where('m.producto = :producto')
-                    ->andWhere("m.tipo = 'Entrada'")
-                    ->setParameter('producto', $productoCargado->getProducto())
-                    ->getQuery()->getSingleScalarResult();
-
-                $salida = $movimientoStockRepository->createQueryBuilder('m')
-                    ->select('SUM(m.cantidad) AS stockSalida')
-                    ->where('m.producto = :producto')
-                    ->andWhere("m.tipo = 'Salida'")
-                    ->setParameter('producto', $productoCargado->getProducto())
-                    ->getQuery()->getSingleScalarResult();
-
-                $stockEntrada = $entrada ?? 0;
-                $stockSalida = $salida ?? 0;
+                $stockEntrada = $movimientoStockRepository->getEntradaProducto($productoCargado->getProducto()) ?? 0;
+                $stockSalida = $movimientoStockRepository->getSalidaProducto($productoCargado->getProducto()) ?? 0;
 
                 if ($productoCargado->getCantidad() > ($stockEntrada - $stockSalida)) {
                     $this->addFlash(
@@ -231,23 +191,12 @@ class VueloMotorController extends AbstractController
                     ]);
                 }
 
-                $movimientoStock = new MovimientoStock();
-                $movimientoStock->setCantidad($productoCargado->getCantidad());
-                $movimientoStock->setTipo('Salida');
-                $movimientoStock->setObservaciones('Movimiento de Salida desde Vuelo del aeroclub');
-                $movimientoStock->setProducto($productoCargado->getProducto());
-                $movimientoStock->setRealizado($this->getUser());
-
-                $movimientosStocks[] = $movimientoStock;
-
+                $movimientoStock = $productoCargado->getMovimientoStock();
+                $movimientoStockActualizado = $this->crearMovimientoStock($productoCargado, $movimientoStock);
+                $productoCargado->setMovimientoStock($movimientoStockActualizado);
             }
 
             $vueloMotorRepository->save($vueloMotor, true);
-
-            foreach ($movimientosStocks as $movimientosStock) {
-                $movimientoStockRepository->save($movimientosStock, true);
-            }
-
             return $this->redirectToRoute('app_vuelo_motor_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -265,5 +214,24 @@ class VueloMotorController extends AbstractController
         }
 
         return $this->redirectToRoute('app_vuelo_motor_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function crearMovimientoStock(ProductoVuelo $productoVuelo, ?MovimientoStock $movimientoStock): MovimientoStock
+    {
+        if (is_null($movimientoStock)) {
+            $movimientoStock = new MovimientoStock();
+        }
+
+        $movimientoStock->setCantidad($productoVuelo->getCantidad());
+        $movimientoStock->setTipo('Salida');
+
+        /** @var Usuario $usuario */
+        $usuario = $this->getUser();
+
+        $movimientoStock->setObservaciones(sprintf('Movimiento de Salida desde Vuelo del aeroclub por parte de %s %s', $usuario->getNombre(), $usuario->getApellido()));
+        $movimientoStock->setRealizado($usuario);
+        $movimientoStock->setProducto($productoVuelo->getProducto());
+
+        return $movimientoStock;
     }
 }

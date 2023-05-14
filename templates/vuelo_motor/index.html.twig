@@ -88,7 +88,11 @@
                         {{ vuelo_motor.vuelo.fecha|date('Y-m-d') }}
                     </td>
                     <td>
-                        <a class="btn btn-warning" href="{{ path('app_vuelo_motor_edit', {'id': vuelo_motor.id}) }}">Editar</a>
+                        {% if vuelo_motor.vuelo.movimientoCuentaVuelo.abono and vuelo_motor.vuelo.movimientoCuentaVuelo.abono.aprobado %}
+                            <p class="text-success"> Vuelo Abonado</p>
+                        {% else %}
+                            <a class="btn btn-warning" href="{{ path('app_vuelo_motor_edit', {'id': vuelo_motor.id}) }}">Editar</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

@@ -39,7 +39,7 @@ class Vuelo
     #[Assert\NotBlank()]
     private ?Avion $avion = null;
 
-    #[ORM\OneToMany(mappedBy: 'vuelo', targetEntity: ProductoVuelo::class,cascade: ['persist','remove'])]
+    #[ORM\OneToMany(mappedBy: 'vuelo', targetEntity: ProductoVuelo::class,cascade: ['persist','remove'],orphanRemoval:true)]
     private Collection $productoVuelos;
 
     #[ORM\OneToOne(mappedBy: 'vuelo', cascade: ['persist', 'remove'])]

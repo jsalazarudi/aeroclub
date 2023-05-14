@@ -50,6 +50,7 @@ security:
         - { path: ^/abono, roles: [ROLE_TESORERO,ROLE_ALUMNO,ROLE_ADMINISTRADOR,ROLE_SOCIO,ROLE_PILOTO] }
         - { path: ^/venta, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR,ROLE_SOCIO,ROLE_PILOTO] }
         - { path: ^/lista/precio, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/vuelo, roles: [ROLE_PILOTO,ROLE_SOCIO,ROLE_ALUMNO] }
 
 when@test:
     security:

@@ -40,6 +40,9 @@ class MovimientoStock
     #[ORM\OneToOne(inversedBy: 'movimientoStock', cascade: ['persist', 'remove'])]
     private ?ProductoVenta $producto_venta = null;
 
+    #[ORM\OneToOne(inversedBy: 'movimientoStock', cascade: ['persist', 'remove'])]
+    private ?ProductoVuelo $producto_vuelo = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -113,6 +116,18 @@ class MovimientoStock
     public function setProductoVenta(?ProductoVenta $producto_venta): self
     {
         $this->producto_venta = $producto_venta;
+
+        return $this;
+    }
+
+    public function getProductoVuelo(): ?ProductoVuelo
+    {
+        return $this->producto_vuelo;
+    }
+
+    public function setProductoVuelo(?ProductoVuelo $producto_vuelo): self
+    {
+        $this->producto_vuelo = $producto_vuelo;
 
         return $this;
     }
