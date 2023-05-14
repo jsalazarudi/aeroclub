@@ -72,8 +72,14 @@
                     </td>
                     <td>
                         {% if is_granted('ROLE_TESORERO') %}
-                            <a class="btn btn-warning"
-                               href="{{ path('app_reserva_hangar_edit', {'id': reserva_hangar.id}) }}">Editar</a>
+                            {% if reserva_hangar.abono and reserva_hangar.abono.aprobado %}
+                            <p class="text-success">
+                                Reserva Abonada
+                            </p>
+                            {% else %}
+                                <a class="btn btn-warning"
+                                   href="{{ path('app_reserva_hangar_edit', {'id': reserva_hangar.id}) }}">Editar</a>
+                            {% endif  %}
                         {% endif %}
                     </td>
 
