@@ -67,13 +67,12 @@
 
             removeFormButton.addEventListener('click', (e) => {
                 e.preventDefault();
-                // remove the li for the tag form
                 item.remove();
             });
         }
 
         document
-            .querySelectorAll('ul.tags li')
+            .querySelectorAll('ul.productosVentas li')
             .forEach((tag) => {
                 addTagFormDeleteLink(tag)
             })

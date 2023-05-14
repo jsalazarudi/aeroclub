@@ -27,6 +27,9 @@ class ProductoVenta
     #[ORM\ManyToOne(inversedBy: 'productoVentas')]
     private ?ListaPrecio $lista_precio = null;
 
+    #[ORM\OneToOne(mappedBy: 'producto_venta', cascade: ['persist', 'remove'])]
+    private ?MovimientoStock $movimientoStock = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -76,6 +79,28 @@ class ProductoVenta
     public function setListaPrecio(?ListaPrecio $lista_precio): self
     {
         $this->lista_precio = $lista_precio;
+
+        return $this;
+    }
+
+    public function getMovimientoStock(): ?MovimientoStock
+    {
+        return $this->movimientoStock;
+    }
+
+    public function setMovimientoStock(?MovimientoStock $movimientoStock): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($movimientoStock === null && $this->movimientoStock !== null) {
+            $this->movimientoStock->setProductoVenta(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($movimientoStock !== null && $movimientoStock->getProductoVenta() !== $this) {
+            $movimientoStock->setProductoVenta($this);
+        }
+
+        $this->movimientoStock = $movimientoStock;
 
         return $this;
     }

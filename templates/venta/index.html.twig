@@ -6,19 +6,38 @@
 
     <div class="container">
 
-        <h1 class="text-center mt-2 mb-2">Listado Ventas</h1>
+        {% if is_granted('ROLE_SOCIO') or is_granted('ROLE_PILOTO') %}
+            <h1 class="text-center mt-2 mb-2">Listado Compras</h1>
 
-        <div class="text-center">
-            <a class="btn btn-success mt-2 mb-5" href="{{ path('app_venta_new') }}">Crear Venta</a>
-        </div>
+            <div class="text-center">
+                <a class="btn btn-success mt-2 mb-5" href="{{ path('app_venta_new') }}">Crear Compra</a>
+            </div>
+        {% else %}
+            <h1 class="text-center mt-2 mb-2">Listado Ventas</h1>
+
+            <div class="text-center">
+                <a class="btn btn-success mt-2 mb-5" href="{{ path('app_venta_new') }}">Crear Venta</a>
+            </div>
+        {% endif %}
+
+
+
 
         <table class="table">
             <thead>
+            {% if is_granted('ROLE_TESORERO') %}
+            <th>
+                Detalle
+            </th>
+            {% endif %}
             <th>
                 Observaciones
             </th>
             <th>
                 Fecha
+            </th>
+            <th>
+                Realizada Por
             </th>
             <th>
 
@@ -27,10 +46,34 @@
             <tbody>
             {% for venta in ventas %}
                 <tr>
+                    {% if is_granted('ROLE_TESORERO') %}
+                        <td>
+                            {% if app.user.id == venta.realizada.id %}
+
+                                {% for productoVenta in venta.productoVentas  %}
+                                    <h5>{{ productoVenta.producto.descripcion }} </h5>
+                                    {% set valor = productoVenta.cantidad * productoVenta.listaPrecio.precio  %}
+                                    <p>{{ valor|format_currency('ARS') }}</p>
+                                {% endfor %}
+
+                            {% endif %}
+                        </td>
+                    {% endif %}
                     <td>{{ venta.observaciones }}</td>
                     <td>{{ venta.fecha|date('Y-m-d') }}</td>
                     <td>
-                        <a class="btn btn-warning" href="{{ path('app_venta_edit', {'id': venta.id}) }}">Editar</a>
+                        {{ venta.realizada.nombre }}  {{ venta.realizada.apellido }}
+                    </td>
+                    <td>
+                        {% if is_granted('ROLE_PILOTO') or is_granted('ROLE_SOCIO') %}
+                            {% if venta.abono and venta.abono.aprobado %}
+                                <p class="text-success">Compra Abonada</p>
+                            {% else %}
+                                <a class="btn btn-warning" href="{{ path('app_venta_edit', {'id': venta.id}) }}">Editar</a>
+                            {% endif %}
+                        {% else %}
+                            <a class="btn btn-warning" href="{{ path('app_venta_edit', {'id': venta.id}) }}">Editar</a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

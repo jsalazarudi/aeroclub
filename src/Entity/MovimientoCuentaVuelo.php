@@ -111,7 +111,7 @@ class MovimientoCuentaVuelo
             $tipo = 'Escuela de Vuelo'.$matricula;
         }
 
-        return sprintf('%s del %s Costo:%s',$tipo,$vuelo->getFecha()->format('Y-m-d'),$this->getUnidadesGastadas());
+        return sprintf('%s: %s / Costo:%s',$vuelo->getFecha()->format('Y-m-d'),$tipo,$this->getUnidadesGastadas());
     }
 
 

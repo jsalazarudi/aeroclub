@@ -37,6 +37,9 @@ class MovimientoStock
     #[ORM\JoinColumn(nullable: false)]
     private ?Usuario $realizado = null;
 
+    #[ORM\OneToOne(inversedBy: 'movimientoStock', cascade: ['persist', 'remove'])]
+    private ?ProductoVenta $producto_venta = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -98,6 +101,18 @@ class MovimientoStock
     public function setRealizado(?Usuario $realizado): self
     {
         $this->realizado = $realizado;
+
+        return $this;
+    }
+
+    public function getProductoVenta(): ?ProductoVenta
+    {
+        return $this->producto_venta;
+    }
+
+    public function setProductoVenta(?ProductoVenta $producto_venta): self
+    {
+        $this->producto_venta = $producto_venta;
 
         return $this;
     }

@@ -81,7 +81,7 @@ class PagoMensualidad
 
     public function __toString(): string
     {
-        return $this->getMensualidad()->getServicio()->getDescripcion(). ' del '.$this->getFecha()->format('Y-m-d');
+        return $this->getFecha()->format('Y-m-d').': '.$this->getMensualidad()->getServicio()->getDescripcion();
     }
 
 }

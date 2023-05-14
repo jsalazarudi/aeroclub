@@ -47,6 +47,9 @@ security:
         - { path: ^/avion, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
         - { path: ^/movimiento/stock, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
         - { path: ^/producto, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/abono, roles: [ROLE_TESORERO,ROLE_ALUMNO,ROLE_ADMINISTRADOR,ROLE_SOCIO,ROLE_PILOTO] }
+        - { path: ^/venta, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR,ROLE_SOCIO,ROLE_PILOTO] }
+        - { path: ^/lista/precio, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
 
 when@test:
     security:

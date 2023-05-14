@@ -3,7 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\ListaPrecio;
+use App\Entity\Producto;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,28 +42,36 @@ class ListaPrecioRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return ListaPrecio[] Returns an array of ListaPrecio objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('l.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getUltimoHistorialListaPrecio()
+    {
+        $queryHistorialListsPrecio = $this->createQueryBuilder('lp')
+            ->join('lp.historial_lista_precio', 'hlp')
+            ->select('MAX(hlp.fecha) AS fecha')
+            ->getQuery();
 
-//    public function findOneBySomeField($value): ?ListaPrecio
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        try {
+            return $queryHistorialListsPrecio->getSingleScalarResult();
+        } catch (NoResultException|NonUniqueResultException $e) {
+            return null;
+        }
+    }
+
+    public function getProducto($ultimaHistorialListaPrecio,Producto $producto, ?string $rol)
+    {
+        $listaPrecioQuery = $this->createQueryBuilder('lp')
+            ->join('lp.historial_lista_precio', 'historial')
+            ->where('lp.producto = :producto')
+            ->andWhere('historial.fecha = :fecha')
+            ->setParameter('producto', $producto)
+            ->setParameter('fecha', $ultimaHistorialListaPrecio);
+
+        if ($rol === 'ROLE_SOCIO') {
+            $listaPrecioQuery->andWhere('lp.socio = true');
+        }
+        try {
+            return $listaPrecioQuery->getQuery()->getSingleResult();
+        } catch (NoResultException|NonUniqueResultException $e) {
+            return null;
+        }
+    }
 }

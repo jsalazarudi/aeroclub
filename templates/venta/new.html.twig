@@ -5,7 +5,12 @@
 {% block content %}
 
     <div class="container">
-        <h1 class="text-center mb-2">Crear Venta</h1>
+        {% if is_granted('ROLE_SOCIO') or is_granted('ROLE_PILOTO') %}
+            <h1 class="text-center mb-2">Crear Compra</h1>
+        {% else %}
+            <h1 class="text-center mb-2">Crear Venta</h1>
+        {% endif %}
+
         <div class="text-center">
             <a class="btn btn-secondary" href="{{ path('app_venta_index') }}">Regresar</a>
         </div>

@@ -16,6 +16,9 @@
         <table class="table">
             <thead>
             <th>
+                Producto
+            </th>
+            <th>
                 Cantidad
             </th>
             <th>
@@ -31,6 +34,7 @@
             <tbody>
             {% for stock in stocks %}
                 <tr>
+                    <td>{{ stock.producto.descripcion }}</td>
                     <td>{{ stock.cantidad }}</td>
                     <td>
                         {% if stock.tipo == 'Entrada' %}

@@ -73,7 +73,6 @@ class AbonoController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // Evitar procesar si no se ha enviado ningun movimiento
             if ($abono->getReservasHangar()->isEmpty() && $abono->getMovimientoCuentaVuelos()->isEmpty() &&
                 $abono->getVentas()->isEmpty() && $abono->getPagoMensualidads()->isEmpty()) {
 
@@ -87,29 +86,11 @@ class AbonoController extends AbstractController
                 ]);
             }
 
-            // Obtener historial lista de precio mas reciente
-            /** @var string $ultimaFechaHistorialListaPrecios */
-            $ultimaFechaHistorialListaPreciosQuery = $listaPrecioRepository->createQueryBuilder('lp')
-                ->join('lp.historial_lista_precio', 'hlp')
-                ->select('MAX(hlp.fecha) AS fecha')
-                ->getQuery();
-
-            try {
-                $ultimaFechaHistorialListaPrecios = $ultimaFechaHistorialListaPreciosQuery->getSingleScalarResult();
-            } catch (NoResultException $e) {
+            $ultimaFechaHistorialListaPrecios = $listaPrecioRepository->getUltimoHistorialListaPrecio();
+            if (is_null($ultimaFechaHistorialListaPrecios)) {
                 $this->addFlash(
                     'error',
-                    'No existe ningun historial de lista de precio. Contactarse con el tesorero para resolver este inconveniente'
-                );
-                return $this->render('abono/new.html.twig', [
-                    'abono' => $abono,
-                    'form' => $form,
-                ]);
-
-            } catch (NonUniqueResultException $e) {
-                $this->addFlash(
-                    'error',
-                    'Se obtuvieron dos historiales. Contactarse con el tesorero para resolver este inconveniente'
+                    'No existe ningun historial de lista de precio o se obtuvieron dos historiales. Contactarse con el tesorero para resolver este inconveniente'
                 );
                 return $this->render('abono/new.html.twig', [
                     'abono' => $abono,
@@ -117,9 +98,8 @@ class AbonoController extends AbstractController
                 ]);
             }
 
-            // Validar relaciones agregadas al abono en el formulario de crear
             $totalAbono = 0;
-            // Validar reservas hangar
+            /** Reservas Hangar */
             foreach ($abono->getReservasHangar() as $reservaHangar) {
 
                 $servicio = $reservaHangar->getServicio();
@@ -169,7 +149,7 @@ class AbonoController extends AbstractController
                 }
             }
 
-            // Validar vuelos
+            /** Movimiento Cuenta Vuelos */
             foreach ($abono->getMovimientoCuentaVuelos() as $movimientoCuentaVuelo) {
 
                 $avion = $movimientoCuentaVuelo->getVuelo()->getAvion();
@@ -226,45 +206,24 @@ class AbonoController extends AbstractController
 
             }
 
-            // Validacion ventas
+            /** Ventas */
             foreach ($abono->getVentas() as $venta) {
                 foreach ($venta->getProductoVentas() as $producto) {
-                    $listaPrecioQuery = $listaPrecioRepository->createQueryBuilder('lp')
-                        ->join('lp.historial_lista_precio', 'historial')
-                        ->where('lp.producto = :producto')
-                        ->andWhere('historial.fecha = :fecha')
-                        ->setParameter('producto', $producto->getProducto())
-                        ->setParameter('fecha', $ultimaFechaHistorialListaPrecios);
 
-                    if ($this->isGranted('ROLE_SOCIO')) {
-                        $listaPrecioQuery->andWhere('lp.socio = true');
-                    }
+                    $listaPrecio = $listaPrecioRepository->getProducto($ultimaFechaHistorialListaPrecios, $producto->getProducto(), $this->getUser()->getRoles()[0]);
 
-                    /** @var ListaPrecio $listaPrecio */
-                    try {
-                        $listaPrecio = $listaPrecioQuery->getQuery()->getSingleResult();
-                    } catch (NoResultException $e) {
+                    if (is_null($listaPrecio)) {
                         $this->addFlash(
                             'error',
-                            'No hay lista de precios relacionadas  al producto'
-                        );
-                        return $this->render('abono/new.html.twig', [
-                            'abono' => $abono,
-                            'form' => $form,
-                        ]);
-
-                    } catch (NonUniqueResultException $e) {
-                        $this->addFlash(
-                            'error',
-                            'Hay conflicto entre dos listas de precios para el producto'
+                            sprintf('No hay lista de precios configuradas o hay conflictos con al producto %s', $producto->getProducto()->getDescripcion())
                         );
                         return $this->render('abono/new.html.twig', [
                             'abono' => $abono,
                             'form' => $form,
                         ]);
                     }
+
                     $totalAbono += $listaPrecio->getPrecio() * $producto->getCantidad();
-
                     $producto->setListaPrecio($listaPrecio);
                 }
 

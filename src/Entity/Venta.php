@@ -27,7 +27,7 @@ class Venta
     #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha = null;
 
-    #[ORM\OneToMany(mappedBy: 'venta', targetEntity: ProductoVenta::class,cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'venta', targetEntity: ProductoVenta::class,cascade: ['persist'],orphanRemoval:true)]
     #[Assert\NotBlank()]
     private Collection $productoVentas;
 
@@ -116,7 +116,7 @@ class Venta
 
     public function __toString(): string
     {
-       return $this->observaciones;
+       return $this->getFecha()->format('Y-m-d').': '.$this->getObservaciones();
     }
 
     public function getRealizada(): ?Usuario
