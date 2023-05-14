@@ -36,6 +36,9 @@
                     Tipo Vuelo
                 </th>
                 <th>
+                    Fecha
+                </th>
+                <th>
                     Realizado por
                 </th>
             </thead>
@@ -59,6 +62,9 @@
                     </td>
                     <td>
                         {{ vuelo_motor.tipoVuelo }}
+                    </td>
+                    <td>
+                        {{ vuelo_motor.vuelo.fecha|date('Y-m-d') }}
                     </td>
                     <td>
                         {{ vuelo_motor.vuelo.reservaVuelo.reserva.usuario.nombre }} {{ vuelo_motor.vuelo.reservaVuelo.reserva.usuario.apellido }}

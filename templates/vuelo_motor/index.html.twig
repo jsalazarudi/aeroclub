@@ -45,6 +45,9 @@
                 Tipo Vuelo
             </th>
             <th>
+                Fecha
+            </th>
+            <th>
 
             </th>
             </thead>
@@ -80,6 +83,9 @@
                         {% if vuelo_motor.vuelo.esVueloTuristico %}
                             <span class="text-success">Bautismo</span>
                         {% endif %}
+                    </td>
+                    <td>
+                        {{ vuelo_motor.vuelo.fecha|date('Y-m-d') }}
                     </td>
                     <td>
                         <a class="btn btn-warning" href="{{ path('app_vuelo_motor_edit', {'id': vuelo_motor.id}) }}">Editar</a>

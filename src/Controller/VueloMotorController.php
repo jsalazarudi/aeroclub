@@ -96,7 +96,9 @@ class VueloMotorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $vueloMotor->getVuelo()->setEsVueloTuristico(false);
+            if (!$vueloMotor->getVuelo()->isEsVueloTuristico()) {
+                $vueloMotor->getVuelo()->setEsVueloTuristico(false);
+            }
 
             // Realizar validacion stock producto vuelos
             $productosCargados = $vueloMotor->getVuelo()->getProductoVuelos();

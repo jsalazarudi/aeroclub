@@ -98,7 +98,9 @@ class VueloPlaneadorController extends AbstractController
         $movimientosStocks = [];
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $vueloPlaneador->getVuelo()->setEsVueloTuristico(false);
+            if (!$vueloPlaneador->getVuelo()->isEsVueloTuristico()) {
+                $vueloPlaneador->getVuelo()->setEsVueloTuristico(false);
+            }
 
             // Realizar movimiento stock si existen
             $productosCargados = $vueloPlaneador->getVuelo()->getProductoVuelos();

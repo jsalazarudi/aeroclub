@@ -28,6 +28,9 @@
         <th>
             Realizado por
         </th>
+        <th>
+            Fecha
+        </th>
         </thead>
         <tbody>
         {% for vuelo_planeador in vuelos_planeador %}
@@ -46,6 +49,9 @@
             </td>
             <td>
                 {{ vuelo_planeador.vuelo.reservaVuelo.reserva.usuario.nombre }} {{ vuelo_planeador.vuelo.reservaVuelo.reserva.usuario.apellido }}
+            </td>
+            <td>
+                {{ vuelo_planeador.vuelo.fecha|date('Y-m-d') }}
             </td>
         </tr>
         {% endfor %}

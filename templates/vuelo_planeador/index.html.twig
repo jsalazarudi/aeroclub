@@ -36,6 +36,9 @@
                 Tiempo Acumulado
             </th>
             <th>
+                Fecha
+            </th>
+            <th>
 
             </th>
             </thead>
@@ -64,9 +67,16 @@
                         {{ vuelo_planeador.tiempoLibre }}
                     <td>
                         {{ vuelo_planeador.temaVuelo }}
+                        {% if vuelo_planeador.vuelo.esVueloTuristico %}
+                            <br>
+                            <span class="text-success">Bautismo</span>
+                        {% endif %}
                     </td>
                     <td>
                         {{ vuelo_planeador.tiempoAcumulado }}
+                    </td>
+                    <td>
+                        {{ vuelo_planeador.vuelo.fecha|date('Y-m-d') }}
                     </td>
                     <td>
                         <a class="btn btn-warning"
