@@ -71,7 +71,7 @@ class CursoController extends AbstractController
             return $this->redirectToRoute('app_curso_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('curso/edit.html.twig', [
+        return $this->render('curso/edit.html.twig', [
             'curso' => $curso,
             'form' => $form,
         ]);

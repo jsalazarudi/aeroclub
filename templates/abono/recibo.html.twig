@@ -9,10 +9,13 @@
 </head>
 <body>
     <div style="text-align: center">
+
         <h2>Recibo Abono Aprobado</h2>
         <img src="{{ logoAeroclob }}" width="200px">
-        <h5>Para {{ usuario.usuario.nombre }} {{ usuario.usuario.apellido }}</h5>
+
+        <h5>Para {{ usuario.nombre }} {{ usuario.apellido }}</h5>
         <h5>Por valor de {{ total|format_currency('ARS') }}</h5>
+
         <p>Que corresponde a:</p>
         {% if vuelos %}
             {% for vuelo in vuelos  %}
@@ -25,6 +28,7 @@
                 {% endif %}
             {% endfor %}
         {% endif %}
+
         {% if ventas %}
             {% for venta in ventas  %}
                 {% for producto in venta.productoVentas %}
@@ -32,11 +36,13 @@
                 {% endfor %}
             {% endfor %}
         {% endif %}
+
         {% if reservasHangar %}
             {% for reservaHangar in reservasHangar  %}
                 <p>Valor Reserva Hangar: {{ (reservaHangar.listaPrecio.precio * reservaHangar.unidadesGastadas)|format_currency('ARS') }}</p>
             {% endfor %}
         {% endif %}
+
         {% if pagoMensualidades %}
             {% for mensualidad in pagoMensualidades  %}
                 <strong>{{ mensualidad.mensualidad.servicio.descripcion }}</strong>

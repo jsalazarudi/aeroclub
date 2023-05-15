@@ -27,7 +27,7 @@ class HistorialListaPrecio
     #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha = null;
 
-    #[ORM\OneToMany(mappedBy: 'historial_lista_precio', targetEntity: ListaPrecio::class)]
+    #[ORM\OneToMany(mappedBy: 'historial_lista_precio', targetEntity: ListaPrecio::class,cascade: ['persist'],orphanRemoval:true)]
     private Collection $listaPrecios;
 
     public function __construct()

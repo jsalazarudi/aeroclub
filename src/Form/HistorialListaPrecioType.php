@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class HistorialListaPrecioType extends AbstractType
 {
@@ -29,7 +30,10 @@ class HistorialListaPrecioType extends AbstractType
                 'label_attr' => [
                     'class' => 'text-muted fs-3'
                 ],
-                'widget' => 'single_text'
+                'widget' => 'single_text',
+                'constraints' => [
+                    new GreaterThan('now')
+                ]
             ]);
     }
 

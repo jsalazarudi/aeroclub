@@ -26,14 +26,19 @@
             </th>
             </thead>
             <tbody>
+            {% set contador = 0 %}
             {% for historial_lista_precio in historial_lista_precios %}
+                <tr>
                 <tr>
                     <td>{{ historial_lista_precio.fecha|date('Y-m-d H:i:s') }}</td>
                     <td>{{ historial_lista_precio.porcentajeCambio ~ '%' }}</td>
                     <td>
-                        <a class="btn btn-warning"
-                           href="{{ path('app_historial_lista_precio_edit', {'id': historial_lista_precio.id}) }}">Editar</a>
+                        {% if app.request.query.all.page is not defined and contador == 0 %}
+                            <a class="btn btn-warning"
+                               href="{{ path('app_historial_lista_precio_edit', {'id': historial_lista_precio.id}) }}">Editar</a>
+                        {% endif %}
                     </td>
+                    {% set contador = contador + 1 %}
                 </tr>
             {% endfor %}
             </tbody>

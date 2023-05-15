@@ -344,26 +344,12 @@ class AbonoController extends AbstractController
     #[Route('/{id}/recibo', name: 'app_abono_recibo', methods: ['GET'])]
     public function recibo(Request $request, Abono $abono): Response
     {
-        $usuario = null;
-        if ($this->isGranted('ROLE_PILOTO')) {
-            $usuario = $this->getUser()->getPiloto();
-        }
-
-        if ($this->isGranted('ROLE_SOCIO')) {
-            $usuario = $this->getUser()->getSocio();
-        }
-
-        if ($this->isGranted('ROLE_ALUMNO')) {
-            $usuario = $this->getUser()->getAlumno();
-        }
-
+        $usuario = $this->getUser();
         $total = $abono->getValor();
-
         $reservasHangar = $abono->getReservasHangar();
         $vuelos = $abono->getMovimientoCuentaVuelos();
         $ventas = $abono->getVentas();
         $pagoMensualidades = $abono->getPagoMensualidads();
-
 
         $html = $this->renderView('abono/recibo.html.twig', [
             'logoAeroclob' => $this->imageToBase64(),
@@ -374,6 +360,7 @@ class AbonoController extends AbstractController
             'reservasHangar' => $reservasHangar,
             'pagoMensualidades' => $pagoMensualidades
         ]);
+
         $dompdf = new Dompdf();
         $dompdf->loadHtml($html);
         $dompdf->render();
@@ -390,7 +377,6 @@ class AbonoController extends AbstractController
         $path = $this->getParameter('kernel.project_dir') . '/public/Logoaeroclub.png';
         $type = pathinfo($path, PATHINFO_EXTENSION);
         $data = file_get_contents($path);
-        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-        return $base64;
+        return 'data:image/' . $type . ';base64,' . base64_encode($data);
     }
 }
