@@ -41,7 +41,7 @@
         {% endif %}
 
 
-        <ul class="productosVuelos"
+        <ul class="mensualidades"
             data-index="{{ form.mensualidades|length > 0 ? form.mensualidades|last.vars.name + 1 : 0 }}"
             data-prototype="{{ form_widget(form.mensualidades.vars.prototype)|e('html_attr') }}">
             {% for mensualidad in form.mensualidades %}
@@ -51,7 +51,7 @@
                 </li>
             {% endfor %}
         </ul>
-        <button type="button" class="add_item_link btn btn-info" data-collection-holder-class="productosVuelos">Agregar Servicio</button>
+        <button type="button" class="add_item_link btn btn-info" data-collection-holder-class="mensualidades">Agregar Servicio</button>
         {% if form.mensualidades|length == 0 %}
             {{ form_widget(form.mensualidades) }}
         {% endif  %}
@@ -79,7 +79,7 @@
         }
 
         document
-            .querySelectorAll('ul.tags li')
+            .querySelectorAll('ul.mensualidades li')
             .forEach((tag) => {
                 addTagFormDeleteLink(tag)
             })

@@ -30,7 +30,6 @@ class ListaPrecioType extends AbstractType
             ->add('historial_lista_precio', EntityType::class, [
                 'label' => '% Aumento',
                 'class' => HistorialListaPrecio::class,
-                'choice_label' => 'porcentaje_cambio',
                 'attr' => [
                     'class' => 'form-control'
                 ],

@@ -93,4 +93,9 @@ class HistorialListaPrecio
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->getFecha()->format('Y-m-d').': '.$this->getPorcentajeCambio().'%';
+    }
 }
