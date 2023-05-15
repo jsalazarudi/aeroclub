@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
 
@@ -37,7 +38,10 @@ class GastoExportType extends AbstractType
                 'widget' => 'single_text',
                 'constraints' => [
                     new Type('\DateTimeInterface'),
-                    new NotBlank()
+                    new NotBlank(),
+                    new GreaterThan([
+                        'propertyPath' => 'parent.all[fecha_inicio].data'
+                    ])
                 ]
             ])
         ;
