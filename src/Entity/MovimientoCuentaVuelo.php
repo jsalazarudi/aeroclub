@@ -15,8 +15,6 @@ class MovimientoCuentaVuelo
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $unidades_gastadas = null;
 
     #[ORM\OneToOne(inversedBy: 'movimientoCuentaVuelo', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -32,21 +30,12 @@ class MovimientoCuentaVuelo
     #[ORM\ManyToOne(inversedBy: 'movimientoCuentaVuelos')]
     private ?Abono $abono = null;
 
+    #[ORM\Column]
+    private ?float $unidades_gastadas = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUnidadesGastadas(): ?int
-    {
-        return $this->unidades_gastadas;
-    }
-
-    public function setUnidadesGastadas(int $unidades_gastadas): self
-    {
-        $this->unidades_gastadas = $unidades_gastadas;
-
-        return $this;
     }
 
     public function getVuelo(): ?Vuelo
@@ -112,6 +101,18 @@ class MovimientoCuentaVuelo
         }
 
         return sprintf('%s: %s / Costo:%s',$vuelo->getFecha()->format('Y-m-d'),$tipo,$this->getUnidadesGastadas());
+    }
+
+    public function getUnidadesGastadas(): ?float
+    {
+        return $this->unidades_gastadas;
+    }
+
+    public function setUnidadesGastadas(float $unidades_gastadas): self
+    {
+        $this->unidades_gastadas = $unidades_gastadas;
+
+        return $this;
     }
 
 
