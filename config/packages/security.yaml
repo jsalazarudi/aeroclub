@@ -53,6 +53,7 @@ security:
         - { path: ^/historial/lista, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
         - { path: ^/vuelo, roles: [ROLE_PILOTO,ROLE_SOCIO,ROLE_ALUMNO] }
         - { path: ^/gasto, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
+        - { path: ^/nota, roles: [ROLE_TESORERO,ROLE_ADMINISTRADOR] }
 
 when@test:
     security:
