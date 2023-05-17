@@ -10,6 +10,8 @@ use App\Repository\AlumnoRepository;
 use App\Repository\HistorialListaPrecioRepository;
 use App\Repository\ListaPrecioRepository;
 use App\Repository\UsuarioRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -73,20 +75,32 @@ class AlumnoController extends AbstractController
     #[Route('/listado', name: 'aeroclub_alumno_listado_precios', methods: ['GET', 'POST'])]
     public function listado(Request $request, HistorialListaPrecioRepository $historialListaPrecioRepository, ListaPrecioRepository $listaPrecioRepository, PaginatorInterface $paginator): Response
     {
-        /** @var string $ultimaFechaHistorialListaPrecios */
-        $ultimaFechaHistorialListaPrecios = $historialListaPrecioRepository->createQueryBuilder('hlp')
+        $ultimaFechaHistorialListaPreciosQuery = $historialListaPrecioRepository->createQueryBuilder('hlp')
             ->select('MAX(hlp.fecha) AS fecha')
-            ->getQuery()
-            ->getSingleScalarResult();
+            ->getQuery();
 
-        /** @var HistorialListaPrecio $ultimaHistorialListaPrecios */
-        $ultimaHistorialListaPrecios = $historialListaPrecioRepository->createQueryBuilder('hlp')
+        try {
+            /** @var string $ultimaFechaHistorialListaPrecios */
+            $ultimaFechaHistorialListaPrecios = $ultimaFechaHistorialListaPreciosQuery->getSingleScalarResult();
+        } catch (NoResultException|NonUniqueResultException $e) {
+            $this->addFlash('error', 'No se encontraron historial de lista de precio o esta duplicado');
+            return $this->redirectToRoute('aeroclub_alumno_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $ultimaFechaHistorialListaPreciosQuery = $historialListaPrecioRepository->createQueryBuilder('hlp')
             ->select('hlp')
             ->join('hlp.listaPrecios', 'lp')
             ->where('hlp.fecha = :fecha')
             ->setParameter('fecha', $ultimaFechaHistorialListaPrecios)
-            ->getQuery()
-            ->getSingleResult();
+            ->getQuery();
+
+        try {
+            /** @var HistorialListaPrecio $ultimaHistorialListaPrecios */
+            $ultimaHistorialListaPrecios = $ultimaFechaHistorialListaPreciosQuery->getSingleResult();
+        } catch (NoResultException|NonUniqueResultException $e) {
+            $this->addFlash('error', 'No se encontraron listas de precios relacionados al historial de lista de precio');
+            return $this->redirectToRoute('aeroclub_alumno_index', [], Response::HTTP_SEE_OTHER);
+        }
 
         $listaPreciosQuery = $listaPrecioRepository->createQueryBuilder('lp')
             ->where('lp.historial_lista_precio = :historia_lista_precio')

@@ -13,11 +13,7 @@
                     <td>{{ usuario.apellido }}</td>
                     <td>{{ usuario.email }}</td>
                     <td>
-                        {% if is_granted('ROLE_ADMINISTRADOR') %}
-                            {{ include('alumno/_delete_form.html.twig') }}
-                        {% else %}
-                            <a class="btn btn-warning mb-2" href="{{ path('aeroclub_alumno_edit', {'id': usuario.alumno.id}) }}">Editar</a>
-                        {% endif %}
+                        <a class="btn btn-warning mb-2" href="{{ path('aeroclub_alumno_edit', {'id': usuario.alumno.id}) }}">Editar</a>
                     </td>
                 </tr>
             {% endfor %}

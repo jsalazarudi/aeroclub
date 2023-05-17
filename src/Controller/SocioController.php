@@ -6,6 +6,7 @@ use App\Entity\PagoMensualidad;
 use App\Entity\Socio;
 use App\Entity\Usuario;
 use App\Form\SocioType;
+use App\Repository\MensualidadRepository;
 use App\Repository\PagoMensualidadRepository;
 use App\Repository\SocioRepository;
 use App\Repository\UsuarioRepository;
@@ -53,8 +54,6 @@ class SocioController extends AbstractController
 
             $socio->getUsuario()->setRoles(['ROLE_SOCIO']);
 
-            // ANTES DE GUARDAR, SETIAR LOS PAGOS PENDIENTES MENSUALES
-            // EN BASE A LA FECHA INICIO Y FECHA FIN DE LA MENSUALIDAD
             foreach ($socio->getMensualidades() as $mensualidad) {
                 $inicio = $mensualidad->getFechaInicio();
                 $fin = $mensualidad->getFechaFin();
@@ -90,29 +89,32 @@ class SocioController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'aeroclub_socio_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Socio $socio, SocioRepository $socioRepository, PagoMensualidadRepository $pagoMensualidadRepository): Response
+    public function edit(Request $request, Socio $socio, SocioRepository $socioRepository, PagoMensualidadRepository $pagoMensualidadRepository, MensualidadRepository $mensualidadRepository): Response
     {
         $form = $this->createForm(SocioType::class, $socio);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // ANTES DE GUARDAR, SETIAR LOS PAGOS PENDIENTES MENSUALES
-            // EN BASE A LA FECHA INICIO Y FECHA FIN DE LA MENSUALIDAD
             foreach ($socio->getMensualidades() as $mensualidad) {
-                if (!$mensualidad->getId()) {
-                    $inicio = $mensualidad->getFechaInicio();
-                    $fin = $mensualidad->getFechaFin();
-                    $interval = new \DateInterval('P1M');
-                    $range = new \DatePeriod($inicio,$interval,$fin);
-
-                    foreach ($range as $date) {
-                        $pagoMensualidad = new PagoMensualidad();
-                        $pagoMensualidad->setFecha($date);
-                        $pagoMensualidad->setMensualidad($mensualidad);
-                        $pagoMensualidadRepository->save($pagoMensualidad);
-                    }
+                /** Eliminar pagos mensualidad anteriores */
+                foreach ($mensualidad->getPagoMensualidads() as $pagoMensualidad) {
+                    $mensualidad->removePagoMensualidad($pagoMensualidad);
                 }
+
+                /** Crear nuevos pagos mensualidades */
+                $inicio = $mensualidad->getFechaInicio();
+                $fin = $mensualidad->getFechaFin();
+                $interval = new \DateInterval('P1M');
+                $range = new \DatePeriod($inicio,$interval,$fin);
+
+                foreach ($range as $date) {
+                    $pagoMensualidad = new PagoMensualidad();
+                    $pagoMensualidad->setFecha($date);
+                    $pagoMensualidad->setMensualidad($mensualidad);
+                    $pagoMensualidadRepository->save($pagoMensualidad);
+                }
+
             }
 
             $socioRepository->save($socio, true);

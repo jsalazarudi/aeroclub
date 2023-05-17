@@ -37,7 +37,7 @@ class Mensualidad
     #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $fecha_fin = null;
 
-    #[ORM\OneToMany(mappedBy: 'mensualidad', targetEntity: PagoMensualidad::class)]
+    #[ORM\OneToMany(mappedBy: 'mensualidad', targetEntity: PagoMensualidad::class, cascade: ['persist','remove'], orphanRemoval: true)]
     private Collection $pagoMensualidads;
 
     public function __construct()
@@ -126,5 +126,11 @@ class Mensualidad
         }
 
         return $this;
+    }
+
+    #[ORM\PreRemove()]
+    public function validarPagoMensual()
+    {
+        dd("holi");
     }
 }

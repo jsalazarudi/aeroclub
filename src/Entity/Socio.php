@@ -39,7 +39,7 @@ class Socio
     #[Assert\Valid]
     private ?Usuario $usuario = null;
 
-    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Mensualidad::class, cascade: ['persist'])]
+    #[ORM\OneToMany(mappedBy: 'socio', targetEntity: Mensualidad::class, cascade: ['persist'] , orphanRemoval: true)]
     private Collection $mensualidades;
    public function __construct()
     {
