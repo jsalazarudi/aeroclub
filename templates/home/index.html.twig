@@ -22,7 +22,7 @@
 
     {% if is_granted('ROLE_ALUMNO') %}
         {% for notificacion_curso in notificacion_cursos  %}
-            {% if notificacion_curso.horas >= 40 %}
+            {% if notificacion_curso.horas >= notificacion_curso.duracion %}
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
 
                     <strong>Horas realizadas ({{ notificacion_curso.horas }}). Usted ha cumplido el mínimo de horas(40) requeridas para presentar el examen del curso {{ notificacion_curso.descripcion }}. Contacte

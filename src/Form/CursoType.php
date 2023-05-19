@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,6 +19,7 @@ class CursoType extends AbstractType
     {
         $builder
             ->add('descripcion', TextType::class, [
+                'label' => 'Descripción',
                 'attr' => [
                     'class' => 'form-control'
                 ],
@@ -46,7 +48,18 @@ class CursoType extends AbstractType
                     return $er->createQueryBuilder('u')->join('u.alumno','a');
                 },
                 'placeholder' => 'Seleccione un alumno'
-            ]);
+            ])
+            ->add('duracion', IntegerType::class,[
+                'label' => 'Duración',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+                'label_attr' => [
+                    'class' => 'text-muted fs-3'
+                ]
+            ])
+
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

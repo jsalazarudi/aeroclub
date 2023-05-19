@@ -32,6 +32,10 @@ class Curso
     #[ORM\JoinColumn(nullable: false)]
     private ?Usuario $alumno = null;
 
+    #[ORM\Column]
+    #[Assert\NotBlank()]
+    private ?int $duracion = null;
+
     public function __construct()
     {
         $this->vuelos = new ArrayCollection();
@@ -110,6 +114,18 @@ class Curso
     public function setAlumno(?Usuario $alumno): self
     {
         $this->alumno = $alumno;
+
+        return $this;
+    }
+
+    public function getDuracion(): ?int
+    {
+        return $this->duracion;
+    }
+
+    public function setDuracion(int $duracion): self
+    {
+        $this->duracion = $duracion;
 
         return $this;
     }

@@ -27,7 +27,7 @@ class HomeController extends AbstractController
 
         if ($alumno) {
             $notificacionCursos = $cursoRepository->createQueryBuilder('c')
-                ->select('SUM(mcv.unidades_gastadas) AS horas, c.descripcion')
+                ->select('SUM(mcv.unidades_gastadas) AS horas, c.descripcion, c.duracion')
                 ->join('c.vuelos', 'v')
                 ->join('v.movimientoCuentaVuelo', 'mcv')
                 ->where('c.alumno = :alumno')

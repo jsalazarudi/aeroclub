@@ -37,6 +37,19 @@
         {{ form_widget(form.alumno) }}
     </div>
 </div>
+<div class="row">
+    <div class="col mb-3">
+        {{ form_label(form.duracion) }}
+
+        {% if form_errors(form.duracion) %}
+            <div class="alert alert-danger">
+                {{ form_errors(form.duracion) }}
+            </div>
+        {% endif %}
+
+        {{ form_widget(form.duracion) }}
+    </div>
+</div>
 <div class="text-center mt-3">
     <button class="btn btn-primary btn-lg">{{ button_label|default('Guardar') }}</button>
 </div>
