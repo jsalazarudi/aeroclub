@@ -68,6 +68,9 @@ class ListaPrecioRepository extends ServiceEntityRepository
         if ($rol === 'ROLE_SOCIO') {
             $listaPrecioQuery->andWhere('lp.socio = true');
         }
+        else {
+            $listaPrecioQuery->andWhere('lp.socio = false');
+        }
         try {
             return $listaPrecioQuery->getQuery()->getSingleResult();
         } catch (NoResultException|NonUniqueResultException $e) {
