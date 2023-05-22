@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class SocioType extends AbstractType
 {
@@ -24,6 +25,9 @@ class SocioType extends AbstractType
                 'label' => 'Fecha Vencimiento Licencia Médica',
                 'label_attr' => [
                     'class' => 'form-check-label text-muted fs-3'
+                ],
+                'constraints' => [
+                    new GreaterThan('today')
                 ]
             ])
             ->add('tipo_licencia', ChoiceType::class, [

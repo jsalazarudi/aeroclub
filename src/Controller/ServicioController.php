@@ -40,6 +40,20 @@ class ServicioController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($servicio->isDefecto()) {
+                if ($servicio->isEsHangaraje() && $servicio->isEsMensual()) {
+                    $this->addFlash(
+                        'error',
+                        'Solo se puede seleccionar defecto o pago mensual al mismo tiempo'
+                    );
+                    return $this->render('servicio/new.html.twig', [
+                        'servicio' => $servicio,
+                        'form' => $form,
+                    ]);
+                }
+            }
+
             $servicioRepository->save($servicio, true);
 
             return $this->redirectToRoute('app_servicio_index', [], Response::HTTP_SEE_OTHER);
@@ -66,12 +80,26 @@ class ServicioController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($servicio->isDefecto()) {
+                if ($servicio->isEsHangaraje() && $servicio->isEsMensual()) {
+                    $this->addFlash(
+                        'error',
+                        'Solo se puede seleccionar defecto o pago mensual al mismo tiempo'
+                    );
+                    return $this->render('servicio/edit.html.twig', [
+                        'servicio' => $servicio,
+                        'form' => $form,
+                    ]);
+                }
+            }
+
             $servicioRepository->save($servicio, true);
 
             return $this->redirectToRoute('app_servicio_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('servicio/edit.html.twig', [
+        return $this->render('servicio/edit.html.twig', [
             'servicio' => $servicio,
             'form' => $form,
         ]);

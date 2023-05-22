@@ -5,10 +5,10 @@ namespace App\Form;
 use App\Entity\Alumno;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class AlumnoType extends AbstractType
 {
@@ -32,6 +32,9 @@ class AlumnoType extends AbstractType
                 'label' => 'Fecha Vencimiento Licencia Médica',
                 'label_attr' => [
                     'class' => 'form-check-label text-muted fs-3'
+                ],
+                'constraints' => [
+                    new GreaterThan('today')
                 ]
             ])
             ->add('usuario',UsuarioType::class);

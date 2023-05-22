@@ -59,13 +59,13 @@ class ListaPrecioController extends AbstractController
                 ->getQuery()
                 ->getSingleResult();
 
-            $checkboxValues = [$listaPrecio->isBautismo(),$listaPrecio->isAlumno(),$listaPrecio->isSocio()];
-            $filteredValues = array_filter($checkboxValues,function ($checkbox){
+            $checkboxValues = [$listaPrecio->isBautismo(), $listaPrecio->isAlumno(), $listaPrecio->isSocio()];
+            $filteredValues = array_filter($checkboxValues, function ($checkbox) {
                 return $checkbox;
             });
 
             if (!$listaPrecio->getServicio() && !$listaPrecio->getProducto() && !$listaPrecio->getAvion()) {
-                $this->addFlash('error','Debe seleccionar al menos una opcion de Servicio,Avion o Producto');
+                $this->addFlash('error', 'Debe seleccionar al menos una opcion de Servicio,Avion o Producto');
 
                 return $this->render('lista_precio/new.html.twig', [
                     'lista_precio' => $listaPrecio,
@@ -78,7 +78,7 @@ class ListaPrecioController extends AbstractController
 
                 // VALIDAR QUE NO ESTE SETIADO PRODUCTO O SERVICIO. SOLO PUEDE ESTAR SETIADO AVION
                 if ($listaPrecio->getProducto() || $listaPrecio->getServicio()) {
-                    $this->addFlash('error','Solo puede seleccionar una opcion entre producto, servicio y avion');
+                    $this->addFlash('error', 'Solo puede seleccionar una opcion entre producto, servicio y avion');
 
                     return $this->render('lista_precio/new.html.twig', [
                         'lista_precio' => $listaPrecio,
@@ -88,7 +88,7 @@ class ListaPrecioController extends AbstractController
 
                 // VALIDAR QUE SOLO ESTE SETIADO UNA OPCION ENTRE SOCIO,ALUMNO,BAUTISMO
                 if (count($filteredValues) > 1) {
-                    $this->addFlash('error','Solo puede seleccionar una opcion entre bautismo, alumno y socio');
+                    $this->addFlash('error', 'Solo puede seleccionar una opcion entre bautismo, alumno y socio');
 
                     return $this->render('lista_precio/new.html.twig', [
                         'lista_precio' => $listaPrecio,
@@ -99,7 +99,7 @@ class ListaPrecioController extends AbstractController
                 // VALIDAR QUE NO SE DUPLIQUE UN PRECIO PARA UN AVION DE VUELO BAUTISMO,ALUMNO Y SOCIO
                 $principalQuery = $listaPrecioRepository->createQueryBuilder('lp')
                     ->where('lp.avion = :avion')
-                    ->setParameter('avion',$listaPrecio->getAvion())
+                    ->setParameter('avion', $listaPrecio->getAvion())
                     ->andWhere('lp.historial_lista_precio = :historial_lista_precio')
                     ->setParameter('historial_lista_precio', $ultimaHistorialListaPrecios);
 
@@ -118,11 +118,11 @@ class ListaPrecioController extends AbstractController
                     $listaPrecioRepository->save($listaPrecio, true);
                     return $this->redirectToRoute('app_lista_precio_index', [], Response::HTTP_SEE_OTHER);
                 } catch (NonUniqueResultException $e) {
-                    $this->addFlash('error','Existen dos listas de precio para el mismo avion');
+                    $this->addFlash('error', 'Existen dos listas de precio para el mismo avion');
                     return $this->redirectToRoute('app_lista_precio_index', [], Response::HTTP_SEE_OTHER);
                 }
 
-                $this->addFlash('error','Ya existe un precio para este avion para ese rol');
+                $this->addFlash('error', 'Ya existe un precio para este avion para ese rol');
 
                 return $this->render('lista_precio/new.html.twig', [
                     'lista_precio' => $listaPrecio,
@@ -134,7 +134,7 @@ class ListaPrecioController extends AbstractController
             if ($listaPrecio->getProducto()) {
                 // VALIDAR QUE NO ESTE SETIADO AVION O SERVICIO. SOLO PUEDE ESTAR SETIADO PRODUCTO
                 if ($listaPrecio->getServicio() || $listaPrecio->getAvion()) {
-                    $this->addFlash('error','Solo puede seleccionar una opcion entre producto, servicio y avion');
+                    $this->addFlash('error', 'Solo puede seleccionar una opcion entre producto, servicio y avion');
 
                     return $this->render('lista_precio/new.html.twig', [
                         'lista_precio' => $listaPrecio,
@@ -144,7 +144,46 @@ class ListaPrecioController extends AbstractController
                 }
 
                 if ($listaPrecio->isAlumno() || $listaPrecio->isBautismo()) {
-                    $this->addFlash('error','Para poner precio a un producto solo esta disponible para los socios y no socios');
+                    $this->addFlash('error', 'Para poner precio a un producto solo esta disponible para los socios y no socios');
+
+                    return $this->render('lista_precio/new.html.twig', [
+                        'lista_precio' => $listaPrecio,
+                        'form' => $form,
+                    ]);
+                }
+
+                // VALIDAR QUE NO EXISTE PRECIO DUPLICADO DEL PRODUCTO
+                $queryPrecioDuplicado = $listaPrecioRepository->createQueryBuilder('lp')
+                    ->where('lp.producto = :producto')
+                    ->andWhere('lp.historial_lista_precio = :historial')
+                    ->setParameter('producto', $listaPrecio->getProducto())
+                    ->setParameter('historial', $ultimaHistorialListaPrecios);
+
+                if ($listaPrecio->isSocio()) {
+                    $queryPrecioDuplicado->andWhere('lp.socio = true');
+                } else {
+                    $queryPrecioDuplicado->andWhere('lp.socio = false');
+                }
+                if ($listaPrecio->isAlumno()) {
+                    $queryPrecioDuplicado->andWhere('lp.alumno = true');
+                } else {
+                    $queryPrecioDuplicado->andWhere('lp.alumno = false');
+                }
+
+                $queryPrecioDuplicado = $queryPrecioDuplicado->getQuery();
+
+                try {
+                    $precioDuplicado = $queryPrecioDuplicado->getSingleResult();
+                    $this->addFlash('error', 'Ya existe una lista de  precio para el producto seleccionado');
+
+                    return $this->render('lista_precio/new.html.twig', [
+                        'lista_precio' => $listaPrecio,
+                        'form' => $form,
+                    ]);
+                } catch (NoResultException) {
+
+                } catch (NonUniqueResultException) {
+                    $this->addFlash('error', 'Ya existe listas de precios para el producto seleccionado');
 
                     return $this->render('lista_precio/new.html.twig', [
                         'lista_precio' => $listaPrecio,
@@ -157,7 +196,7 @@ class ListaPrecioController extends AbstractController
             if ($listaPrecio->getServicio()) {
                 // VALIDAR QUE NO ESTE SETIADO AVION O SERVICIO. SOLO PUEDE ESTAR SETIADO PRODUCTO
                 if ($listaPrecio->getProducto() || $listaPrecio->getAvion()) {
-                    $this->addFlash('error','Solo puede seleccionar una opcion entre producto, servicio y avion');
+                    $this->addFlash('error', 'Solo puede seleccionar una opcion entre producto, servicio y avion');
 
                     return $this->render('lista_precio/new.html.twig', [
                         'lista_precio' => $listaPrecio,
@@ -166,7 +205,7 @@ class ListaPrecioController extends AbstractController
                 }
 
                 if ($listaPrecio->isBautismo() || $listaPrecio->isAlumno()) {
-                    $this->addFlash('error','Solo se puede seleccionar socio si es necesario para el precio de los servicios');
+                    $this->addFlash('error', 'Solo se puede seleccionar socio si es necesario para el precio de los servicios');
 
                     return $this->render('lista_precio/new.html.twig', [
                         'lista_precio' => $listaPrecio,
@@ -174,7 +213,44 @@ class ListaPrecioController extends AbstractController
                     ]);
                 }
 
+                // VALIDAR QUE NO EXISTE PRECIO DUPLICADO DEL SERVICIO
+                $queryPrecioDuplicado = $listaPrecioRepository->createQueryBuilder('lp')
+                    ->where('lp.servicio = :servicio')
+                    ->andWhere('lp.historial_lista_precio = :historial')
+                    ->setParameter('servicio', $listaPrecio->getServicio())
+                    ->setParameter('historial', $ultimaHistorialListaPrecios);
 
+                if ($listaPrecio->isSocio()) {
+                    $queryPrecioDuplicado->andWhere('lp.socio = true');
+                } else {
+                    $queryPrecioDuplicado->andWhere('lp.socio = false');
+                }
+                if ($listaPrecio->isAlumno()) {
+                    $queryPrecioDuplicado->andWhere('lp.alumno = true');
+                } else {
+                    $queryPrecioDuplicado->andWhere('lp.alumno = false');
+                }
+
+                $queryPrecioDuplicado = $queryPrecioDuplicado->getQuery();
+
+                try {
+                    $precioDuplicado = $queryPrecioDuplicado->getSingleResult();
+                    $this->addFlash('error', 'Ya existe una lista de precio para el servicio seleccionado');
+
+                    return $this->render('lista_precio/new.html.twig', [
+                        'lista_precio' => $listaPrecio,
+                        'form' => $form,
+                    ]);
+                } catch (NoResultException) {
+
+                } catch (NonUniqueResultException) {
+                    $this->addFlash('error', 'Ya existen listas de precios para el servicio seleccionado');
+
+                    return $this->render('lista_precio/new.html.twig', [
+                        'lista_precio' => $listaPrecio,
+                        'form' => $form,
+                    ]);
+                }
 
             }
 
